@@ -1,3 +1,3 @@
-function log_likelihood(dist::Distribution, link::Link)
+function log_likelihood(dist::Distribution)
     
 end
