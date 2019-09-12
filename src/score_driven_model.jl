@@ -13,16 +13,23 @@ mutable struct SDModel
 end
 
 function simulate(sd_model::SDModel, n::Int, initial_values)
+    # Allocations
     serie = zeros(n)
     param = Array{Vector{Float64}}(undef, n)
+    param_tilde = Array{Vector{Float64}}(undef, n)
+
+    # initial_values 
     dist = update_dist(sd_model.dist, initial_values)
     serie[1] = sample(dist)
-    param[1] = initial_values
+    param_tilde[1] = param_to_param_tilde(dist, initial_values)
+    
     for i in 1:n-1
-        param[i + 1] = sd_model.ω + sd_model.A*score(serie[i], update_dist(sd_model.dist, param[i]), sd_model.scaling) + sd_model.B*param[i]
-        serie[i + 1] = sample(update_dist(sd_model.dist, param[i + 1]))
+        param[i] = param_tilde_to_param(sd_model.dist, param_tilde[i])
+        param_tilde[i + 1] = sd_model.ω + sd_model.A*score_tilde(serie[i], dist, param[i], param_tilde[i], sd_model.scaling) + sd_model.B*param_tilde[i]
+        updated_dist = update_dist(sd_model.dist, param_tilde_to_param(sd_model.dist, param_tilde[i + 1]))
+        serie[i + 1] = sample(updated_dist)
     end
-    return serie, param
+    return serie, param, param_tilde
 end
 
 function update_dist(dist::Distribution, value)

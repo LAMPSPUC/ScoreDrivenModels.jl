@@ -14,5 +14,7 @@ initial_values = [15.0]
 serie, param = simulate(sd_model, 100, initial_values)
 
 using Plots
-plot(param)
-plot(serie)
+plot(vcat(param...), label = "\\lambda")
+plot!(serie, label = "y\\_t")
+
+score(1.0, Poisson(3))
