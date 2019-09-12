@@ -23,7 +23,7 @@ end
 
 # Transformations 
 function score_tilde(y, dist::Distribution, param::Vector{T}, param_tilde::Vector{T}) where T
-    return jacobian_param_tilde(dist, param_tilde).*score(y, dist, param)
+    return jacobian_param_tilde(dist, param_tilde)*score(y, dist, param)
 end
 function fisher_information_tilde(dist::Distribution, param::Vector{T}, param_tilde::Vector{T}) where T
     return jacobian_param_tilde(dist, param_tilde)'*fisher_information(dist, param)*jacobian_param_tilde(dist, param_tilde)
@@ -34,7 +34,7 @@ end
 Proof somewhere
 """
 function score(y, poisson::Poisson, param)
-    return (y - param[1])/param[1]
+    return [(y - param[1])/param[1]]
 end
 
 """

@@ -1,13 +1,13 @@
-push!(LOAD_PATH, "/Users/guilhermebodin/Documents/ScoreDrivenModels.jl/src")
+push!(LOAD_PATH, "/home/guilhermebodin/Documents/Github/ScoreDrivenModels.jl/src")
 using ScoreDrivenModels
 using Distributions
 using Plots
 
 ω = [1; 0.1]
-A = [0.5 0; 0 0.05]
-B = [0.5 0; 0 0.05]
+A = [0.9 0; 0 0.05]
+B = [0.9 0; 0 0.05]
 dist = Normal()
-scaling = 1/2
+scaling = 1.0
 
 sd_model = SDModel(ω, A, B, dist, scaling)
 
@@ -20,3 +20,16 @@ hcat(param...)'
 
 plot(hcat(param...)', label = ["\\mu" "\\sigma"])
 plot!(serie, label = "y\\_t")
+
+
+# R package
+using RCall
+# install.packages("GAS")
+library(GAS)
+A <- diag(c(0.9, 0.05))
+B <- diag(c(0.9, 0.05))
+kappa <- c(1, 0.1)
+Sim <- UniGASSim(fit = NULL, T.sim = 100, kappa = kappa, A = A, B = B, Dist = "beta", ScalingType = "Identity")
+plot(Sim)
+3
+0

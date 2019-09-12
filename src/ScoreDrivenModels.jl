@@ -1,6 +1,7 @@
 module ScoreDrivenModels
 
 using Distributions
+using LinearAlgebra
 
 include("utils.jl")
 include("sample.jl")

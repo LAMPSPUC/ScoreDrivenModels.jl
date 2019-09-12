@@ -15,7 +15,7 @@ jacobian_param_tilde(::Type{IdentityLink}, param_tilde::T) where T = one(T)
 # Poisson
 param_to_param_tilde(poisson::Poisson, param::Vector{T}) where T = param_to_param_tilde.(ExponentialLink, param)
 param_tilde_to_param(poisson::Poisson, param_tilde::Vector{T}) where T = param_tilde_to_param.(ExponentialLink, param_tilde)
-jacobian_param_tilde(poisson::Poisson, param_tilde::Vector{T}) where T = jacobian_param_tilde.(ExponentialLink, param_tilde)
+jacobian_param_tilde(poisson::Poisson, param_tilde::Vector{T}) where T = Diagonal(jacobian_param_tilde.(ExponentialLink, param_tilde))
 
 # Normal
 function param_to_param_tilde(normal::Normal, param::Vector{T}) where T 
@@ -31,8 +31,8 @@ function param_tilde_to_param(normal::Normal, param_tilde::Vector{T}) where T
     ]
 end
 function jacobian_param_tilde(normal::Normal, param_tilde::Vector{T}) where T 
-    return [
+    return Diagonal([
         jacobian_param_tilde(IdentityLink, param_tilde[1])
         jacobian_param_tilde(ExponentialLink, param_tilde[2])
-    ]
+    ])
 end
