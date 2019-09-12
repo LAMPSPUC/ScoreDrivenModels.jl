@@ -1,20 +1,25 @@
-push!(LOAD_PATH, "/home/guilhermebodin/Documents/Github/ScoreDrivenModels.jl/src")
+push!(LOAD_PATH, "/Users/guilhermebodin/Documents/ScoreDrivenModels.jl/src")
 using ScoreDrivenModels
 using Distributions
+using Plots
 
-ω = [1.0]
-A = [0.9][:, :]
-B = [0.9][:, :]
+ω = [0.01]
+A = [0.3][:, :]
+B = [0.4][:, :]
 dist = Poisson()
 scaling = 0.5
 
 sd_model = SDModel(ω, A, B, dist, scaling)
 
 initial_param = [15.0]
-serie, param = simulate(sd_model, 100, initial_param)
+serie, param, param_tilde = simulate(sd_model, 100, initial_param)
+serie
+param
+param_tilde
+maximum(serie)
+maximum(param)
 
-using Plots
 plot(vcat(param...), label = "\\lambda")
 plot!(serie, label = "y\\_t")
 
-score(1.0, Poisson(3))
+# R package
