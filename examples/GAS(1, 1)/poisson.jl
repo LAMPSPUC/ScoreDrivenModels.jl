@@ -6,12 +6,12 @@ using Distributions
 A = [0.9][:, :]
 B = [0.9][:, :]
 dist = Poisson()
-scaling = 0
+scaling = 0.5
 
 sd_model = SDModel(ω, A, B, dist, scaling)
 
-initial_values = [15.0]
-serie, param = simulate(sd_model, 100, initial_values)
+initial_param = [15.0]
+serie, param = simulate(sd_model, 100, initial_param)
 
 using Plots
 plot(vcat(param...), label = "\\lambda")
