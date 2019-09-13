@@ -1,15 +1,7 @@
-export SDModel, simulate
+export simulate
 
-mutable struct SDModel
-    ω::Vector{Float64}
-    A::Matrix{Float64}
-    B::Matrix{Float64}
-    dist::Distribution
-    scaling
-
-    function SDModel(ω, A, B, dist, scaling)
-        return new(ω, A, B, dist, scaling)
-    end
+function simulate(sd_model::SDModel, n::Int)
+    return simulate(sd_model, n, stationary_initial_params(sd_model))
 end
 
 function simulate(sd_model::SDModel, n::Int, initial_param::Vector{T}) where T
@@ -19,9 +11,9 @@ function simulate(sd_model::SDModel, n::Int, initial_param::Vector{T}) where T
     param_tilde = Vector{Vector{T}}(undef, n)
 
     # initial_values 
-    dist = update_dist(sd_model.dist, initial_param)
+    dist = update_dist(sd_model.dist, param_tilde_to_param(sd_model.dist, initial_param))
     serie[1] = sample_observation(dist)
-    param_tilde[1] = param_to_param_tilde(dist, initial_param)
+    param_tilde[1] = initial_param
 
     for i in 1:n-1
         param[i] = param_tilde_to_param(sd_model.dist, param_tilde[i])
@@ -32,11 +24,6 @@ function simulate(sd_model::SDModel, n::Int, initial_param::Vector{T}) where T
     end
     param[end] = param_tilde_to_param(sd_model.dist, param_tilde[end])
     return serie, param, param_tilde
-end
-
-function update_param_tilde(param_tilde, dist, ω, A, B, score_til, i)
-    param_tilde[i + 1] = ω + A*score_til + B*param_tilde[i]
-    return 
 end
 
 function update_dist(dist::Distribution, param::Vector{T}) where T

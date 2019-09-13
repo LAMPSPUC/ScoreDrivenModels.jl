@@ -29,7 +29,15 @@ library(GAS)
 A <- matrix(c(-0.2))
 B <- matrix(c(0.9))
 kappa <- c(0.0)
-Sim <- UniGASSim(fit = NULL, T.sim = 100, kappa = kappa, A = A, B = B, Dist = "poi", ScalingType = "Identity")
+Sim <- UniGASSim(fit = NULL, T.sim = 100, kappa = kappa, A = A, B = B, Dist = "poi", ScalingType = "InvSqrt")
 plot(Sim)
-3
-0
+obs <- getObs(Sim)
+parameters <- getFilteredParameters(Sim)
+
+@rget obs parameters
+
+obs
+parameters
+
+println(obs)
+println(parameters)
