@@ -16,7 +16,7 @@ end
 """
 Proof somewhere
 """
-function log_likelihood(poisson::Poisson, y::Vector{T}, params::Vector{T}, n::Int)
+function log_likelihood(poisson::Poisson, y::Vector{T}, params::Vector{T}, n::Int) where T
     
 end
 

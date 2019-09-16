@@ -1,6 +1,6 @@
 module ScoreDrivenModels
 
-using Distributions
+using Distributions, Optim
 using LinearAlgebra
 
 # Core files
@@ -11,6 +11,7 @@ include("link_functions.jl")
 include("score.jl")
 include("initial_params.jl")
 include("simulate.jl")
+include("MLE.jl")
 
 # Distributions
 include("distributions/normal.jl")

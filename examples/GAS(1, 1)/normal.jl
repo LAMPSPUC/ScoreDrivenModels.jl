@@ -21,9 +21,6 @@ hcat(param...)'
 param[1]
 param_tilde[1]
 
-param[47]
-param_tilde[47]
-
 plot(hcat(param...)', label = ["\\mu" "\\sigma"])
 plot!(serie, label = "y\\_t")
 
