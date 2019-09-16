@@ -29,11 +29,11 @@ function RandomSeedsLBFGS(nseeds::Int, dim::Int; f_tol::Float64 = 1e-6, g_tol::F
 end
 
 function log_lik_sd_model(psitilde::Vector{T}, y::Vector{T}, sd_model::SDModel, 
-                          initial_params::Vector{T}, len_ω::Int, n::Int) where T
-    # use len_ω to fill sd_model
-    fill_ω!(sd_model, psitilde[1:len_ω])
-    fill_A!(sd_model, psitilde[len_ω + 1:2len_ω])
-    fill_B!(sd_model, psitilde[2len_ω + 1:3len_ω])
+                          initial_params::Vector{T}, unknowns_ω::Vector{Int},
+                          unknowns_A::Vector{Int}, unknowns_B::Vector{Int}, n::Int) where T
+    
+    # Use the unkowns vectors to fill the right positions
+    fill_psitilde!(sd_model, psitilde, unknowns_ω, unknowns_A, unknowns_B)
 
     if isnan(initial_params[1]) # Means default stationary initialization
         params = score_driven_recursion(sd_model, y)
@@ -46,7 +46,7 @@ end
 
 function estimate_SDModel!(sd_model::SDModel, y::Vector{T};
                            initial_params::Vector{Float64} = [NaN], # Means default stationary initialization
-                           random_seeds_lbfgs::RandomSeedsLBFGS = RandomSeedsLBFGS(3, 3*length(sd_model.ω)),
+                           random_seeds_lbfgs::RandomSeedsLBFGS = RandomSeedsLBFGS(3, dimension_unkowns(sd_model)),
                            verbose::Int = 0) where T
 
     # Number of seed and number of params to estimate
@@ -54,20 +54,29 @@ function estimate_SDModel!(sd_model::SDModel, y::Vector{T};
     len_ω = length(sd_model.ω)
     n = length(y)
 
+    unknowns_ω = find_unknowns(sd_model.ω)
+    unknowns_A = find_unknowns(sd_model.A)
+    unknowns_B = find_unknowns(sd_model.B)
+    len_unknowns = length(unknowns_ω) + length(unknowns_A) + length(unknowns_B)
+
+    # Check if the model has no unknowns
+    check_model_estimated(len_unknowns) && return sd_model
+
     # Guarantee that the seeds are in the right dimension
-    @assert length(random_seeds_lbfgs.seeds[1]) == 3*len_ω
+    @assert length(random_seeds_lbfgs.seeds[1]) == len_unknowns
 
     # optimize for each seed
-    psi = Matrix{Float64}(undef, 3*len_ω, nseeds)
+    psi = Matrix{Float64}(undef, len_unknowns, nseeds)
     loglikelihood = Vector{Float64}(undef, nseeds)
 
     for i = 1:nseeds
-        optseed = optimize(psitilde -> log_lik_sd_model(psitilde, y, sd_model, initial_params, len_ω, n), 
-                            random_seeds_lbfgs.seeds[i],
-                            LBFGS(), Optim.Options(f_tol = random_seeds_lbfgs.f_tol, 
-                                                   g_tol = random_seeds_lbfgs.g_tol, 
-                                                   iterations = random_seeds_lbfgs.iterations,
-                                                   show_trace = (verbose == 2 ? true : false) ))
+        optseed = optimize(psi_tilde -> log_lik_sd_model(psi_tilde, y, sd_model, initial_params, unknowns_ω,
+                                                         unknowns_A, unknowns_B, n), 
+                                                         random_seeds_lbfgs.seeds[i],
+                                                         LBFGS(), Optim.Options(f_tol = random_seeds_lbfgs.f_tol, 
+                                                                                g_tol = random_seeds_lbfgs.g_tol, 
+                                                                                iterations = random_seeds_lbfgs.iterations,
+                                                                                show_trace = (verbose == 2 ? true : false) ))
         loglikelihood[i] = -optseed.minimum
         psi[:, i] = optseed.minimizer
         # print_loglikelihood(verbose, iseed, loglikelihood, t0)
@@ -76,9 +85,7 @@ function estimate_SDModel!(sd_model::SDModel, y::Vector{T};
     bestpsi = psi[:, argmax(loglikelihood)]
 
     # return the estimated 
-    fill_ω!(sd_model, bestpsi[1:len_ω])
-    fill_A!(sd_model, bestpsi[len_ω + 1:2len_ω])
-    fill_B!(sd_model, bestpsi[2len_ω + 1:3len_ω])
+    fill_psitilde!(sd_model, bestpsi, unknowns_ω, unknowns_A, unknowns_B)
 
     println("Finished!")
 end

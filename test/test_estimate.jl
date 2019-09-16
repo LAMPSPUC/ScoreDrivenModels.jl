@@ -6,16 +6,22 @@ using ScoreDrivenModels
 using Distributions
 using LinearAlgebra
 
+# ω = [1.0; 0.1]
+# A = convert(Matrix{Float64}, Diagonal([0.0; 0.5]))
+# B = convert(Matrix{Float64}, Diagonal([0.9; 0.5]))
+# dist = Normal()
+# scaling = 0.0
+
 ω = [1.0; 0.1]
-A = convert(Matrix{Float64}, Diagonal([0.0; 0.5]))
-B = convert(Matrix{Float64}, Diagonal([0.9; 0.5]))
+A = convert(Matrix{Float64}, Diagonal([NaN; NaN]))
+B = convert(Matrix{Float64}, Diagonal([NaN; 0.5]))
 dist = Normal()
 scaling = 0.0
 
 sd_model = SDModel(ω, A, B, dist, scaling)
 
 ScoreDrivenModels.estimate_SDModel!(sd_model, obs; verbose = 2,
-                                    random_seeds_lbfgs = ScoreDrivenModels.RandomSeedsLBFGS(10, 3*length(sd_model.ω)))
+                                    random_seeds_lbfgs = ScoreDrivenModels.RandomSeedsLBFGS(10, ScoreDrivenModels.dimension_unkowns(sd_model)))
 
 # ScoreDrivenModels.estimate_SDModel!(sd_model, obs; verbose = 2,
 #                                     random_seeds_lbfgs = ScoreDrivenModels.RandomSeedsLBFGS([[1.0; 0.1; 0.0; 0.5; 0.9; 0.5]]))
@@ -26,7 +32,20 @@ sd_model.ω./diag(I - sd_model.B)
 
 param = score_driven_recursion(sd_model, obs)
 
-using Plots
+# using Plots
 params = hcat(param...)'
 plot(params, label = ["\\mu estimado" "\\sigma estimado"])
 plot!(parameters, label = ["\\mu real" "\\sigma real"])
+
+
+#Testar isso
+# ω = [1.0; 0.1]
+# A = convert(Matrix{Float64}, Diagonal([0.0; NaN]))
+# B = convert(Matrix{Float64}, Diagonal([0.9; 0.5]))
+# dist = Normal()
+# scaling = 0.0
+
+# sd_model = SDModel(ω, A, B, dist, scaling)
+
+# ScoreDrivenModels.estimate_SDModel!(sd_model, obs; verbose = 2,
+#                                     random_seeds_lbfgs = ScoreDrivenModels.RandomSeedsLBFGS(10, ScoreDrivenModels.dimension_unkowns(sd_model)))

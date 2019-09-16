@@ -22,12 +22,13 @@ Proof somewhere
 """
 function log_likelihood(normal::Normal, y::Vector{T}, param::Vector{Vector{T}}, n::Int) where T
     loglik = 0.0
-    for i in eachindex(y)
+    for i in 1:n
         loglik += -0.5*(2*pi*param[i][2] + (1/param[i][2])*(y[i] - param[i][1])^2)
     end
     return -loglik
 end
 
+# Links
 function param_to_param_tilde(normal::Normal, param::Vector{T}) where T 
     return [
         param_to_param_tilde(IdentityLink, param[1]);
