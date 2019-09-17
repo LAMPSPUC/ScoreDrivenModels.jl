@@ -12,9 +12,9 @@ using LinearAlgebra
 # dist = Normal()
 # scaling = 0.0
 
-ω = [1.0; 0.1]
-A = convert(Matrix{Float64}, Diagonal([NaN; NaN]))
-B = convert(Matrix{Float64}, Diagonal([NaN; 0.5]))
+ω = [1.0; NaN]
+A = convert(Matrix{Float64}, Diagonal([0.0; NaN]))
+B = convert(Matrix{Float64}, Diagonal([0.9; NaN]))
 dist = Normal()
 scaling = 0.0
 
@@ -26,13 +26,12 @@ ScoreDrivenModels.estimate_SDModel!(sd_model, obs; verbose = 2,
 # ScoreDrivenModels.estimate_SDModel!(sd_model, obs; verbose = 2,
 #                                     random_seeds_lbfgs = ScoreDrivenModels.RandomSeedsLBFGS([[1.0; 0.1; 0.0; 0.5; 0.9; 0.5]]))
 
-# true loglik \approx -418.2
 sd_model
 sd_model.ω./diag(I - sd_model.B)
 
 param = score_driven_recursion(sd_model, obs)
 
-# using Plots
+using Plots
 params = hcat(param...)'
 plot(params, label = ["\\mu estimado" "\\sigma estimado"])
 plot!(parameters, label = ["\\mu real" "\\sigma real"])

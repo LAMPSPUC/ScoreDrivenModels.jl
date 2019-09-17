@@ -2,7 +2,7 @@
 """
 Proof somewhere
 """
-function score(y, poisson::Poisson, param::Vector{T}) where T
+function score(y::T, poisson::Poisson, param::Vector{T}) where T
     return [y/param[1] - 1]
 end
 

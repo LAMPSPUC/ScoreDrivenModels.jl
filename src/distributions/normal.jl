@@ -3,7 +3,7 @@
 Proof somewhere 
 parametrized in \\mu and \\sigma^2
 """
-function score(y, normal::Normal, param::Vector{T}) where T
+function score(y::T, normal::Normal, param::Vector{T}) where T
     return [
         (y - param[1])/param[2];
         -(0.5/param[2]) * (1 - ((y - param[1])^2)/param[2])
