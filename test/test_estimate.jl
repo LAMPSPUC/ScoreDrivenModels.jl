@@ -12,9 +12,12 @@ using LinearAlgebra
 # dist = Normal()
 # scaling = 0.0
 
-ω = [1.0; NaN]
-A = convert(Matrix{Float64}, Diagonal([0.0; NaN]))
-B = convert(Matrix{Float64}, Diagonal([0.9; NaN]))
+ω = [NaN; NaN]
+A = convert(Matrix{Float64}, Diagonal([NaN; NaN]))
+B = convert(Matrix{Float64}, Diagonal([NaN; NaN]))
+# ω = [1.0; 0.1]
+# A = convert(Matrix{Float64}, Diagonal([0.0; 0.5]))
+# B = convert(Matrix{Float64}, Diagonal([0.9; 0.5]))
 dist = Normal()
 scaling = 0.0
 
@@ -32,6 +35,9 @@ sd_model.ω./diag(I - sd_model.B)
 param = score_driven_recursion(sd_model, obs)
 
 using Plots
+include("/home/guilhermebodin/Documents/Github/ScoreDrivenModels.jl/examples/Extras/useful_plots.jl")
+plot_sdm(obs, param, sd_model.dist; quantiles = [0.025; 0.975])
+
 params = hcat(param...)'
 plot(params, label = ["\\mu estimado" "\\sigma estimado"])
 plot!(parameters, label = ["\\mu real" "\\sigma real"])
