@@ -1,0 +1,51 @@
+push!(LOAD_PATH, "/home/guilhermebodin/Documents/Github/ScoreDrivenModels.jl/src")
+using ScoreDrivenModels
+using Distributions
+using LinearAlgebra
+
+ω = [1.0; 0.1]
+A = convert(Matrix{Float64}, Diagonal([0.0; 0.5]))
+B = convert(Matrix{Float64}, Diagonal([0.9; 0.5]))
+dist = Normal()
+scaling = 0.0
+
+sd_model = SDModel(ω, A, B, dist, scaling)
+
+serie_simulated, param_simulated = simulate(sd_model, 100)
+
+
+ω = [0.0; 0.1]
+A = convert(Matrix{Float64}, Diagonal([0.0; 0.5]))
+B = convert(Matrix{Float64}, Diagonal([0.9; 0.5]))
+dist = Beta()
+scaling = 0.0
+
+sd_model = SDModel(ω, A, B, dist, scaling)
+
+serie_simulated, param_simulated = simulate(sd_model, 100)
+
+# Nem sempre termina
+ω = [0.0; NaN]
+A = convert(Matrix{Float64}, Diagonal([0.0; NaN]))
+B = convert(Matrix{Float64}, Diagonal([0.9; NaN]))
+dist = Beta()
+scaling = 0.0
+
+sd_model = SDModel(ω, A, B, dist, scaling)
+
+ScoreDrivenModels.estimate_SDModel!(sd_model, serie_simulated; verbose = 2,
+                                    random_seeds_lbfgs = ScoreDrivenModels.RandomSeedsLBFGS(10, ScoreDrivenModels.dimension_unkowns(sd_model)))
+
+sd_model
+
+using Plots
+
+param = score_driven_recursion(sd_model, serie_simulated)
+plot(hcat(param_simulated...)')
+plot!(hcat(param...)')
+
+include("/home/guilhermebodin/Documents/Github/ScoreDrivenModels.jl/examples/Extras/useful_plots.jl")
+plot_sdm(serie_simulated, param_simulated, sd_model.dist; quantiles = [0.025; 0.975])
+plot_sdm(serie_simulated, param, sd_model.dist; quantiles = [0.025; 0.975])
+
+

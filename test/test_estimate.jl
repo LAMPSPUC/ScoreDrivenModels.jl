@@ -36,21 +36,11 @@ param = score_driven_recursion(sd_model, obs)
 
 using Plots
 include("/home/guilhermebodin/Documents/Github/ScoreDrivenModels.jl/examples/Extras/useful_plots.jl")
-plot_sdm(obs, param, sd_model.dist; quantiles = [0.025; 0.975])
+p1 = plot_sdm(obs, param, sd_model.dist; quantiles = [0.025; 0.975])
+plot_sdm!(p1, obs, parameters, sd_model.dist; quantiles = [0.025; 0.975])
 
 params = hcat(param...)'
 plot(params, label = ["\\mu estimado" "\\sigma estimado"])
 plot!(parameters, label = ["\\mu real" "\\sigma real"])
 
 
-#Testar isso
-# ω = [1.0; 0.1]
-# A = convert(Matrix{Float64}, Diagonal([0.0; NaN]))
-# B = convert(Matrix{Float64}, Diagonal([0.9; 0.5]))
-# dist = Normal()
-# scaling = 0.0
-
-# sd_model = SDModel(ω, A, B, dist, scaling)
-
-# ScoreDrivenModels.estimate_SDModel!(sd_model, obs; verbose = 2,
-#                                     random_seeds_lbfgs = ScoreDrivenModels.RandomSeedsLBFGS(10, ScoreDrivenModels.dimension_unkowns(sd_model)))

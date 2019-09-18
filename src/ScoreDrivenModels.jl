@@ -1,6 +1,6 @@
 module ScoreDrivenModels
 
-using Distributions, Optim
+using Distributions, Optim, SpecialFunctions
 using LinearAlgebra
 
 # Core files
@@ -16,5 +16,6 @@ include("MLE.jl")
 # Distributions
 include("distributions/normal.jl")
 include("distributions/poisson.jl")
+include("distributions/beta.jl")
 
 end

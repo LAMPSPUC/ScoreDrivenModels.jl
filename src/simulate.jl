@@ -16,14 +16,15 @@ function simulate(sd_model::SDModel, n::Int, initial_param::Vector{T}) where T
     param_tilde[1] = initial_param
 
     for i in 1:n-1
-        param[i] = param_tilde_to_param(sd_model.dist, param_tilde[i])
-        score_til = score_tilde(serie[i], dist, param[i], param_tilde[i], sd_model.scaling)
-        update_param_tilde(param_tilde, dist, sd_model.ω, sd_model.A, sd_model.B, score_til, i)
+        # update step
+        univariate_score_driven_update!(param, param_tilde, serie[i], sd_model, i)
+        # Sample from the updated distribution
         updated_dist = update_dist(sd_model.dist, param_tilde_to_param(sd_model.dist, param_tilde[i + 1]))
         serie[i + 1] = sample_observation(updated_dist)
     end
-    param[end] = param_tilde_to_param(sd_model.dist, param_tilde[end])
-    return serie, param, param_tilde
+    update_param!(param, param_tilde, sd_model.dist, n #=end=#)
+
+    return serie, param
 end
 
 function update_dist(dist::Distribution, param::Vector{T}) where T
@@ -36,4 +37,8 @@ end
 
 function update_dist(dist::Normal, param::Vector{T}) where T
     return Normal(param[1], param[2])
+end 
+
+function update_dist(dist::Beta, param::Vector{T}) where T
+    return Beta(param[1], param[2])
 end 
