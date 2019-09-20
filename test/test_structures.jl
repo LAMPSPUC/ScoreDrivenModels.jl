@@ -11,13 +11,27 @@ un = ScoreDrivenModels.find_unknowns(gas_sarima)
 # gas_sarima = GAS_Sarima([1;24; 168], [1], Normal(), 0.0)
 # un = ScoreDrivenModels.find_unknowns(gas_sarima)
 # @test length(un) == 10
+dist = Normal()
+using Random
+Random.seed!(123)
+vec = 0.1*ones(length(params(dist)))
+
+gas_sarima = GAS_Sarima(1, 1, dist, 0.0)
+
+gas_sarima.ω = vec
+gas_sarima.A[1] = convert(Matrix{Float64}, Diagonal(vec))
+gas_sarima.B[1] = convert(Matrix{Float64}, Diagonal(vec))  
+
+# Simulate 1000 observations
+serie_simulated, param_simulated = simulate(gas_sarima, 1000)
 
 
 estimate_GAS_Sarima!(gas_sarima, obs; verbose = 2, 
                      random_seeds_lbfgs = ScoreDrivenModels.RandomSeedsLBFGS(10, ScoreDrivenModels.dim_unknowns(gas_sarima)))
 
 
-gas_sarima = GAS_Sarima([1;3], [1], Normal(), 0.0)
-gas_sarima.A
-gas_sarima.B
+using Plots
+param = score_driven_recursion(gas_sarima, serie_simulated)
+plot(hcat(param_simulated...)'[1:100, :])
+plot!(hcat(param...)'[1:100, :])
 

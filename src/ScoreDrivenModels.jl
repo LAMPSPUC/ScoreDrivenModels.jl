@@ -7,7 +7,7 @@ import Base.length
 
 # Core files
 include("structures.jl")
-include("univariate_score_driven_model.jl")
+include("univariate_score_driven_recursion.jl")
 include("utils.jl")
 include("sample.jl")
 include("link_functions.jl")

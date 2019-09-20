@@ -1,28 +1,42 @@
 export simulate
 
-function simulate(sd_model::SDM, n::Int)
-    return simulate(sd_model, n, stationary_initial_params(sd_model))
+function simulate(gas_sarima::GAS_Sarima, n::Int)
+    initial_param_tilde = stationary_initial_params(gas_sarima)
+    return simulate(gas_sarima, n, initial_param_tilde)
 end
 
-function simulate(sd_model::SDM, n::Int, initial_param::Vector{T}) where T
+function simulate(gas_sarima::GAS_Sarima, n::Int, initial_param_tilde::Vector{Vector{T}}) where T
     # Allocations
     serie = zeros(n)
     param = Vector{Vector{T}}(undef, n)
     param_tilde = Vector{Vector{T}}(undef, n)
+    scores_tilde = Vector{Vector{T}}(undef, n)
 
-    # initial_values 
-    dist = update_dist(sd_model.dist, param_tilde_to_param(sd_model.dist, initial_param))
+    biggest_lag = length(initial_param_tilde)
+
+    dist = update_dist(gas_sarima.dist, param_tilde_to_param(gas_sarima.dist, initial_param_tilde[1]))
     serie[1] = sample_observation(dist)
-    param_tilde[1] = initial_param
 
-    for i in 1:n-1
-        # update step
-        univariate_score_driven_update!(param, param_tilde, serie[i], sd_model, i)
-        # Sample from the updated distribution
-        updated_dist = update_dist(sd_model.dist, param_tilde_to_param(sd_model.dist, param_tilde[i + 1]))
+    # initial_values  
+    for i in 1:biggest_lag
+        param_tilde[i] = initial_param_tilde[i]
+        param[i] = param_tilde_to_param(gas_sarima.dist, initial_param_tilde[i])
+        scores_tilde[i] = score_tilde(serie[i], gas_sarima.dist, param[i], param_tilde[i], gas_sarima.scaling)
+        # sample
+        updated_dist = update_dist(gas_sarima.dist, param_tilde_to_param(gas_sarima.dist, param_tilde[i]))
         serie[i + 1] = sample_observation(updated_dist)
     end
-    update_param!(param, param_tilde, sd_model.dist, n #=end=#)
+    
+    update_param_tilde!(param_tilde, gas_sarima.ω, gas_sarima.A, gas_sarima.B, scores_tilde, biggest_lag)
+
+    for i in biggest_lag + 1:n-1
+        # update step
+        univariate_score_driven_update!(param, param_tilde, scores_tilde, serie[i], gas_sarima, i)
+        # Sample from the updated distribution
+        updated_dist = update_dist(gas_sarima.dist, param_tilde_to_param(gas_sarima.dist, param_tilde[i + 1]))
+        serie[i + 1] = sample_observation(updated_dist)
+    end
+    update_param!(param, param_tilde, gas_sarima.dist, n)
 
     return serie, param
 end
@@ -36,7 +50,8 @@ function update_dist(dist::Poisson, param::Vector{T}) where T
 end 
 
 function update_dist(dist::Normal, param::Vector{T}) where T
-    return Normal(param[1], param[2])
+    # normal here is parametrized as sigma^2
+    return Normal(param[1], sqrt(param[2]))
 end 
 
 function update_dist(dist::Beta, param::Vector{T}) where T

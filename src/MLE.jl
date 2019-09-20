@@ -24,19 +24,19 @@ function RandomSeedsLBFGS(nseeds::Int, dim::Int; f_tol::Float64 = 1e-6, g_tol::F
     seeds = Vector{Vector{Float64}}(undef, nseeds)
 
     for i in 1:nseeds
-        seeds[i] = rand(Uniform(0.0, 0.9), dim)
+        seeds[i] = rand(Uniform(-0.4, 0.4), dim)
     end
 
     return RandomSeedsLBFGS(seeds; f_tol = f_tol, g_tol = g_tol, iterations = iterations)
 end
 
 function log_lik_gas_sarima(psitilde::Vector{T}, y::Vector{T}, gas_sarima::GAS_Sarima, 
-                            initial_params::Vector{T}, unknowns_gas_sarima::Unknowns_GAS_Sarima, n::Int) where T
+                            initial_params::Vector{Vector{Float64}}, unknowns_gas_sarima::Unknowns_GAS_Sarima, n::Int) where T
     
     # Use the unkowns vectors to fill the right positions
     fill_psitilde!(gas_sarima, psitilde, unknowns_gas_sarima)
 
-    if isnan(initial_params[1]) # Means default stationary initialization
+    if isnan(initial_params[1][1]) # Means default stationary initialization
         params = score_driven_recursion(gas_sarima, y)
     else
         params = score_driven_recursion(gas_sarima, y, initial_params)
@@ -46,7 +46,7 @@ function log_lik_gas_sarima(psitilde::Vector{T}, y::Vector{T}, gas_sarima::GAS_S
 end
 
 function estimate_GAS_Sarima!(gas_sarima::GAS_Sarima, y::Vector{T};
-                              initial_params::Vector{Float64} = [NaN], # Means default stationary initialization
+                              initial_params::Vector{Vector{Float64}} = [[NaN]], # Means default initializations
                               random_seeds_lbfgs::RandomSeedsLBFGS = RandomSeedsLBFGS(3, dimension_unkowns(gas_sarima)),
                               verbose::Int = 0) where T
 
@@ -77,6 +77,7 @@ function estimate_GAS_Sarima!(gas_sarima::GAS_Sarima, y::Vector{T};
         loglikelihood[i] = -optseed.minimum
         psi[:, i] = optseed.minimizer
         # print_loglikelihood(verbose, iseed, loglikelihood, t0)
+        println("seed $i of $nseeds - $(-optseed.minimum)")
     end
 
     bestpsi = psi[:, argmax(loglikelihood)]
