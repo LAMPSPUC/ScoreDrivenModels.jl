@@ -24,7 +24,7 @@ function RandomSeedsLBFGS(nseeds::Int, dim::Int; f_tol::Float64 = 1e-6, g_tol::F
     seeds = Vector{Vector{Float64}}(undef, nseeds)
 
     for i in 1:nseeds
-        seeds[i] = rand(Uniform(-0.4, 0.4), dim)
+        seeds[i] = rand(Uniform(0.0, 0.9), dim)
     end
 
     return RandomSeedsLBFGS(seeds; f_tol = f_tol, g_tol = g_tol, iterations = iterations)
