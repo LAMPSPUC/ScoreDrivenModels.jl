@@ -14,27 +14,26 @@ sd_model = SDModel(ω, A, B, dist, scaling)
 serie_simulated, param_simulated = simulate(sd_model, 100)
 
 
-ω = [0.0; 0.1]
-A = convert(Matrix{Float64}, Diagonal([0.0; 0.5]))
-B = convert(Matrix{Float64}, Diagonal([0.9; 0.5]))
+ω = [0.1; 0.1]
+A = convert(Matrix{Float64}, Diagonal([0.5; 0.5]))
+B = convert(Matrix{Float64}, Diagonal([0.5; 0.5]))
 dist = Beta()
 scaling = 0.0
 
 sd_model = SDModel(ω, A, B, dist, scaling)
 
-serie_simulated, param_simulated = simulate(sd_model, 100)
+serie_simulated, param_simulated = simulate(sd_model, 1000)
 
 # Nem sempre termina
-ω = [0.0; NaN]
-A = convert(Matrix{Float64}, Diagonal([0.0; NaN]))
-B = convert(Matrix{Float64}, Diagonal([0.9; NaN]))
+ω = [NaN; NaN]
+A = convert(Matrix{Float64}, Diagonal([NaN; NaN]))
+B = convert(Matrix{Float64}, Diagonal([NaN; NaN]))
 dist = Beta()
 scaling = 0.0
 
 sd_model = SDModel(ω, A, B, dist, scaling)
-
 ScoreDrivenModels.estimate_SDModel!(sd_model, serie_simulated; verbose = 2,
-                                    random_seeds_lbfgs = ScoreDrivenModels.RandomSeedsLBFGS(10, ScoreDrivenModels.dimension_unkowns(sd_model)))
+                                    random_seeds_lbfgs = ScoreDrivenModels.RandomSeedsLBFGS(5, ScoreDrivenModels.dimension_unkowns(sd_model)))
 
 sd_model
 
