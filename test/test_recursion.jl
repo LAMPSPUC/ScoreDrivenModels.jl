@@ -14,7 +14,7 @@
         B = convert(Matrix{Float64}, Diagonal([0.9; 0.5]))
         dist = Normal()
         scaling = 0.0
-        sd_model = SDModel(ω, A, B, dist, scaling)
+        sd_model = GAS_Sarima(ω, A, B, dist, scaling)
         param = score_driven_recursion(sd_model, obs)
         params = hcat(param...)'
         

@@ -3,7 +3,10 @@ module ScoreDrivenModels
 using Distributions, Optim, SpecialFunctions
 using LinearAlgebra
 
+import Base.length
+
 # Core files
+include("structures.jl")
 include("univariate_score_driven_model.jl")
 include("utils.jl")
 include("sample.jl")

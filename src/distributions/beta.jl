@@ -18,7 +18,7 @@ function fisher_information(::Beta, param::Vector{T}) where T
 
     return [
         trigamma(param[1]) + minus_trigamma_a_b    minus_trigamma_a_b;
-        minus_trigamma_a_b                       trigamma(param[2]) + minus_trigamma_a_b
+        minus_trigamma_a_b                         trigamma(param[2]) + minus_trigamma_a_b
     ]
 end
 

@@ -1,10 +1,10 @@
 export simulate
 
-function simulate(sd_model::SDModel, n::Int)
+function simulate(sd_model::SDM, n::Int)
     return simulate(sd_model, n, stationary_initial_params(sd_model))
 end
 
-function simulate(sd_model::SDModel, n::Int, initial_param::Vector{T}) where T
+function simulate(sd_model::SDM, n::Int, initial_param::Vector{T}) where T
     # Allocations
     serie = zeros(n)
     param = Vector{Vector{T}}(undef, n)

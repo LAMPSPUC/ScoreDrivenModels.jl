@@ -1,38 +1,33 @@
-function fill_ω!(sd_model::SDModel, psi_tilde::Vector{T}, unknowns_ω::Vector{Int}, offset::Int) where T
-    for (i, pos) in enumerate(unknowns_ω)
-        sd_model.ω[pos] = psi_tilde[i + offset]
+function fill_psitilde!(gas_sarima::GAS_Sarima, psitilde::Vector{T}, unknowns_gas_sarima::Unknowns_GAS_Sarima) where T
+    offset = 0
+    # fill ω
+    for i in unknowns_gas_sarima.ω
+        offset += 1
+        gas_sarima.ω[i] = psitilde[offset]
+    end
+    # fill A
+    for (k, v) in unknowns_gas_sarima.A
+        for i in v
+            offset += 1
+            gas_sarima.A[k][i] = psitilde[offset]
+        end
+    end
+    # fill B
+    for (k, v) in unknowns_gas_sarima.B
+        for i in v
+            offset += 1
+            gas_sarima.B[k][i] = psitilde[offset]
+        end
     end
     return 
 end
 
-function fill_A!(sd_model::SDModel, psi_tilde::Vector{T}, unknowns_A::Vector{Int}, offset::Int) where T
-    for (i, pos) in enumerate(unknowns_A)
-        sd_model.A[pos, pos] = psi_tilde[i + offset]
-    end
-    return 
+function find_unknowns(vec::Vector{T}) where T
+    return findall(isnan, vec)
 end
 
-function fill_B!(sd_model::SDModel, psi_tilde::Vector{T}, unknowns_B::Vector{Int}, offset) where T
-    for (i, pos) in enumerate(unknowns_B)
-        sd_model.B[pos, pos] = psi_tilde[i + offset]
-    end
-    return 
-end
-
-function fill_psitilde!(sd_model::SDModel, psitilde::Vector{T}, unknowns_ω::Vector{Int},
-                        unknowns_A::Vector{Int}, unknowns_B::Vector{Int}) where T
-    fill_ω!(sd_model, psitilde, unknowns_ω, 0)
-    fill_A!(sd_model, psitilde, unknowns_A, length(unknowns_ω))
-    fill_B!(sd_model, psitilde, unknowns_B, length(unknowns_ω) + length(unknowns_A))
-    return 
-end
-
-function find_unknowns(array::Array{T}) where T
-    return findall(isnan, array)
-end
-
-function find_unknowns(array::Matrix{T}) where T
-    return findall(isnan, diag(array))
+function find_unknowns(mat::Matrix{T}) where T
+    return findall(isnan, vec(mat))
 end
 
 function check_model_estimated(len::Int)
@@ -43,9 +38,8 @@ function check_model_estimated(len::Int)
     return false
 end
 
-function dimension_unkowns(sd_model::SDModel) where T
-    return length(find_unknowns(sd_model.ω)) + length(find_unknowns(sd_model.A)) + 
-           length(find_unknowns(sd_model.B))
+function num_params(dist::Distribution)
+    return length(params(dist))
 end
 
 function NaN2zero!(score_til::Vector{T}) where T
@@ -79,4 +73,14 @@ function small_threshold!(score_til::Vector{T}, threshold::T) where T
         end
     end
     return 
+end
+
+function sum_lags_matrices(mat_dict::Dict{Int, Matrix{T}}) where T
+    mat = zeros(size(first(mat_dict)[2]))
+    for (k, v) in mat_dict
+        for i in eachindex(v)
+            mat[i] += v[i]
+        end
+    end
+    return mat
 end

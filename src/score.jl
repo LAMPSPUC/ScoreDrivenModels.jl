@@ -26,8 +26,9 @@ end
 # Scalings
 function scaling_invsqrt(jac, dist, param)
     #TODO improve performace and check if this is right
-    chol = cholesky(fisher_information(dist, param))
-    cholmat = Matrix(chol)
+    # chol = cholesky(fisher_information(dist, param))
+    # cholmat = Matrix(chol)
+    error("check how to do this properly")
     return jac'*inv(cholmat)*jac
 end
 
