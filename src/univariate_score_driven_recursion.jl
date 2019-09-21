@@ -59,12 +59,12 @@ end
 
 function update_param_tilde!(param_tilde::Vector{Vector{T}}, ω::Vector{T}, A::Dict{Int, Matrix{T}}, 
                              B::Dict{Int, Matrix{T}}, scores_tilde::Vector{Vector{T}}, i::Int) where T
-    param_tilde[i + 1] = ω
+    param_tilde[i + 1] = copy(ω)
     for (lag, mat) in A
         param_tilde[i + 1] .+= mat*scores_tilde[i - lag + 1]
     end
     for (lag, mat) in B
-        param_tilde[i + 1] .+= mat*scores_tilde[i - lag + 1]
+        param_tilde[i + 1] .+= mat*param_tilde[i - lag + 1]
     end
     return 
 end
