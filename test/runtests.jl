@@ -4,7 +4,7 @@ using ScoreDrivenModels, Distributions, LinearAlgebra
 using Test, Random
 
 
-Random.seed!(123)
+
 gas_sarima = GAS_Sarima(1, 1, Beta(), 0.0)
 vect = 0.1*ones(length(params(Beta())))
 gas_sarima.ω = vect

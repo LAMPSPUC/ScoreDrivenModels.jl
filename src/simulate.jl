@@ -14,9 +14,6 @@ function simulate(gas_sarima::GAS_Sarima, n::Int, initial_param_tilde::Vector{Ve
 
     biggest_lag = length(initial_param_tilde)
 
-    dist = update_dist(gas_sarima.dist, param_tilde_to_param(gas_sarima.dist, initial_param_tilde[1]))
-    serie[1] = sample_observation(dist)
-
     # initial_values  
     for i in 1:biggest_lag
         param_tilde[i] = initial_param_tilde[i]
@@ -24,15 +21,17 @@ function simulate(gas_sarima::GAS_Sarima, n::Int, initial_param_tilde::Vector{Ve
         scores_tilde[i] = score_tilde(serie[i], gas_sarima.dist, param[i], param_tilde[i], gas_sarima.scaling)
         # sample
         updated_dist = update_dist(gas_sarima.dist, param_tilde_to_param(gas_sarima.dist, param_tilde[i]))
-        serie[i + 1] = sample_observation(updated_dist)
+        serie[i] = sample_observation(updated_dist)
     end
     
     update_param_tilde!(param_tilde, gas_sarima.ω, gas_sarima.A, gas_sarima.B, scores_tilde, biggest_lag)
 
     for i in biggest_lag + 1:n-1
         # update step
+        @show i
         univariate_score_driven_update!(param, param_tilde, scores_tilde, serie[i], gas_sarima, i)
         # Sample from the updated distribution
+        @show param_tilde[i + 1]
         updated_dist = update_dist(gas_sarima.dist, param_tilde_to_param(gas_sarima.dist, param_tilde[i + 1]))
         serie[i + 1] = sample_observation(updated_dist)
     end
