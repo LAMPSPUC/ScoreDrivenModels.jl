@@ -1,13 +1,13 @@
-function simulate_GAS_Sarima_1_1(dist::Distribution, scaling::Float64)
+function simulate_GAS_Sarima_1_1(dist::Beta, scaling::Float64)
     # Create model
-    Random.seed!(123)
-    vec = 0.5*ones(length(params(dist)))
+    Random.seed!(13)
+    vec = [0.1 ; 0.1]
 
     gas_sarima = GAS_Sarima(1, 1, dist, scaling)
 
     gas_sarima.ω = vec
-    gas_sarima.A[1] = convert(Matrix{Float64}, Diagonal(vec))
-    gas_sarima.B[1] = convert(Matrix{Float64}, Diagonal(vec))  
+    gas_sarima.A[1] = convert(Matrix{Float64}, Diagonal(5*vec))
+    gas_sarima.B[1] = convert(Matrix{Float64}, Diagonal(5*vec))  
 
     # Simulate 1000 observations
     serie_simulated, param_simulated = simulate(gas_sarima, 1000)
@@ -15,38 +15,25 @@ function simulate_GAS_Sarima_1_1(dist::Distribution, scaling::Float64)
     return serie_simulated
 end
 
-function test_coefficients_GAS_Sarima_1_1(vec::Vector, i::Int; atol = 1e-2, rtol = 1e-1)
-    @test vec[i] ≈ 0.1 atol = atol rtol = rtol
-end
-function test_coefficients_GAS_Sarima_1_1(mat::Matrix, i::Int; atol = 1e-2, rtol = 1e-1)
-    @test mat[i, i] ≈ 0.1 atol = atol rtol = rtol
+function test_coefficients_GAS_Sarima_1_1(dist::Beta, gas_sarima::GAS_Sarima; atol = 1e-1, rtol = 1e-1)
+    @test gas_sarima.ω[1] ≈ 0.1 atol = atol rtol = rtol
+    @test gas_sarima.ω[2] ≈ 0.1 atol = atol rtol = rtol
+    @test gas_sarima.A[1][1, 1] ≈ 0.5 atol = atol rtol = rtol
+    @test gas_sarima.A[1][2, 2] ≈ 0.5 atol = atol rtol = rtol
+    @test gas_sarima.B[1][1, 1] ≈ 0.5 atol = atol rtol = rtol
+    @test gas_sarima.B[1][2, 2] ≈ 0.5 atol = atol rtol = rtol
+    return
 end
 
-function test_estimation_GAS_Sarima_1_1(gas_sarima, simulation::Vector{T}) where T
-    gas_sarima = GAS_Sarima(1, 1, Beta(), 0.0)
+function test_estimation_GAS_Sarima_1_1(gas_sarima::GAS_Sarima, simulation::Vector{T}) where T
     estimate_GAS_Sarima!(gas_sarima, simulation; verbose = 0,
                          random_seeds_lbfgs = ScoreDrivenModels.RandomSeedsLBFGS(5, ScoreDrivenModels.dim_unknowns(gas_sarima)))
 
-    for i in eachindex(gas_sarima.ω)
-        test_coefficients_GAS_Sarima_1_1(gas_sarima.ω, i)
-        test_coefficients_GAS_Sarima_1_1(gas_sarima.A, i)
-        test_coefficients_GAS_Sarima_1_1(gas_sarima.B, i)
-    end
+    test_coefficients_GAS_Sarima_1_1(gas_sarima.dist, gas_sarima)
     return 
 end
 
-
 @testset "Estimate" begin
-    @testset "Normal" begin
-        simulation = simulate_GAS_Sarima_1_1(Normal(), 0.0)
-        gas_sarima = GAS_Sarima(1, 1, Normal(), 0.0)
-        test_estimation_GAS_Sarima_1_1(gas_sarima, simulation)
-    end
-    @testset "Poisson" begin
-        simulation = simulate_GAS_Sarima_1_1(Poisson(), 0.0)
-        gas_sarima = GAS_Sarima(1, 1, Poisson(), 0.0)
-        test_estimation_GAS_Sarima_1_1(gas_sarima, simulation)
-    end
     @testset "Beta" begin
         simulation = simulate_GAS_Sarima_1_1(Beta(), 0.0)
         gas_sarima = GAS_Sarima(1, 1, Beta(), 0.0)

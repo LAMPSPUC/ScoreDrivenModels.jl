@@ -20,11 +20,10 @@ mutable struct RandomSeedsLBFGS <: AbstractOptimizationMethod
     end
 end
 function RandomSeedsLBFGS(nseeds::Int, dim::Int; f_tol::Float64 = 1e-6, g_tol::Float64 = 1e-6, iterations::Int = 10^5)
-    # sample seeds respecting spectral norm
     seeds = Vector{Vector{Float64}}(undef, nseeds)
 
     for i in 1:nseeds
-        seeds[i] = rand(Uniform(0.0, 0.9), dim)
+        seeds[i] = rand(Uniform(0.0, 0.6), dim)
     end
 
     return RandomSeedsLBFGS(seeds; f_tol = f_tol, g_tol = g_tol, iterations = iterations)
@@ -64,23 +63,27 @@ function estimate_GAS_Sarima!(gas_sarima::GAS_Sarima, y::Vector{T};
     @assert length(random_seeds_lbfgs.seeds[1]) == len_unknowns
 
     # optimize for each seed
-    psi = Matrix{Float64}(undef, len_unknowns, nseeds)
-    loglikelihood = Vector{Float64}(undef, nseeds)
+    psi = Vector{Float64}[]
+    loglikelihood = Float64[]
 
     for i = 1:nseeds
-        optseed = optimize(psi_tilde -> log_lik_gas_sarima(psi_tilde, y, gas_sarima, initial_params, unknowns_gas_sarima, n), 
-                                                           random_seeds_lbfgs.seeds[i],
-                                                           LBFGS(), Optim.Options(f_tol = random_seeds_lbfgs.f_tol, 
-                                                                                  g_tol = random_seeds_lbfgs.g_tol, 
-                                                                                  iterations = random_seeds_lbfgs.iterations,
-                                                                                  show_trace = (verbose == 2 ? true : false) ))
-        loglikelihood[i] = -optseed.minimum
-        psi[:, i] = optseed.minimizer
-        # print_loglikelihood(verbose, iseed, loglikelihood, t0)
-        println("seed $i of $nseeds - $(-optseed.minimum)")
+        try 
+            optseed = optimize(psi_tilde -> log_lik_gas_sarima(psi_tilde, y, gas_sarima, initial_params, unknowns_gas_sarima, n), 
+                                                               random_seeds_lbfgs.seeds[i],
+                                                               LBFGS(), Optim.Options(f_tol = random_seeds_lbfgs.f_tol, 
+                                                                                      g_tol = random_seeds_lbfgs.g_tol, 
+                                                                                      iterations = random_seeds_lbfgs.iterations,
+                                                                                      show_trace = (verbose == 2 ? true : false) ))
+            push!(loglikelihood, -optseed.minimum)
+            push!(psi, optseed.minimizer)
+            # print_loglikelihood(verbose, iseed, loglikelihood, t0)
+            println("seed $i of $nseeds - $(-optseed.minimum)")
+        catch
+            println("seed $i diverged")
+        end
     end
 
-    bestpsi = psi[:, argmax(loglikelihood)]
+    bestpsi = psi[argmax(loglikelihood)]
 
     # return the estimated 
     fill_psitilde!(gas_sarima, bestpsi, unknowns_gas_sarima)

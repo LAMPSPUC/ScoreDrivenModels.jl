@@ -75,12 +75,6 @@ function small_threshold!(score_til::Vector{T}, threshold::T) where T
     return 
 end
 
-function sum_lags_matrices(mat_dict::Dict{Int, Matrix{T}}) where T
-    mat = zeros(size(first(mat_dict)[2]))
-    for (k, v) in mat_dict
-        for i in eachindex(v)
-            mat[i] += v[i]
-        end
-    end
-    return mat
-end
+function update_dist(dist::Distribution, param::Vector{T}) where T
+    error("not implemented")
+end 

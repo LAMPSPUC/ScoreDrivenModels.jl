@@ -46,3 +46,9 @@ function jacobian_param_tilde(::Normal, param_tilde::Vector{T}) where T
         jacobian_param_tilde(ExponentialLink, param_tilde[2])
     ])
 end
+
+# utils 
+function update_dist(dist::Normal, param::Vector{T}) where T
+    # normal here is parametrized as sigma^2
+    return Normal(param[1], sqrt(param[2]))
+end 

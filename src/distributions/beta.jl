@@ -52,3 +52,8 @@ function jacobian_param_tilde(::Beta, param_tilde::Vector{T}) where T
         jacobian_param_tilde(ExponentialLink, param_tilde[2])
     ])
 end
+
+# utils
+function update_dist(dist::Beta, param::Vector{T}) where T
+    return Beta(param[1], param[2])
+end 

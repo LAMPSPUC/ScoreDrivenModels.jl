@@ -27,3 +27,8 @@ end
 param_to_param_tilde(::Poisson, param::Vector{T}) where T = param_to_param_tilde.(ExponentialLink, param)
 param_tilde_to_param(::Poisson, param_tilde::Vector{T}) where T = param_tilde_to_param.(ExponentialLink, param_tilde)
 jacobian_param_tilde(::Poisson, param_tilde::Vector{T}) where T = Diagonal(jacobian_param_tilde.(ExponentialLink, param_tilde))
+
+# utils
+function update_dist(dist::Poisson, param::Vector{T}) where T
+    return Poisson(param[1])
+end 

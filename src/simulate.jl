@@ -39,20 +39,3 @@ function simulate(gas_sarima::GAS_Sarima, n::Int, initial_param_tilde::Vector{Ve
 
     return serie, param
 end
-
-function update_dist(dist::Distribution, param::Vector{T}) where T
-    error("not implemented")
-end 
-
-function update_dist(dist::Poisson, param::Vector{T}) where T
-    return Poisson(param[1])
-end 
-
-function update_dist(dist::Normal, param::Vector{T}) where T
-    # normal here is parametrized as sigma^2
-    return Normal(param[1], sqrt(param[2]))
-end 
-
-function update_dist(dist::Beta, param::Vector{T}) where T
-    return Beta(param[1], param[2])
-end 
