@@ -1,4 +1,4 @@
-export estimate_GAS_Sarima!
+export estimate!
 
 """
     AbstractOptimizationMethod
@@ -19,11 +19,12 @@ mutable struct RandomSeedsLBFGS <: AbstractOptimizationMethod
         return new(f_tol, g_tol, 1e5, seeds)
     end
 end
-function RandomSeedsLBFGS(nseeds::Int, dim::Int; f_tol::Float64 = 1e-6, g_tol::Float64 = 1e-6, iterations::Int = 10^5)
+function RandomSeedsLBFGS(nseeds::Int, dim::Int; f_tol::Float64 = 1e-6, g_tol::Float64 = 1e-6, iterations::Int = 10^5,
+                          LB::Float64 = 0.0, UB::Float64 = 0.6)
     seeds = Vector{Vector{Float64}}(undef, nseeds)
 
     for i in 1:nseeds
-        seeds[i] = rand(Uniform(0.0, 0.6), dim)
+        seeds[i] = rand(Uniform(LB, UB), dim)
     end
 
     return RandomSeedsLBFGS(seeds; f_tol = f_tol, g_tol = g_tol, iterations = iterations)
@@ -44,10 +45,10 @@ function log_lik_gas_sarima(psitilde::Vector{T}, y::Vector{T}, gas_sarima::GAS_S
     return log_likelihood(gas_sarima.dist, y, params, n)
 end
 
-function estimate_GAS_Sarima!(gas_sarima::GAS_Sarima, y::Vector{T};
-                              initial_params::Vector{Vector{Float64}} = [[NaN]], # Means default initializations
-                              random_seeds_lbfgs::RandomSeedsLBFGS = RandomSeedsLBFGS(3, dimension_unkowns(gas_sarima)),
-                              verbose::Int = 0) where T
+function estimate!(gas_sarima::GAS_Sarima, y::Vector{T};
+                   initial_params::Vector{Vector{Float64}} = [[NaN]], # Means default initializations
+                   random_seeds_lbfgs::RandomSeedsLBFGS = RandomSeedsLBFGS(3, dimension_unkowns(gas_sarima)),
+                   verbose::Int = 0) where T
 
     # Number of seed and number of params to estimate
     nseeds = length(random_seeds_lbfgs.seeds)
@@ -63,8 +64,8 @@ function estimate_GAS_Sarima!(gas_sarima::GAS_Sarima, y::Vector{T};
     @assert length(random_seeds_lbfgs.seeds[1]) == len_unknowns
 
     # optimize for each seed
-    psi = Vector{Float64}[]
-    loglikelihood = Float64[]
+    psi = Vector{Vector{Float64}}(undef, 0)
+    loglikelihood = Vector{Float64}(undef, 0)
 
     for i = 1:nseeds
         try 

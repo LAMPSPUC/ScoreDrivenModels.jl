@@ -78,3 +78,33 @@ end
 function update_dist(dist::Distribution, param::Vector{T}) where T
     error("not implemented")
 end 
+
+function find_unknowns(gas_sarima::GAS_Sarima)
+    unknowns_A = Dict{Int, Vector{Int}}()
+    unknowns_B = Dict{Int, Vector{Int}}()
+
+    unknowns_ω = find_unknowns(gas_sarima.ω)
+
+    for (k, v) in gas_sarima.A
+        unknowns_A[k] = find_unknowns(v)
+    end
+    for (k, v) in gas_sarima.B
+        unknowns_B[k] = find_unknowns(v)
+    end
+    return Unknowns_GAS_Sarima(unknowns_ω, unknowns_A, unknowns_B)
+end
+
+function length(unknowns::Unknowns_GAS_Sarima)
+    len = length(values(unknowns.ω))
+    for (k, v) in unknowns.A
+        len += length(v)
+    end
+    for (k, v) in unknowns.B
+        len += length(v)
+    end
+    return len
+end
+
+function dim_unknowns(gas_sarima::GAS_Sarima)
+    return length(find_unknowns(gas_sarima))
+end

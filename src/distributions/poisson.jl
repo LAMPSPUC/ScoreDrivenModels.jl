@@ -18,7 +18,7 @@ Proof somewhere
 function log_likelihood(::Poisson, y::Vector{T}, param::Vector{Vector{T}}, n::Int) where T
     loglik = 0.0
     for i in n
-        loglik += y[i]*log(param[i][1]) - param[i][1] - log(factorial(y[i]))
+        loglik += y[i]*log(param[i][1]) - param[i][1] - lfactorial(y[i])
     end
     return -loglik
 end
