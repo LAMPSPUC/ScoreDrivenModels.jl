@@ -15,7 +15,7 @@ function simulate_GAS_Sarima_1_1(D::Type{Beta}, scaling::Float64)
     return serie_simulated
 end
 
-function test_coefficients_GAS_Sarima_1_1(gas_sarima::GAS_Sarima; atol = 1e-1, rtol = 1e-1)
+function test_coefficients_GAS_Sarima_1_1(gas_sarima::GAS_Sarima{Beta, T}; atol = 1e-1, rtol = 1e-1) where T
     @test gas_sarima.ω[1] ≈ 0.1 atol = atol rtol = rtol
     @test gas_sarima.ω[2] ≈ 0.1 atol = atol rtol = rtol
     @test gas_sarima.A[1][1, 1] ≈ 0.5 atol = atol rtol = rtol
@@ -29,7 +29,7 @@ function test_estimation_GAS_Sarima_1_1(gas_sarima::GAS_Sarima{D, T}, simulation
     estimate!(gas_sarima, simulation; verbose = 0,
                          random_seeds_lbfgs = ScoreDrivenModels.RandomSeedsLBFGS(5, ScoreDrivenModels.dim_unknowns(gas_sarima)))
 
-    test_coefficients_GAS_Sarima_1_1(D, gas_sarima)
+    test_coefficients_GAS_Sarima_1_1(gas_sarima)
     return 
 end
 

@@ -30,8 +30,8 @@ function RandomSeedsLBFGS(nseeds::Int, dim::Int; f_tol::Float64 = 1e-6, g_tol::F
     return RandomSeedsLBFGS(seeds; f_tol = f_tol, g_tol = g_tol, iterations = iterations)
 end
 
-function log_lik_gas_sarima(psitilde::Vector{T}, y::Vector{T}, gas_sarima::GAS_Sarima, 
-                            initial_params::Vector{Vector{Float64}}, unknowns_gas_sarima::Unknowns_GAS_Sarima, n::Int) where T
+function log_lik_gas_sarima(psitilde::Vector{T}, y::Vector{T}, gas_sarima::GAS_Sarima{D, T}, 
+                            initial_params::Vector{Vector{Float64}}, unknowns_gas_sarima::Unknowns_GAS_Sarima, n::Int) where {D, T}
     
     # Use the unkowns vectors to fill the right positions
     fill_psitilde!(gas_sarima, psitilde, unknowns_gas_sarima)
@@ -42,7 +42,7 @@ function log_lik_gas_sarima(psitilde::Vector{T}, y::Vector{T}, gas_sarima::GAS_S
         params = score_driven_recursion(gas_sarima, y, initial_params)
     end
 
-    return log_likelihood(gas_sarima.dist, y, params, n)
+    return log_likelihood(D, y, params, n)
 end
 
 function estimate!(gas_sarima::GAS_Sarima, y::Vector{T};
