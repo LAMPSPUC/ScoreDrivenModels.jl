@@ -1,4 +1,4 @@
-function score_tilde(y, D::Type{<:Distribution}, param::Vector{T}, param_tilde::Vector{T}, scaling::T) where T
+function score_tilde(y::T, D::Type{<:Distribution}, param::Vector{T}, param_tilde::Vector{T}, scaling::T) where T
     @assert scaling in (0.0, 1/2, 1.0)
     # Evaluate Jacobian and score tilde (\tilde \nabla)
     jac = jacobian_param_tilde(D, param_tilde)
@@ -16,11 +16,11 @@ function score_tilde(y, D::Type{<:Distribution}, param::Vector{T}, param_tilde::
     return score_til
 end
 
-function score(y, D::Type{<:Distribution})
-    return error("score not implemented for $(typeof(dist)) distribution")
+function score(y::T, D::Type{<:Distribution}) where T
+    return error("score not implemented for $(typeof(D)) distribution")
 end
 function fisher_information(D::Type{<:Distribution})
-    return error("fisher information not implemented for $(typeof(dist)) distribution")
+    return error("fisher information not implemented for $(typeof(D)) distribution")
 end
 
 # Scalings
