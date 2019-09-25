@@ -24,7 +24,7 @@ function fisher_information(D::Type{<:Distribution})
 end
 
 # Scalings
-function scaling_invsqrt(jac, dist, param)
+function scaling_invsqrt(jac::Matrix{T}, D::Type{Distribution}, param::Vector{T}) where T
     #TODO improve performace and check if this is right
     # chol = cholesky(fisher_information(dist, param))
     # cholmat = Matrix(chol)
@@ -32,7 +32,7 @@ function scaling_invsqrt(jac, dist, param)
     return jac'*inv(cholmat)*jac
 end
 
-function scaling_inv(jac, dist, param)
+function scaling_inv(jac::Matrix{T}, D::Type{Distribution}, param::Vector{T}) where T
     #TODO improve performace
-    return jac'*inv(fisher_information(dist, param))*jac
+    return jac'*inv(fisher_information(D, param))*jac
 end
