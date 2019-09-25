@@ -32,3 +32,7 @@ jacobian_param_tilde(::Poisson, param_tilde::Vector{T}) where T = Diagonal(jacob
 function update_dist(dist::Poisson, param::Vector{T}) where T
     return Poisson(param[1])
 end 
+
+function num_params(::Type{<:Poisson})
+    return 1
+end
