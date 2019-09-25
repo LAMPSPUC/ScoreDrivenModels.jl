@@ -38,8 +38,8 @@ function check_model_estimated(len::Int)
     return false
 end
 
-function num_params(dist::Distribution)
-    return length(params(dist))
+function num_params(D::Type{<:Distribution})
+    return error("num_params not defined for $D")
 end
 
 function NaN2zero!(score_til::Vector{T}) where T

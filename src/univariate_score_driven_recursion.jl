@@ -10,7 +10,7 @@ function score_driven_recursion(gas_sarima::GAS_Sarima, observations::Vector{T})
     return score_driven_recursion(gas_sarima, observations, initial_param_tilde)
 end
 
-function score_driven_recursion(gas_sarima::GAS_Sarima, observations::Vector{T}, initial_param_tilde::Vector{Vector{T}}) where T
+function score_driven_recursion(gas_sarima::GAS_Sarima{D, T}, observations::Vector{T}, initial_param_tilde::Vector{Vector{T}}) where {D, T}
     # Allocations
     n = length(observations)
     param = Vector{Vector{T}}(undef, n + 1)
@@ -22,8 +22,8 @@ function score_driven_recursion(gas_sarima::GAS_Sarima, observations::Vector{T},
     # initial_values  
     for i in 1:biggest_lag
         param_tilde[i] = initial_param_tilde[i]
-        param[i] = param_tilde_to_param(gas_sarima.dist, initial_param_tilde[i])
-        scores_tilde[i] = score_tilde(observations[i], gas_sarima.dist, param[i], param_tilde[i], gas_sarima.scaling)
+        param[i] = param_tilde_to_param(D, initial_param_tilde[i])
+        scores_tilde[i] = score_tilde(observations[i], D, param[i], param_tilde[i], gas_sarima.scaling)
     end
     
     update_param_tilde!(param_tilde, gas_sarima.ω, gas_sarima.A, gas_sarima.B, scores_tilde, biggest_lag)
@@ -31,25 +31,25 @@ function score_driven_recursion(gas_sarima::GAS_Sarima, observations::Vector{T},
     for i in biggest_lag + 1:n
         univariate_score_driven_update!(param, param_tilde, scores_tilde, observations[i], gas_sarima, i)
     end
-    update_param!(param, param_tilde, gas_sarima.dist, n + 1)
+    update_param!(param, param_tilde, D, n + 1)
 
     return param
 end
 
 function univariate_score_driven_update!(param::Vector{Vector{T}}, param_tilde::Vector{Vector{T}},
                                          scores_tilde::Vector{Vector{T}},
-                                         observation::T, sd_model::SDM, i::Int) where T
+                                         observation::T, gas_sarima::GAS_Sarima{D, T}, i::Int) where {D <: Distribution, T <: AbstractFloat}
     # update param 
-    update_param!(param, param_tilde, sd_model.dist, i)
+    update_param!(param, param_tilde, D, i)
     # evaluate score
-    scores_tilde[i] = score_tilde(observation, sd_model.dist, param[i], param_tilde[i], sd_model.scaling)
+    scores_tilde[i] = score_tilde(observation, D, param[i], param_tilde[i], gas_sarima.scaling)
     # update param_tilde
-    update_param_tilde!(param_tilde, sd_model.ω, sd_model.A, sd_model.B, scores_tilde, i)
+    update_param_tilde!(param_tilde, gas_sarima.ω, gas_sarima.A, gas_sarima.B, scores_tilde, i)
     return 
 end
 
-function update_param!(param::Vector{Vector{T}}, param_tilde::Vector{Vector{T}}, dist::Distribution, i::Int) where T
-    param[i] = param_tilde_to_param(dist, param_tilde[i])
+function update_param!(param::Vector{Vector{T}}, param_tilde::Vector{Vector{T}}, D::Type{<:Distribution}, i::Int) where T
+    param[i] = param_tilde_to_param(D, param_tilde[i])
     # Some treatments 
     NaN2zero!(param[i])
     big_threshold!(param[i], 1e10)
