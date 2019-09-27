@@ -17,12 +17,15 @@ function fisher_information(::Type{Normal}, param::Vector{T}) where T
 end
 
 """
-Proof somewhere
+Proof:
+p = 1/sqrt(2πσ²) exp(-0.5(y-μ)²/σ²)
+
+ln(p) = -0.5ln(2πσ²)-0.5(y-μ)²/σ²
 """
 function log_likelihood(::Type{Normal}, y::Vector{T}, param::Vector{Vector{T}}, n::Int) where T
-    loglik = 0.0
+    loglik = zero(T)
     for i in 1:n
-        loglik += -0.5*(2*pi*param[i][2] + (1/param[i][2])*(y[i] - param[i][1])^2)
+        loglik -=  0.5*(log(2*pi*param[i][2]) + (1/param[i][2])*(y[i] - param[i][1])^2)
     end
     return -loglik
 end
