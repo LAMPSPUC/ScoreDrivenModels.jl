@@ -11,6 +11,7 @@ SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+Expectations = "2fe49d83-0758-5602-8f54-1f90ad0d522b"
 
 [targets]
-test = ["Test"]
+test = ["Test", "Expectations"]

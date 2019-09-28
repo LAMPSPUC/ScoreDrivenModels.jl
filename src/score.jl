@@ -16,13 +16,6 @@ function score_tilde(y::T, D::Type{<:Distribution}, param::Vector{T}, param_tild
     return score_til
 end
 
-function score(y::T, D::Type{<:Distribution}) where T
-    return error("score not implemented for $(typeof(D)) distribution")
-end
-function fisher_information(D::Type{<:Distribution})
-    return error("fisher information not implemented for $(typeof(D)) distribution")
-end
-
 # Scalings
 function scaling_invsqrt(jac::Matrix{T}, D::Type{Distribution}, param::Vector{T}) where T
     #TODO improve performace and check if this is right

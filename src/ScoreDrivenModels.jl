@@ -17,6 +17,7 @@ include("simulate.jl")
 include("MLE.jl")
 
 # Distributions
+include("distributions/common_interface.jl")
 include("distributions/normal.jl")
 include("distributions/poisson.jl")
 include("distributions/beta.jl")
