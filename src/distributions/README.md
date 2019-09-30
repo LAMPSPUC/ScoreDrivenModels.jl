@@ -10,3 +10,5 @@ Each distribution must have the following methods:
     * param_to_param_tilde
     * param_tilde_to_param
     * jacobian_param_tilde
+* update_dist
+* num_params
