@@ -23,9 +23,9 @@ p = 1/sqrt(2πσ²) exp(-0.5(y-μ)²/σ²)
 ln(p) = -0.5ln(2πσ²)-0.5(y-μ)²/σ²
 """
 function log_likelihood(::Type{Normal}, y::Vector{T}, param::Vector{Vector{T}}, n::Int) where T
-    loglik = zero(T)
+    loglik = -0.5*n*log(2*pi)
     for i in 1:n
-        loglik -= 0.5*(log(2*pi*param[i][2]) + (1/param[i][2])*(y[i] - param[i][1])^2)
+        loglik -= 0.5*(log(param[i][2]) + (1/param[i][2])*(y[i] - param[i][1])^2)
     end
     return -loglik
 end
@@ -51,11 +51,11 @@ function jacobian_param_tilde(::Type{Normal}, param_tilde::Vector{T}) where T
 end
 
 # utils 
-function update_dist(D::Type{Normal}, param::Vector{T}) where T
+function update_dist(::Type{Normal}, param::Vector{T}) where T
     # normal here is parametrized as sigma^2
     return Normal(param[1], sqrt(param[2]))
 end 
 
-function num_params(::Type{<:Normal})
+function num_params(::Type{Normal})
     return 2
 end
