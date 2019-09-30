@@ -5,7 +5,7 @@ parametrized in \\mu and \\sigma^2
 function score(y::T, ::Type{LogNormal}, param::Vector{T}) where T
     return [
         (log(y) - param[1])/param[2] ;
-        7 #TODO
+        -0.5/param[2] + 0.5*(log(y) - param[1])^2/param[2]^2
     ]
 end
 
@@ -20,9 +20,9 @@ end
 Proof somewhere
 """
 function log_likelihood(::Type{LogNormal}, y::Vector{T}, param::Vector{Vector{T}}, n::Int) where T
-    loglik = 0.0
+    loglik = -0.5*log(2*pi)*n
     for i in 1:n
-        loglik += 1#TODO
+        loglik -= log(y[i]*sqrt(param[i][2])) + 0.5*(log(y[i]) - param[i][1])^2/param[i][2]
     end
     return -loglik
 end
