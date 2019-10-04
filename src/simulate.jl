@@ -12,7 +12,7 @@ function simulate(gas_sarima::GAS_Sarima{D, T}, n::Int, initial_param_tilde::Vec
     param_tilde = Vector{Vector{T}}(undef, n)
     scores_tilde = Vector{Vector{T}}(undef, n)
 
-    biggest_lag = length(initial_param_tilde)
+    biggest_lag = number_of_lags(gas_sarima)
 
     # initial_values  
     for i in 1:biggest_lag
