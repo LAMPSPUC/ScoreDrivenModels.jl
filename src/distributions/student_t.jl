@@ -12,9 +12,9 @@ parametrized in \\mu, \\sigma^2 and \\nu
 """
 
 function score(y::T, ::Type{LocationScale{Float64,TDist{Float64}}}, param::Vector{T}) where T
-    dNu = param[1]
+    dMu = param[1]
     dPhi2 = param[2]
-    dMu = param[2]
+    dNu = param[3]
 
     dNu_s = digamma((dNu + 1.0)/2.0)*0.5 - digamma(dNu/2.0)*0.5 - 1.0/(2.0*dNu) - 0.5*log(1.0+ (y-dMu)^2.0/(dNu*dPhi2) )+
     0.5*(dNu+1.0)*(y-dMu)^2.0/(dPhi2*(dNu)^2.0 )/(1.0 +  (y-dMu)^2.0/(dNu*dPhi2) );
@@ -23,35 +23,62 @@ function score(y::T, ::Type{LocationScale{Float64,TDist{Float64}}}, param::Vecto
 
     dMu_s = (dNu+1.0)*(y-dMu)/(dNu*dPhi2 + (y-dMu)^2.0);
     return [
-        dNu_s;
+        dMu_s;
         dPhi2_s;
-        dMu_s
+        dNu_s
     ]
 end
-##############################################
-# Still TODO
-##############################################
 
 """
 Proof somewhere
 """
 function fisher_information(::Type{LocationScale{Float64,TDist{Float64}}}, param::Vector{T}) where T
-    return Diagonal([1/(param[2]); 1/(2*(param[2]^2))])
+    dPhi2 = param[2]
+    dNu = param[3]
+
+    uu = (dNu+1.0)/(dPhi2*(dNu+3.0));
+    dd = dNu/(2.0*(dPhi2^2.0)*(dNu+3.0));
+    tt = 0.5*( 0.5* trigamma(0.5*dNu) - 0.5* trigamma( 0.5*(dNu+1.0) ) - (dNu+5.0)/(dNu*(dNu+3.0)*(dNu+1.0)));
+    td = -1.0/(dPhi2*(dNu+3.0)*(dNu+1.0));
+
+    mIM=zeros(3,3);
+
+    mIM[1,1]=uu;
+    mIM[2,2]=dd;
+    mIM[3,3]=tt;
+    mIM[3,2]=td;
+    mIM[2,3]=td;
+
+    return mIM
 end
 
 """
-Proof:
-p = 1/sqrt(2πσ²) exp(-0.5(y-μ)²/σ²)
-
-ln(p) = -0.5ln(2πσ²)-0.5(y-μ)²/σ²
+Proof somewhere
 """
 function log_likelihood(::Type{LocationScale{Float64,TDist{Float64}}}, y::Vector{T}, param::Vector{Vector{T}}, n::Int) where T
-    loglik = -0.5*n*log(2*pi)
+    loglik = 0.0
     for i in 1:n
-        loglik -= 0.5*(log(param[i][2]) + (1/param[i][2])*(y[i] - param[i][1])^2)
+        loglik +=   log(gamma((param[i][3]+1)/2)/(gamma(param[i][3]/2)*sqrt(pi*param[i][3]))) + 
+                    0.5*log(1/param[i][2])+
+                    ((param[i][3]+1)/2)*log(1+(1/param[i][3])*((y[i]-param[i][1])^2)/param[i][2])
     end
     return -loglik
 end
+
+
+# utils 
+function update_dist(::Type{LocationScale{Float64,TDist{Float64}}}, param::Vector{T}) where T
+    # Generalized Stundet T here is parametrized as sigma^2
+    return LocationScale{Float64,TDist{Float64}}(param[1], sqrt(param[2]), TDist(param[3]))
+end 
+
+function num_params(::Type{LocationScale{Float64,TDist{Float64}}})
+    return 3
+end
+
+##############################################
+# Still TODO
+##############################################
 
 # Links
 function param_to_param_tilde(::Type{LocationScale{Float64,TDist{Float64}}}, param::Vector{T}) where T 
@@ -71,14 +98,4 @@ function jacobian_param_tilde(::Type{LocationScale{Float64,TDist{Float64}}}, par
         jacobian_param_tilde(IdentityLink, param_tilde[1]);
         jacobian_param_tilde(ExponentialLink, param_tilde[2])
     ])
-end
-
-# utils 
-function update_dist(::Type{LocationScale{Float64,TDist{Float64}}}, param::Vector{T}) where T
-    # Generalized Stundet T here is parametrized as sigma^2
-    return LocationScale{Float64,TDist{Float64}}(param[1], sqrt(param[2]))
-end 
-
-function num_params(::Type{LocationScale{Float64,TDist{Float64}}})
-    return 3
 end
