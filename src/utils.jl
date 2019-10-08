@@ -104,3 +104,7 @@ end
 function dim_unknowns(gas_sarima::GAS_Sarima)
     return length(find_unknowns(gas_sarima))
 end
+
+function number_of_lags(gas_sarima::GAS_Sarima)
+    return max(maximum(keys(gas_sarima.A)), maximum(keys(gas_sarima.B)))
+end
