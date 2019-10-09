@@ -36,20 +36,20 @@ end
 # Links
 function param_to_param_tilde(::Type{Beta}, param::Vector{T}) where T 
     return [
-        param_to_param_tilde(ExponentialLink, param[1]);
-        param_to_param_tilde(ExponentialLink, param[2])
+        param_to_param_tilde(ExponentialLink, param[1], zero(T));
+        param_to_param_tilde(ExponentialLink, param[2], zero(T))
     ]
 end
 function param_tilde_to_param(::Type{Beta}, param_tilde::Vector{T}) where T 
     return [
-        param_tilde_to_param(ExponentialLink, param_tilde[1]);
-        param_tilde_to_param(ExponentialLink, param_tilde[2])
+        param_tilde_to_param(ExponentialLink, param_tilde[1], zero(T));
+        param_tilde_to_param(ExponentialLink, param_tilde[2], zero(T))
     ]
 end
 function jacobian_param_tilde(::Type{Beta}, param_tilde::Vector{T}) where T 
     return Diagonal([
-        jacobian_param_tilde(ExponentialLink, param_tilde[1]);
-        jacobian_param_tilde(ExponentialLink, param_tilde[2])
+        jacobian_param_tilde(ExponentialLink, param_tilde[1], zero(T));
+        jacobian_param_tilde(ExponentialLink, param_tilde[2], zero(T))
     ])
 end
 
