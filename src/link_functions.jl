@@ -8,9 +8,9 @@ jacobian_param_tilde(::Type{IdentityLink}, param_tilde::T) where T = one(T)
 
 struct ExponentialLink <: Link end
 
-param_to_param_tilde(::Type{ExponentialLink}, param::T, offset::T) where T = log(param - offset)
-param_tilde_to_param(::Type{ExponentialLink}, param_tilde::T, offset::T) where T = exp(param_tilde) + offset
-jacobian_param_tilde(::Type{ExponentialLink}, param_tilde::T, offset::T) where T = exp(param_tilde) + offset
+param_to_param_tilde(::Type{ExponentialLink}, param::T, lower_bound::T) where T = log(param - lower_bound)
+param_tilde_to_param(::Type{ExponentialLink}, param_tilde::T, lower_bound::T) where T = exp(param_tilde) + lower_bound
+jacobian_param_tilde(::Type{ExponentialLink}, param_tilde::T, lower_bound::T) where T = exp(param_tilde) + lower_bound
 
 struct LogitLink <: Link end
 
