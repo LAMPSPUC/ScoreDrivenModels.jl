@@ -66,6 +66,7 @@ function estimate!(gas_sarima::GAS_Sarima, y::Vector{T};
     # optimize for each seed
     psi = Vector{Vector{Float64}}(undef, 0)
     loglikelihood = Vector{Float64}(undef, 0)
+    optseeds = Vector{Optim.OptimizationResults}(undef, 0)
 
     for i = 1:nseeds
         try 
@@ -77,14 +78,19 @@ function estimate!(gas_sarima::GAS_Sarima, y::Vector{T};
                                                                                       show_trace = (verbose == 2 ? true : false) ))
             push!(loglikelihood, -optseed.minimum)
             push!(psi, optseed.minimizer)
-            # print_loglikelihood(verbose, iseed, loglikelihood, t0)
+            push!(optseeds, optseed)
             println("seed $i of $nseeds - $(-optseed.minimum)")
         catch
             println("seed $i diverged")
         end
     end
 
-    bestpsi = psi[argmax(loglikelihood)]
+    best_llk = argmax(loglikelihood)
+    bestpsi = psi[best_llk]
+    if verbose >= 1
+        println("\nBest seed optimization result:")
+        println(optseeds[best_llk])
+    end
 
     # return the estimated 
     fill_psitilde!(gas_sarima, bestpsi, unknowns_gas_sarima)
