@@ -1,4 +1,4 @@
-export score_driven_recursion
+export score_driven_recursion, fitted_mean
 
 """
 score_driven_recursion(sd_model::SDM, observations::Vector{T}) where T
@@ -67,4 +67,21 @@ function update_param_tilde!(param_tilde::Vector{Vector{T}}, ω::Vector{T}, A::D
         param_tilde[i + 1] .+= mat*param_tilde[i - lag + 1]
     end
     return 
+end
+
+"""
+    fitted_mean(gas_sarima::GAS_Sarima{D, T}, observations::Vector{T}, initial_params::Vector{T}) where {D, T}
+
+return the fitted mean.. #TODO
+"""
+function fitted_mean(gas_sarima::GAS_Sarima{D, T}, observations::Vector{T}, initial_params::Vector{Vector{T}}) where {D, T}
+    params_fitted = score_driven_recursion(gas_sarima, observations, initial_params)
+    n = length(params_fitted)
+    fitted_mean = Vector{T}(undef, n)
+
+    for (i, param) in enumerate(params_fitted)
+        fitted_mean[i] = mean(D(param...))
+    end
+    
+    return fitted_mean
 end
