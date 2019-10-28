@@ -15,6 +15,7 @@ include("score.jl")
 include("initial_params.jl")
 include("simulate.jl")
 include("MLE.jl")
+include("diagnostics.jl")
 
 # Distributions
 include("distributions/common_interface.jl")

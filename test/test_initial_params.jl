@@ -1,6 +1,7 @@
 function test_dynamic(sigma::Float64, lags::Int; seed::Int = 12, atol::Float64 = 1e-1, rtol::Float64 = 1e-3, n::Int = 100)
     Random.seed!(seed)
-    obs_dynamic = kron(ones(n), collect(1:lags)) + sigma*randn(n*lags)
+    dist = Normal(0, sigma^2)
+    obs_dynamic = kron(ones(n), collect(1:lags)) + rand(dist, n*lags)
     gas_lag_lag = GAS_Sarima(lags, lags, Normal, 0.0)
     initial_params = dynamic_initial_params(obs_dynamic, gas_lag_lag)
     for i in eachindex(initial_params)
