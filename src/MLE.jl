@@ -47,7 +47,7 @@ end
 
 function estimate!(gas_sarima::GAS_Sarima, y::Vector{T};
                    initial_params::Vector{Vector{Float64}} = [[NaN]], # Means default initializations
-                   random_seeds_lbfgs::RandomSeedsLBFGS = RandomSeedsLBFGS(3, dimension_unkowns(gas_sarima)),
+                   random_seeds_lbfgs::RandomSeedsLBFGS = RandomSeedsLBFGS(3, dim_unknowns(gas_sarima)),
                    verbose::Int = 0) where T
 
     # Number of seed and number of params to estimate
@@ -83,6 +83,11 @@ function estimate!(gas_sarima::GAS_Sarima, y::Vector{T};
         catch
             println("seed $i diverged")
         end
+    end
+
+    if isempty(loglikelihood) 
+        println("No seed converged.")
+        return
     end
 
     best_llk = argmax(loglikelihood)
