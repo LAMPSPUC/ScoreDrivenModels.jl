@@ -16,13 +16,27 @@ end
     dynamic_initial_params
 """
 function dynamic_initial_params(obs::Vector{T}, gas_sarima::GAS_Sarima{D, T}) where {D <: Distribution, T <: AbstractFloat}
+    # Take the biggest lag
     biggest_lag = number_of_lags(gas_sarima)
+
+    # Allocate memory 
     initial_params = Vector{Vector{T}}(undef, biggest_lag)
     obs_separated = Vector{Vector{T}}(undef, biggest_lag)
+
+    # Loop to fit mle in every component of seasonality
     len = length(obs)
     for i in 1:biggest_lag
+        # Indexes of a component of seasonality i.e. of january in a annual seasonality
         idx = collect(i:biggest_lag:len)
-        initial_params[i] = vcat(params(fit_mle(D, obs[idx]))...)
+        # Fit MLE in the observations
+        dist = fit_mle(D, obs[idx])
+        # Adequate to the ScoreDrivenModels standard
+        # In Distributions Normal is \mu and \sigma
+        # In ScoreDrivenModels Normal is \mu and \sigma^2
+        sdm_dist = update_dist(D, [params(dist)...])
+
+        initial_params[i] = [params(sdm_dist)...]
     end
+
     return initial_params
 end

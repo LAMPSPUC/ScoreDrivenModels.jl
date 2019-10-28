@@ -80,7 +80,8 @@ function fitted_mean(gas_sarima::GAS_Sarima{D, T}, observations::Vector{T}, init
     fitted_mean = Vector{T}(undef, n)
 
     for (i, param) in enumerate(params_fitted)
-        fitted_mean[i] = mean(D(param...))
+        sdm_dist = update_dist(D, param)
+        fitted_mean[i] = mean(sdm_dist)
     end
     
     return fitted_mean
