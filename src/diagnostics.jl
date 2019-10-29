@@ -1,4 +1,4 @@
-export quantile_residuals
+export quantile_residuals, pearson_residuals
 
 function quantile_residuals(obs::Vector{T}, gas_sarima::GAS_Sarima{D, T}, initial_params::Vector{Vector{T}}) where {D, T}
 
@@ -21,4 +21,19 @@ function quantile_residuals(obs::Vector{T}, gas_sarima::GAS_Sarima{D, T}, initia
     end
 
     return quant_res
+end
+
+function pearson_residuals(obs::Vector{T}, gas_sarima::GAS_Sarima{D, T}, initial_params::Vector{Vector{T}}) where {D, T}
+
+    n = length(obs)
+    len_ini_par = length(initial_params)
+    pearson = Vector{T}(undef, n - len_ini_par)
+    params_fitted = score_driven_recursion(gas_sarima, obs, initial_params)
+
+    for (i, param) in enumerate(params_fitted[len_ini_par + 1:end - 1])
+        dist = update_dist(D, param)
+        pearson[i] = (obs[i + len_ini_par] - mean(dist))/sqrt(var(dist))
+    end
+
+    return pearson
 end
