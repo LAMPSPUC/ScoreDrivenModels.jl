@@ -5,9 +5,7 @@ function test_score_mean(D::Type{<:Distribution{Univariate,Continuous}}; n::Int 
     pars = [params(dist)...]
     avg  = zeros(SDM.num_params(D))
     for i = 1:n
-        y = rand(D(pars...))
-        s = SDM.score(y, D, pars)
-        avg += s
+        avg += SDM.score(rand(D(pars...)), D, pars)
     end
     avg ./= n
     @test avg ≈ zeros(SDM.num_params(D)) atol = atol rtol = rtol
