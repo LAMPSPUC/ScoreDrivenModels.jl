@@ -1,12 +1,16 @@
-function test_score_mean(D::Type{<:Distribution{Univariate,Continuous}}; atol::Float64 = 1e-3, rtol::Float64 = 1e-3)
+function test_score_mean(D::Type{<:Distribution{Univariate,Continuous}}; n::Int = 10^7, seed::Int = 10,
+                            atol::Float64 = 1e-3, rtol::Float64 = 1e-3)
+    Random.seed!()
     dist = D()
-    pars = vcat(params(dist)...)
-    fs = Array{Function}(undef, length(pars))
-    for i in eachindex(fs)
-        fs[i] = y -> SDM.score(y, D, pars)[i]
-        @test expectation(fs[i], dist) ≈ 0.0 atol = atol rtol = rtol
+    pars = [params(dist)...]
+    avg  = zeros(SDM.num_params(D))
+    for i = 1:n
+        y = rand(D(pars...))
+        s = SDM.score(y, D, pars)
+        avg += s
     end
-    return 
+    avg ./= n
+    @test avg ≈ zeros(SDM.num_params(D)) atol = atol rtol = rtol
 end
 function test_score_mean(D::Type{<:Distribution}; atol::Float64 = 1e-3, rtol::Float64 = 1e-3)
     @warn("Score of $D is not currently tested because it has countably infinite support.")

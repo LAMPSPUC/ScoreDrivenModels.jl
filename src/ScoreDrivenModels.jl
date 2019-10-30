@@ -23,5 +23,6 @@ include("distributions/normal.jl")
 include("distributions/poisson.jl")
 include("distributions/beta.jl")
 include("distributions/log_normal.jl")
+include("distributions/gamma.jl")
 
 end

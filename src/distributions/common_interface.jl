@@ -3,7 +3,8 @@ const DISTS = [
     Normal;
     Beta;
     Poisson;
-    LogNormal
+    LogNormal;
+    Gamma
 ]
 
 function score(y::T, D::Type{<:Distribution}, param::Vector{T}) where T

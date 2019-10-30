@@ -10,9 +10,8 @@ Optim = "429524aa-4258-5aef-a3af-852621145aeb"
 SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 
 [extras]
-Expectations = "2fe49d83-0758-5602-8f54-1f90ad0d522b"
 HypothesisTests = "09f84164-cd44-5f33-b23f-e6b0d136a0d5"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test", "Expectations"]
+test = ["Test"]
