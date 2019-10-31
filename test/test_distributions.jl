@@ -1,6 +1,6 @@
 function test_score_mean(D::Type{<:Distribution{Univariate,Continuous}}; n::Int = 10^7, seed::Int = 10,
                             atol::Float64 = 1e-3, rtol::Float64 = 1e-3)
-    Random.seed!()
+    Random.seed!(seed)
     dist = D()
     pars = [params(dist)...]
     avg  = zeros(SDM.num_params(D))
