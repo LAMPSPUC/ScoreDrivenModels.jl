@@ -1,67 +1,24 @@
 export estimate!
 
-"""
-    AbstractOptimizationMethod
-Abstract type used to implement an interface for generic optimization methods.
-"""
-abstract type AbstractOptimizationMethod end
-
-"""
-TODO
-"""
-mutable struct RandomSeedsLBFGS <: AbstractOptimizationMethod
-    f_tol::Float64
-    g_tol::Float64
-    iterations::Int
-    seeds::Vector{Vector{Float64}}
-
-    function RandomSeedsLBFGS(seeds::Vector{Vector{Float64}}; f_tol::Float64 = 1e-6, g_tol::Float64 = 1e-6, iterations::Int = 10^5)
-        return new(f_tol, g_tol, 1e5, seeds)
-    end
-end
-function RandomSeedsLBFGS(nseeds::Int, dim::Int; f_tol::Float64 = 1e-6, g_tol::Float64 = 1e-6, iterations::Int = 10^5,
-                          LB::Float64 = 0.0, UB::Float64 = 0.6)
-    seeds = Vector{Vector{Float64}}(undef, nseeds)
-
-    for i in 1:nseeds
-        seeds[i] = rand(Uniform(LB, UB), dim)
-    end
-
-    return RandomSeedsLBFGS(seeds; f_tol = f_tol, g_tol = g_tol, iterations = iterations)
+function log_lik(psitilde::Vector{T}, y::Vector{T}, sdm::SDM{D, T}, 
+                 initial_params::Vector{Vector{T}}, unknowns::Unknowns_SDM, n::Int) where {D, T}
+    return error("log_lik not defined for a model of type ", typeof(sdm))
 end
 
-function log_lik_gas_sarima(psitilde::Vector{T}, y::Vector{T}, gas_sarima::GAS_Sarima{D, T}, 
-                            initial_params::Vector{Vector{Float64}}, unknowns_gas_sarima::Unknowns_GAS_Sarima, n::Int) where {D, T}
-    
-    # Use the unkowns vectors to fill the right positions
-    fill_psitilde!(gas_sarima, psitilde, unknowns_gas_sarima)
-
-    if isnan(initial_params[1][1]) # Means default stationary initialization
-        params = score_driven_recursion(gas_sarima, y)
-    else
-        params = score_driven_recursion(gas_sarima, y, initial_params)
-    end
-
-    return log_likelihood(D, y, params, n)
-end
-
-function estimate!(gas_sarima::GAS_Sarima, y::Vector{T};
+function estimate!(sdm::SDM{D, T}, y::Vector{T};
                    initial_params::Vector{Vector{Float64}} = [[NaN]], # Means default initializations
-                   random_seeds_lbfgs::RandomSeedsLBFGS = RandomSeedsLBFGS(3, dim_unknowns(gas_sarima)),
-                   verbose::Int = 0) where T
+                   opt_method::AbstractOptimizationMethod = LBFGS(sdm, 3),
+                   verbose::Int = 0) where {D, T}
 
     # Number of seed and number of params to estimate
-    nseeds = length(random_seeds_lbfgs.seeds)
+    nseeds = length(opt_method.seeds)
     n = length(y)
 
-    unknowns_gas_sarima = find_unknowns(gas_sarima)
-    len_unknowns = length(unknowns_gas_sarima)
+    unknowns = find_unknowns(sdm)
+    len_unknowns = length(unknowns)
 
     # Check if the model has no unknowns
-    check_model_estimated(len_unknowns) && return gas_sarima
-
-    # Guarantee that the seeds are in the right dimension
-    @assert length(random_seeds_lbfgs.seeds[1]) == len_unknowns
+    check_model_estimated(len_unknowns) && return sdm
 
     # optimize for each seed
     psi = Vector{Vector{Float64}}(undef, 0)
@@ -70,12 +27,12 @@ function estimate!(gas_sarima::GAS_Sarima, y::Vector{T};
 
     for i = 1:nseeds
         try 
-            optseed = optimize(psi_tilde -> log_lik_gas_sarima(psi_tilde, y, gas_sarima, initial_params, unknowns_gas_sarima, n), 
-                                                               random_seeds_lbfgs.seeds[i],
-                                                               LBFGS(), Optim.Options(f_tol = random_seeds_lbfgs.f_tol, 
-                                                                                      g_tol = random_seeds_lbfgs.g_tol, 
-                                                                                      iterations = random_seeds_lbfgs.iterations,
-                                                                                      show_trace = (verbose == 2 ? true : false) ))
+            optseed = optimize(psi_tilde -> log_lik(psi_tilde, y, sdm, initial_params, unknowns, n), 
+                                                    opt_method.seeds[i],
+                                                    opt_method.method, Optim.Options(f_tol = opt_method.f_tol, 
+                                                                                     g_tol = opt_method.g_tol, 
+                                                                                     iterations = opt_method.iterations,
+                                                                                     show_trace = (verbose == 2 ? true : false) ))
             push!(loglikelihood, -optseed.minimum)
             push!(psi, optseed.minimizer)
             push!(optseeds, optseed)
@@ -98,7 +55,7 @@ function estimate!(gas_sarima::GAS_Sarima, y::Vector{T};
     end
 
     # return the estimated 
-    fill_psitilde!(gas_sarima, bestpsi, unknowns_gas_sarima)
+    fill_psitilde!(sdm, bestpsi, unknowns)
 
     println("Finished!")
 end

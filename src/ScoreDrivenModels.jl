@@ -6,16 +6,20 @@ using LinearAlgebra
 import Base.length
 
 # Core files
-include("structures.jl")
-include("univariate_score_driven_recursion.jl")
+include("abstracts.jl")
 include("utils.jl")
 include("sample.jl")
 include("link_functions.jl")
 include("score.jl")
-include("initial_params.jl")
-include("simulate.jl")
 include("MLE.jl")
-include("diagnostics.jl")
+include("opt_methods.jl")
+
+# GAS
+include("gas/gas.jl")
+include("gas/initial_params.jl")
+include("gas/simulate.jl")
+include("gas/diagnostics.jl")
+include("gas/univariate_score_driven_recursion.jl")
 
 # Distributions
 include("distributions/common_interface.jl")

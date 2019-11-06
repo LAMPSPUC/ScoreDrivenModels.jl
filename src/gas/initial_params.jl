@@ -1,13 +1,13 @@
 export stationary_initial_params, dynamic_initial_params
 
 """
-    stationary_initial_params(gas_sarima::GAS_Sarima)
+    stationary_initial_params(gas::GAS)
 """
-function stationary_initial_params(gas_sarima::GAS_Sarima)
-    biggest_lag = number_of_lags(gas_sarima)
+function stationary_initial_params(gas::GAS)
+    biggest_lag = number_of_lags(gas)
     initial_params = Vector{Vector{Float64}}(undef, biggest_lag)
     for i in 1:biggest_lag
-        initial_params[i] = gas_sarima.ω./diag(I - gas_sarima.B[1])
+        initial_params[i] = gas.ω./diag(I - gas.B[1])
     end
     return initial_params
 end
@@ -15,9 +15,9 @@ end
 """
     dynamic_initial_params
 """
-function dynamic_initial_params(obs::Vector{T}, gas_sarima::GAS_Sarima{D, T}) where {D <: Distribution, T <: AbstractFloat}
+function dynamic_initial_params(obs::Vector{T}, gas::GAS{D, T}) where {D <: Distribution, T <: AbstractFloat}
     # Take the biggest lag
-    biggest_lag = number_of_lags(gas_sarima)
+    biggest_lag = number_of_lags(gas)
 
     # Allocate memory 
     initial_params = Vector{Vector{T}}(undef, biggest_lag)
