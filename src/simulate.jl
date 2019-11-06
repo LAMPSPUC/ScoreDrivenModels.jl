@@ -1,5 +1,10 @@
 export simulate
 
+function simulate(gas_sarima::GAS_Sarima, n::Int, s::Int)
+    initial_param_tilde = stationary_initial_params(gas_sarima)
+    return [simulate(gas_sarima, n, initial_param_tilde) for i=1:s]
+end
+
 function simulate(gas_sarima::GAS_Sarima, n::Int)
     initial_param_tilde = stationary_initial_params(gas_sarima)
     return simulate(gas_sarima, n, initial_param_tilde)
