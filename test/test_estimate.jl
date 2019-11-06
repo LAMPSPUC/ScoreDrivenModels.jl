@@ -26,7 +26,7 @@ function test_coefficients_GAS_Sarima_1_1(gas_sarima::GAS_Sarima{Beta, T}; atol 
 end
 
 function test_estimation_GAS_Sarima_1_1(gas_sarima::GAS_Sarima{D, T}, simulation::Vector{T}) where {D, T}
-    estimate!(gas_sarima, simulation; verbose = 0,
+    estimate!(gas_sarima, simulation; verbose = 1,
                          random_seeds_lbfgs = ScoreDrivenModels.RandomSeedsLBFGS(5, ScoreDrivenModels.dim_unknowns(gas_sarima)))
 
     test_coefficients_GAS_Sarima_1_1(gas_sarima)
