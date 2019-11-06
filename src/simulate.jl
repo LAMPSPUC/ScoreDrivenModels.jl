@@ -1,10 +1,16 @@
 export simulate
 
-function simulate()
-    
+function simulate(gas::GAS{D, T}, n::Int, s::Int) where {D, T}
+    scenarios_series = Matrix{T}(undef, n, s)
+
+    for i in 1:s
+        serie, params = simulate(gas, n)
+        scenarios_series[:, i] = serie
+    end
+    return scenarios_series
 end
 
-function simulate(gas::GAS, n::Int)
+function simulate(gas::GAS{D, T}, n::Int) where {D, T}
     initial_param_tilde = stationary_initial_params(gas)
     return simulate(gas, n, initial_param_tilde)
 end
