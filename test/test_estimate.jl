@@ -27,7 +27,7 @@ end
 
 function test_estimation_GAS_Sarima_1_1(gas::GAS{D, T}, simulation::Vector{T}) where {D, T}
     estimate!(gas, simulation; verbose = 1,
-                         random_seeds_lbfgs = ScoreDrivenModels.RandomSeedsLBFGS(5, ScoreDrivenModels.dim_unknowns(gas)))
+                         opt_method = ScoreDrivenModels.LBFGS(gas, 5))
 
     test_coefficients_GAS_Sarima_1_1(gas)
     return 

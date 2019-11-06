@@ -1,6 +1,6 @@
 export GAS
 
-mutable struct GAS{D <: Distribution, T <: AbstractFloat} <: SDM
+mutable struct GAS{D <: Distribution, T <: AbstractFloat} <: SDM{D, T}
     ω::Vector{T}
     A::Dict{Int, Matrix{T}}
     B::Dict{Int, Matrix{T}}
@@ -54,12 +54,76 @@ function GAS(ps::Vector{Int}, qs::Vector{Int}, D::Type{<:Distribution}, scaling:
     return GAS{D, Float64}(ω, A, B, scaling)
 end
 
+function number_of_lags(gas::GAS)
+    return max(maximum(keys(gas.A)), maximum(keys(gas.B)))
+end
+
 """
 The unknows parameters of a GAS model
 Only for internal use
+    
+Every unknonws must define
+fill_psitilde
+find_unknowns
+dim_unknowns
+length
 """
 mutable struct Unknowns_GAS <: Unknowns_SDM
     ω::Vector{Int}
     A::Dict{Int, Vector{Int}}
     B::Dict{Int, Vector{Int}}
+end
+
+function fill_psitilde!(gas::GAS, psitilde::Vector{T}, unknowns::Unknowns_GAS) where T
+    offset = 0
+    # fill ω
+    for i in unknowns.ω
+        offset += 1
+        gas.ω[i] = psitilde[offset]
+    end
+    # fill A
+    for (k, v) in unknowns.A
+        for i in v
+            offset += 1
+            gas.A[k][i] = psitilde[offset]
+        end
+    end
+    # fill B
+    for (k, v) in unknowns.B
+        for i in v
+            offset += 1
+            gas.B[k][i] = psitilde[offset]
+        end
+    end
+    return 
+end
+
+function find_unknowns(gas::GAS)
+    unknowns_A = Dict{Int, Vector{Int}}()
+    unknowns_B = Dict{Int, Vector{Int}}()
+
+    unknowns_ω = find_unknowns(gas.ω)
+
+    for (k, v) in gas.A
+        unknowns_A[k] = find_unknowns(v)
+    end
+    for (k, v) in gas.B
+        unknowns_B[k] = find_unknowns(v)
+    end
+    return Unknowns_GAS(unknowns_ω, unknowns_A, unknowns_B)
+end
+
+function dim_unknowns(gas::GAS)
+    return length(find_unknowns(gas))
+end
+
+function length(unknowns::Unknowns_GAS)
+    len = length(values(unknowns.ω))
+    for (k, v) in unknowns.A
+        len += length(v)
+    end
+    for (k, v) in unknowns.B
+        len += length(v)
+    end
+    return len
 end

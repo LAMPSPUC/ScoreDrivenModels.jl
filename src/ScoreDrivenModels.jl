@@ -6,7 +6,7 @@ using LinearAlgebra
 import Base.length
 
 # Core files
-include("structures.jl")
+include("abstracts.jl")
 include("GAS.jl")
 include("univariate_score_driven_recursion.jl")
 include("utils.jl")
@@ -16,6 +16,7 @@ include("score.jl")
 include("initial_params.jl")
 include("simulate.jl")
 include("MLE.jl")
+include("opt_methods.jl")
 include("diagnostics.jl")
 
 # Distributions
