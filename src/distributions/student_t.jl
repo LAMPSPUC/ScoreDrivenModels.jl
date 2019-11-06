@@ -76,26 +76,25 @@ function num_params(::Type{LocationScale{Float64,TDist{Float64}}})
     return 3
 end
 
-##############################################
-# Still TODO
-##############################################
-
 # Links
 function param_to_param_tilde(::Type{LocationScale{Float64,TDist{Float64}}}, param::Vector{T}) where T 
     return [
         param_to_param_tilde(IdentityLink, param[1]);
-        param_to_param_tilde(ExponentialLink, param[2])
+        param_to_param_tilde(ExponentialLink, param[2],0);
+        param_to_param_tilde(ExponentialLink, param[3],1)
     ]
 end
 function param_tilde_to_param(::Type{LocationScale{Float64,TDist{Float64}}}, param_tilde::Vector{T}) where T 
     return [
         param_tilde_to_param(IdentityLink, param_tilde[1]);
-        param_tilde_to_param(ExponentialLink, param_tilde[2])
+        param_tilde_to_param(ExponentialLink, param_tilde[2],0);
+        param_tilde_to_param(ExponentialLink, param_tilde[3],1)
     ]
 end
 function jacobian_param_tilde(::Type{LocationScale{Float64,TDist{Float64}}}, param_tilde::Vector{T}) where T 
     return Diagonal([
         jacobian_param_tilde(IdentityLink, param_tilde[1]);
-        jacobian_param_tilde(ExponentialLink, param_tilde[2])
+        jacobian_param_tilde(ExponentialLink, param_tilde[2],0);
+        jacobian_param_tilde(ExponentialLink, param_tilde[3],1)
     ])
 end
