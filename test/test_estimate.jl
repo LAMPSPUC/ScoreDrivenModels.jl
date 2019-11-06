@@ -3,40 +3,40 @@ function simulate_GAS_Sarima_1_1(D::Type{Beta}, scaling::Float64)
     Random.seed!(13)
     vec = [0.1 ; 0.1]
 
-    gas_sarima = GAS_Sarima(1, 1, D, scaling)
+    gas = GAS(1, 1, D, scaling)
 
-    gas_sarima.ω = vec
-    gas_sarima.A[1] = convert(Matrix{Float64}, Diagonal(5*vec))
-    gas_sarima.B[1] = convert(Matrix{Float64}, Diagonal(5*vec))  
+    gas.ω = vec
+    gas.A[1] = convert(Matrix{Float64}, Diagonal(5*vec))
+    gas.B[1] = convert(Matrix{Float64}, Diagonal(5*vec))  
 
     # Simulate 1000 observations
-    serie_simulated, param_simulated = simulate(gas_sarima, 1000)
+    serie_simulated, param_simulated = simulate(gas, 1000)
 
     return serie_simulated
 end
 
-function test_coefficients_GAS_Sarima_1_1(gas_sarima::GAS_Sarima{Beta, T}; atol = 1e-1, rtol = 1e-1) where T
-    @test gas_sarima.ω[1] ≈ 0.1 atol = atol rtol = rtol
-    @test gas_sarima.ω[2] ≈ 0.1 atol = atol rtol = rtol
-    @test gas_sarima.A[1][1, 1] ≈ 0.5 atol = atol rtol = rtol
-    @test gas_sarima.A[1][2, 2] ≈ 0.5 atol = atol rtol = rtol
-    @test gas_sarima.B[1][1, 1] ≈ 0.5 atol = atol rtol = rtol
-    @test gas_sarima.B[1][2, 2] ≈ 0.5 atol = atol rtol = rtol
+function test_coefficients_GAS_Sarima_1_1(gas::GAS{Beta, T}; atol = 1e-1, rtol = 1e-1) where T
+    @test gas.ω[1] ≈ 0.1 atol = atol rtol = rtol
+    @test gas.ω[2] ≈ 0.1 atol = atol rtol = rtol
+    @test gas.A[1][1, 1] ≈ 0.5 atol = atol rtol = rtol
+    @test gas.A[1][2, 2] ≈ 0.5 atol = atol rtol = rtol
+    @test gas.B[1][1, 1] ≈ 0.5 atol = atol rtol = rtol
+    @test gas.B[1][2, 2] ≈ 0.5 atol = atol rtol = rtol
     return
 end
 
-function test_estimation_GAS_Sarima_1_1(gas_sarima::GAS_Sarima{D, T}, simulation::Vector{T}) where {D, T}
-    estimate!(gas_sarima, simulation; verbose = 1,
-                         random_seeds_lbfgs = ScoreDrivenModels.RandomSeedsLBFGS(5, ScoreDrivenModels.dim_unknowns(gas_sarima)))
+function test_estimation_GAS_Sarima_1_1(gas::GAS{D, T}, simulation::Vector{T}) where {D, T}
+    estimate!(gas, simulation; verbose = 1,
+                         random_seeds_lbfgs = ScoreDrivenModels.RandomSeedsLBFGS(5, ScoreDrivenModels.dim_unknowns(gas)))
 
-    test_coefficients_GAS_Sarima_1_1(gas_sarima)
+    test_coefficients_GAS_Sarima_1_1(gas)
     return 
 end
 
 @testset "Estimate" begin
     @testset "Beta" begin
         simulation = simulate_GAS_Sarima_1_1(Beta, 0.0)
-        gas_sarima = GAS_Sarima(1, 1, Beta, 0.0)
-        test_estimation_GAS_Sarima_1_1(gas_sarima, simulation)
+        gas = GAS(1, 1, Beta, 0.0)
+        test_estimation_GAS_Sarima_1_1(gas, simulation)
     end
 end

@@ -30,35 +30,35 @@ function RandomSeedsLBFGS(nseeds::Int, dim::Int; f_tol::Float64 = 1e-6, g_tol::F
     return RandomSeedsLBFGS(seeds; f_tol = f_tol, g_tol = g_tol, iterations = iterations)
 end
 
-function log_lik_gas_sarima(psitilde::Vector{T}, y::Vector{T}, gas_sarima::GAS_Sarima{D, T}, 
-                            initial_params::Vector{Vector{Float64}}, unknowns_gas_sarima::Unknowns_GAS_Sarima, n::Int) where {D, T}
+function log_lik(psitilde::Vector{T}, y::Vector{T}, gas::GAS{D, T}, 
+                 initial_params::Vector{Vector{Float64}}, unknowns::Unknowns_GAS, n::Int) where {D, T}
     
     # Use the unkowns vectors to fill the right positions
-    fill_psitilde!(gas_sarima, psitilde, unknowns_gas_sarima)
+    fill_psitilde!(gas, psitilde, unknowns)
 
     if isnan(initial_params[1][1]) # Means default stationary initialization
-        params = score_driven_recursion(gas_sarima, y)
+        params = score_driven_recursion(gas, y)
     else
-        params = score_driven_recursion(gas_sarima, y, initial_params)
+        params = score_driven_recursion(gas, y, initial_params)
     end
 
     return log_likelihood(D, y, params, n)
 end
 
-function estimate!(gas_sarima::GAS_Sarima, y::Vector{T};
+function estimate!(gas::GAS, y::Vector{T};
                    initial_params::Vector{Vector{Float64}} = [[NaN]], # Means default initializations
-                   random_seeds_lbfgs::RandomSeedsLBFGS = RandomSeedsLBFGS(3, dim_unknowns(gas_sarima)),
+                   random_seeds_lbfgs::RandomSeedsLBFGS = RandomSeedsLBFGS(3, dim_unknowns(gas)),
                    verbose::Int = 0) where T
 
     # Number of seed and number of params to estimate
     nseeds = length(random_seeds_lbfgs.seeds)
     n = length(y)
 
-    unknowns_gas_sarima = find_unknowns(gas_sarima)
-    len_unknowns = length(unknowns_gas_sarima)
+    unknowns = find_unknowns(gas)
+    len_unknowns = length(unknowns)
 
     # Check if the model has no unknowns
-    check_model_estimated(len_unknowns) && return gas_sarima
+    check_model_estimated(len_unknowns) && return gas
 
     # Guarantee that the seeds are in the right dimension
     @assert length(random_seeds_lbfgs.seeds[1]) == len_unknowns
@@ -70,12 +70,12 @@ function estimate!(gas_sarima::GAS_Sarima, y::Vector{T};
 
     for i = 1:nseeds
         try 
-            optseed = optimize(psi_tilde -> log_lik_gas_sarima(psi_tilde, y, gas_sarima, initial_params, unknowns_gas_sarima, n), 
-                                                               random_seeds_lbfgs.seeds[i],
-                                                               LBFGS(), Optim.Options(f_tol = random_seeds_lbfgs.f_tol, 
-                                                                                      g_tol = random_seeds_lbfgs.g_tol, 
-                                                                                      iterations = random_seeds_lbfgs.iterations,
-                                                                                      show_trace = (verbose == 2 ? true : false) ))
+            optseed = optimize(psi_tilde -> log_lik(psi_tilde, y, gas, initial_params, unknowns, n), 
+                                                    random_seeds_lbfgs.seeds[i],
+                                                    LBFGS(), Optim.Options(f_tol = random_seeds_lbfgs.f_tol, 
+                                                                           g_tol = random_seeds_lbfgs.g_tol, 
+                                                                           iterations = random_seeds_lbfgs.iterations,
+                                                                           show_trace = (verbose == 2 ? true : false) ))
             push!(loglikelihood, -optseed.minimum)
             push!(psi, optseed.minimizer)
             push!(optseeds, optseed)
@@ -98,7 +98,7 @@ function estimate!(gas_sarima::GAS_Sarima, y::Vector{T};
     end
 
     # return the estimated 
-    fill_psitilde!(gas_sarima, bestpsi, unknowns_gas_sarima)
+    fill_psitilde!(gas, bestpsi, unknowns)
 
     println("Finished!")
 end

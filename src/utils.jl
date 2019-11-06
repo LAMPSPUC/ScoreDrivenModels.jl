@@ -1,22 +1,22 @@
-function fill_psitilde!(gas_sarima::GAS_Sarima, psitilde::Vector{T}, unknowns_gas_sarima::Unknowns_GAS_Sarima) where T
+function fill_psitilde!(gas::GAS, psitilde::Vector{T}, unknowns::Unknowns_GAS) where T
     offset = 0
     # fill ω
-    for i in unknowns_gas_sarima.ω
+    for i in unknowns.ω
         offset += 1
-        gas_sarima.ω[i] = psitilde[offset]
+        gas.ω[i] = psitilde[offset]
     end
     # fill A
-    for (k, v) in unknowns_gas_sarima.A
+    for (k, v) in unknowns.A
         for i in v
             offset += 1
-            gas_sarima.A[k][i] = psitilde[offset]
+            gas.A[k][i] = psitilde[offset]
         end
     end
     # fill B
-    for (k, v) in unknowns_gas_sarima.B
+    for (k, v) in unknowns.B
         for i in v
             offset += 1
-            gas_sarima.B[k][i] = psitilde[offset]
+            gas.B[k][i] = psitilde[offset]
         end
     end
     return 
@@ -75,22 +75,22 @@ function update_dist(dist::Distribution, param::Vector{T}) where T
     error("not implemented")
 end 
 
-function find_unknowns(gas_sarima::GAS_Sarima)
+function find_unknowns(gas::GAS)
     unknowns_A = Dict{Int, Vector{Int}}()
     unknowns_B = Dict{Int, Vector{Int}}()
 
-    unknowns_ω = find_unknowns(gas_sarima.ω)
+    unknowns_ω = find_unknowns(gas.ω)
 
-    for (k, v) in gas_sarima.A
+    for (k, v) in gas.A
         unknowns_A[k] = find_unknowns(v)
     end
-    for (k, v) in gas_sarima.B
+    for (k, v) in gas.B
         unknowns_B[k] = find_unknowns(v)
     end
-    return Unknowns_GAS_Sarima(unknowns_ω, unknowns_A, unknowns_B)
+    return Unknowns_GAS(unknowns_ω, unknowns_A, unknowns_B)
 end
 
-function length(unknowns::Unknowns_GAS_Sarima)
+function length(unknowns::Unknowns_GAS)
     len = length(values(unknowns.ω))
     for (k, v) in unknowns.A
         len += length(v)
@@ -101,10 +101,10 @@ function length(unknowns::Unknowns_GAS_Sarima)
     return len
 end
 
-function dim_unknowns(gas_sarima::GAS_Sarima)
-    return length(find_unknowns(gas_sarima))
+function dim_unknowns(gas::GAS)
+    return length(find_unknowns(gas))
 end
 
-function number_of_lags(gas_sarima::GAS_Sarima)
-    return max(maximum(keys(gas_sarima.A)), maximum(keys(gas_sarima.B)))
+function number_of_lags(gas::GAS)
+    return max(maximum(keys(gas.A)), maximum(keys(gas.B)))
 end
