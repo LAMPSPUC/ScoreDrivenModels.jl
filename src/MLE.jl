@@ -20,9 +20,6 @@ function estimate!(sdm::SDM{D, T}, y::Vector{T};
     # Check if the model has no unknowns
     check_model_estimated(len_unknowns) && return sdm
 
-    # Guarantee that the seeds are in the right dimension
-    @assert length(opt_method.seeds[1]) == len_unknowns
-
     # optimize for each seed
     psi = Vector{Vector{Float64}}(undef, 0)
     loglikelihood = Vector{Float64}(undef, 0)
