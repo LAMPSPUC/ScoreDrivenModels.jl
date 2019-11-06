@@ -4,14 +4,13 @@
 # parametrized in \\mu, \\sigma^2 and \\nu
 # wikipedia: https://en.wikipedia.org/wiki/Student%27s_t-distribution#Generalized_Student's_t-distribution
 ##############################################
-using SpecialFunctions
+const GeneralTDist = LocationScale{Float64,TDist{Float64}
 
 """
 Proof somewhere 
 parametrized in \\mu, \\sigma^2 and \\nu
 """
-
-function score(y::T, ::Type{LocationScale{Float64,TDist{Float64}}}, param::Vector{T}) where T
+function score(y::T, ::Type{GeneralTDist}, param::Vector{T}) where T
     dMu = param[1]
     dPhi2 = param[2]
     dNu = param[3]
@@ -32,7 +31,7 @@ end
 """
 Proof somewhere
 """
-function fisher_information(::Type{LocationScale{Float64,TDist{Float64}}}, param::Vector{T}) where T
+function fisher_information(::Type{GeneralTDist}, param::Vector{T}) where T
     dPhi2 = param[2]
     dNu = param[3]
 
@@ -55,7 +54,7 @@ end
 """
 Proof somewhere
 """
-function log_likelihood(::Type{LocationScale{Float64,TDist{Float64}}}, y::Vector{T}, param::Vector{Vector{T}}, n::Int) where T
+function log_likelihood(::Type{GeneralTDist}, y::Vector{T}, param::Vector{Vector{T}}, n::Int) where T
     loglik = 0.0
     for i in 1:n
         loglik +=   log(gamma((param[i][3]+1)/2)/(gamma(param[i][3]/2)*sqrt(pi*param[i][3]))) + 
@@ -67,34 +66,34 @@ end
 
 
 # utils 
-function update_dist(::Type{LocationScale{Float64,TDist{Float64}}}, param::Vector{T}) where T
+function update_dist(::Type{GeneralTDist}, param::Vector{T}) where T
     # Generalized Stundet T here is parametrized as sigma^2
-    return LocationScale{Float64,TDist{Float64}}(param[1], sqrt(param[2]), TDist(param[3]))
+    return GeneralTDist(param[1], sqrt(param[2]), TDist(param[3]))
 end 
 
-function num_params(::Type{LocationScale{Float64,TDist{Float64}}})
+function num_params(::Type{GeneralTDist})
     return 3
 end
 
 # Links
-function param_to_param_tilde(::Type{LocationScale{Float64,TDist{Float64}}}, param::Vector{T}) where T 
+function param_to_param_tilde(::Type{GeneralTDist}, param::Vector{T}) where T 
     return [
         param_to_param_tilde(IdentityLink, param[1]);
-        param_to_param_tilde(ExponentialLink, param[2],0);
-        param_to_param_tilde(ExponentialLink, param[3],1)
+        param_to_param_tilde(ExponentialLink, param[2], zero(T));
+        param_to_param_tilde(ExponentialLink, param[3], one(T))
     ]
 end
-function param_tilde_to_param(::Type{LocationScale{Float64,TDist{Float64}}}, param_tilde::Vector{T}) where T 
+function param_tilde_to_param(::Type{GeneralTDist}, param_tilde::Vector{T}) where T 
     return [
         param_tilde_to_param(IdentityLink, param_tilde[1]);
-        param_tilde_to_param(ExponentialLink, param_tilde[2],0);
-        param_tilde_to_param(ExponentialLink, param_tilde[3],1)
+        param_tilde_to_param(ExponentialLink, param_tilde[2], zero(T));
+        param_tilde_to_param(ExponentialLink, param_tilde[3], one(T))
     ]
 end
-function jacobian_param_tilde(::Type{LocationScale{Float64,TDist{Float64}}}, param_tilde::Vector{T}) where T 
+function jacobian_param_tilde(::Type{GeneralTDist}, param_tilde::Vector{T}) where T 
     return Diagonal([
         jacobian_param_tilde(IdentityLink, param_tilde[1]);
-        jacobian_param_tilde(ExponentialLink, param_tilde[2],0);
-        jacobian_param_tilde(ExponentialLink, param_tilde[3],1)
+        jacobian_param_tilde(ExponentialLink, param_tilde[2], zero(T));
+        jacobian_param_tilde(ExponentialLink, param_tilde[3], one(T))
     ])
 end
