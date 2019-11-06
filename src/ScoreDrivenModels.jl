@@ -7,17 +7,19 @@ import Base.length
 
 # Core files
 include("abstracts.jl")
-include("GAS.jl")
-include("univariate_score_driven_recursion.jl")
 include("utils.jl")
 include("sample.jl")
 include("link_functions.jl")
 include("score.jl")
-include("initial_params.jl")
-include("simulate.jl")
 include("MLE.jl")
 include("opt_methods.jl")
-include("diagnostics.jl")
+
+# GAS
+include("gas/gas.jl")
+include("gas/initial_params.jl")
+include("gas/simulate.jl")
+include("gas/diagnostics.jl")
+include("gas/univariate_score_driven_recursion.jl")
 
 # Distributions
 include("distributions/common_interface.jl")
