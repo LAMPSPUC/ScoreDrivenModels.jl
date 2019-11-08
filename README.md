@@ -12,7 +12,7 @@ ScoreDrivenModels.jl is a Julia package for modeling, forecasting and simulating
   * Poisson
   * Beta
   * Gamma
-  * T Distribution
+  * Student's t
 
 # Roadmap
 * Weibull distribution
