@@ -39,8 +39,8 @@ function small_threshold!(score_til::Vector{T}, threshold::T) where T
     return 
 end
 
-function update_dist(dist::Distribution, param::Vector{T}) where T
-    error("not implemented")
+function sample_observation(dist::Distribution)
+    return rand(dist)
 end
 
 function find_unknowns(vec::Vector{T}) where T
