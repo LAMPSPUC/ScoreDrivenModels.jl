@@ -8,7 +8,6 @@ import Base.length
 # Core files
 include("abstracts.jl")
 include("utils.jl")
-include("sample.jl")
 include("link_functions.jl")
 include("score.jl")
 include("MLE.jl")
