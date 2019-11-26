@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Examples · ScoreDrivenModels.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>ScoreDrivenModels.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../">Home</a></li><li><a class="toctext" href="../manual/">Manual</a></li><li class="current"><a class="toctext" href>Examples</a><ul class="internal"><li><a class="toctext" href="#Water-inflow-1">Water inflow</a></li></ul></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Examples</a></li></ul><a class="edit-page" href="https://github.com/LAMPSPUC/ScoreDrivenModels.jl/blob/master/docs/src/examples.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Examples</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Examples-1" href="#Examples-1">Examples</a></h1><h2><a class="nav-anchor" id="Water-inflow-1" href="#Water-inflow-1">Water inflow</a></h2><p>Let&#39;s model some monthly water inflow data from the Northeast of Brazil using a Lognormal GAS model. Since inflow is a highly seasonal phenomenon, we will utilize lags 1 and 12. The former aims to characterize the short-term evolution of the series, while the latter characterizes the seasonality. The full code is in the examples folder.</p><pre><code class="language-julia"># Convert data to vector
+y = Vector{Float64}(vec(inflow&#39;))
+
+# Specify GAS model: here we use lag 1 for trend characterization and 
+# lag 12 for seasonality characterization
+gas = GAS_Sarima([1, 12], [1, 12], LogNormal, 0.0)
+
+# Estimate the model via MLE
+estimate!(gas, y)
+
+# Obtain in-sample estimates for the inflow
+y_gas = fitted_mean(gas, y, dynamic_initial_params(y, gas))
+
+# Compare observations and in-sample estimates
+plot(y)
+plot!(y_gas)</code></pre><p>The result can be seen in the following plot.</p><p><img src="../assets/inflow_lognormal.png" alt="Historical inflow data vs. in-sample estimates"/></p><footer><hr/><a class="previous" href="../manual/"><span class="direction">Previous</span><span class="title">Manual</span></a></footer></article></body></html>
