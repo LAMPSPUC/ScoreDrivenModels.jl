@@ -13,7 +13,7 @@ end
 Proof somewhere
 """
 function fisher_information(::Type{Weibull}, param::Vector{T}) where T
-    return #TODO
+    return error("Fisher information not implemented for Weibull distribution.")
 end
 
 """
