@@ -5,7 +5,7 @@ parametrized in \\alpha and \\theta
 function score(y::T, ::Type{Weibull}, param::Vector{T}) where T
     return [
         (1/param[1]) + log(y/param[2]) * (1 - (y/param[2])^param[1]) ;
-        param[1]/param[2] * ((y/param[2])^param[1] - 1))
+        (param[1]/param[2]) * (((y/param[2])^param[1]) - 1)
     ]
 end
 
