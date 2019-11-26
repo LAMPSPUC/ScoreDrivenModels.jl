@@ -4,8 +4,8 @@
 |:-----------------:|:-----------------:|:-----------------:|
 | [![Build Status][build-img]][build-url] | [![Codecov branch][codecov-img]][codecov-url] |[![](https://img.shields.io/badge/docs-latest-blue.svg)](https://lampspuc.github.io/ScoreDrivenModels.jl/latest/)
 
-[build-img]: https://travis-ci.org/LAMPSPUC/ScoreDrivenModels.jl.svg?branch=master
-[build-url]: https://travis-ci.org/LAMPSPUC/ScoreDrivenModels.jl
+[build-img]: https://travis-ci.com/LAMPSPUC/ScoreDrivenModels.jl.svg?branch=master
+[build-url]: https://travis-ci.com/LAMPSPUC/ScoreDrivenModels.jl
 
 [codecov-img]: https://codecov.io/gh/LAMPSPUC/ScoreDrivenModels.jl/coverage.svg?branch=master
 [codecov-url]: https://codecov.io/gh/LAMPSPUC/ScoreDrivenModels.jl?branch=master
