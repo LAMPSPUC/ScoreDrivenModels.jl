@@ -43,10 +43,10 @@ function param_tilde_to_param(::Type{Normal}, param_tilde::Vector{T}) where T
         param_tilde_to_param(ExponentialLink, param_tilde[2], zero(T))
     ]
 end
-function jacobian_param_tilde(::Type{Normal}, param_tilde::Vector{T}) where T 
+function jacobian_link(::Type{Normal}, param_tilde::Vector{T}) where T 
     return Diagonal([
-        jacobian_param_tilde(IdentityLink, param_tilde[1]);
-        jacobian_param_tilde(ExponentialLink, param_tilde[2], zero(T))
+        jacobian_link(IdentityLink, param_tilde[1]);
+        jacobian_link(ExponentialLink, param_tilde[2], zero(T))
     ])
 end
 

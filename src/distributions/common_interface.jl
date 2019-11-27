@@ -23,8 +23,8 @@ end
 function param_tilde_to_param(D::Type{<:Distribution}, param_tilde::Vector{T}) where T 
     return error("param_tilde_to_param not implemented for $D distribution")
 end
-function jacobian_param_tilde(D::Type{<:Distribution}, param_tilde::Vector{T}) where T 
-    return error("jacobian_param_tilde not implemented for $D distribution")
+function jacobian_link(D::Type{<:Distribution}, param_tilde::Vector{T}) where T 
+    return error("jacobian_link not implemented for $D distribution")
 end
 function update_dist(D::Type{<:Distribution}, param::Vector{T}) where T
     return error("update_dist not implemented for $D distribution")

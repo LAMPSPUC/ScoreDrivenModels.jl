@@ -46,15 +46,16 @@ function param_tilde_to_param(::Type{Beta}, param_tilde::Vector{T}) where T
         param_tilde_to_param(ExponentialLink, param_tilde[2], zero(T))
     ]
 end
-function jacobian_param_tilde(::Type{Beta}, param_tilde::Vector{T}) where T 
+function jacobian_link(::Type{Beta}, param_tilde::Vector{T}) where T 
     return Diagonal([
-        jacobian_param_tilde(ExponentialLink, param_tilde[1], zero(T));
-        jacobian_param_tilde(ExponentialLink, param_tilde[2], zero(T))
+        jacobian_link(ExponentialLink, param_tilde[1], zero(T));
+        jacobian_link(ExponentialLink, param_tilde[2], zero(T))
     ])
 end
 
 # utils
 function update_dist(::Type{Beta}, param::Vector{T}) where T
+    small_threshold!(param, T(1e-8))
     return Beta(param[1], param[2])
 end 
 

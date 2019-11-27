@@ -6,34 +6,34 @@ function check_model_estimated(len::Int)
     return false
 end
 
-function NaN2zero!(score_til::Vector{T}) where T
-    for i in eachindex(score_til)
-        if isnan(score_til[i])
-            score_til[i] = zero(T) 
+function NaN2zero!(v::Vector{T}) where T
+    for i in eachindex(v)
+        if isnan(v[i])
+            v[i] = zero(T) 
         end
     end
     return 
 end
 
-function big_threshold!(score_til::Vector{T}, threshold::T) where T
-    for i in eachindex(score_til)
-        if score_til[i] >= threshold
-            score_til[i] = threshold 
+function big_threshold!(v::Vector{T}, threshold::T) where T
+    for i in eachindex(v)
+        if v[i] >= threshold
+            v[i] = threshold 
         end
-        if score_til[i] <= -threshold
-            score_til[i] = -threshold 
+        if v[i] <= -threshold
+            v[i] = -threshold 
         end
     end
     return 
 end
 
-function small_threshold!(score_til::Vector{T}, threshold::T) where T
-    for i in eachindex(score_til)
-        if score_til[i] <= threshold && score_til[i] >= 0
-            score_til[i] = threshold 
+function small_threshold!(v::Vector{T}, threshold::T) where T
+    for i in eachindex(v)
+        if v[i] <= threshold && v[i] >= 0
+            v[i] = threshold 
         end
-        if score_til[i] >= -threshold && score_til[i] <= 0
-            score_til[i] = -threshold 
+        if v[i] >= -threshold && v[i] <= 0
+            v[i] = -threshold 
         end
     end
     return 

@@ -1,13 +1,12 @@
 function score_tilde(y::T, D::Type{<:Distribution}, param::Vector{T}, param_tilde::Vector{T}, scaling::T) where T
     @assert scaling in (0.0, 1/2, 1.0)
-    # Evaluate Jacobian and score tilde (\tilde \nabla)
-    jac = jacobian_param_tilde(D, param_tilde)
-    score_til = jac*score(y, D, param)
-    # if scaling == 0 do nothing
-    if scaling == 1/2
-        score_til = scaling_invsqrt(jac, D, param)*score_til
+
+    if scaling == 0
+        score_til = scaling_identity(y, D, param)
+    elseif scaling == 1/2
+        score_til = scaling_invsqrt(y, D, param)
     elseif scaling == 1.0
-        score_til = scaling_inv(jac, D, param)*score_til
+        score_til = scaling_inv(y, D, param)
     end
 
     NaN2zero!(score_til)
@@ -17,15 +16,19 @@ function score_tilde(y::T, D::Type{<:Distribution}, param::Vector{T}, param_tild
 end
 
 # Scalings
-function scaling_invsqrt(jac::AbstractMatrix{T}, D::Type{<:Distribution}, param::Vector{T}) where T
-    #TODO improve performace and check if this is right
-    # chol = cholesky(fisher_information(dist, param))
-    # cholmat = Matrix(chol)
-    error("check how to do this properly")
-    return jac'*inv(cholmat)*jac
+function scaling_identity(y::T, D::Type{<:Distribution}, param::Vector{T}) where T
+    jac = jacobian_link(D, param)
+    return inv(jac)*score(y, D, param)
 end
 
-function scaling_inv(jac::AbstractMatrix{T}, D::Type{<:Distribution}, param::Vector{T}) where T
-    #TODO improve performace
-    return jac'*inv(fisher_information(D, param))*jac
+function scaling_invsqrt(y::T, D::Type{<:Distribution}, param::Vector{T}) where T
+    jac = jacobian_link(D, param)
+    inv_fisher = inv(fisher_information(D, param))
+    J_tilde = cholesky(jac*inv_fisher*jac').L
+    return J_tilde * inv(jac) * score(y, D, param)
+end
+
+function scaling_inv(y::T, D::Type{<:Distribution}, param::Vector{T}) where T
+    jac = jacobian_link(D, param)
+    return jac*inv(fisher_information(D, param))*score(y, D, param)
 end

@@ -1,4 +1,4 @@
-function test_score_mean(D::Type{<:Distribution{Univariate,Continuous}}; n::Int = 10^7, seed::Int = 10,
+function test_score_mean(D::Type{<:Distribution}; n::Int = 10^7, seed::Int = 10,
                             atol::Float64 = 1e-3, rtol::Float64 = 1e-3)
     Random.seed!(seed)
     dist = D()
@@ -9,10 +9,6 @@ function test_score_mean(D::Type{<:Distribution{Univariate,Continuous}}; n::Int 
     end
     avg ./= n
     @test avg ≈ zeros(SDM.num_params(D)) atol = atol rtol = rtol
-end
-function test_score_mean(D::Type{<:Distribution}; atol::Float64 = 1e-3, rtol::Float64 = 1e-3)
-    @warn("Score of $D is not currently tested because it has countably infinite support.")
-    return 
 end
 
 function test_loglik(D::Type{<:Distribution}; atol::Float64 = 1e-3, rtol::Float64 = 1e-3,
