@@ -9,6 +9,6 @@ Each distribution must have the following methods:
 * link interface
     * param_to_param_tilde
     * param_tilde_to_param
-    * inv_jacobian_link
+    * jacobian_link
 * update_dist
 * num_params
