@@ -26,7 +26,7 @@ end
 # Links
 param_to_param_tilde(::Type{Poisson}, param::Vector{T}) where T = param_to_param_tilde.(ExponentialLink, param, zero(T))
 param_tilde_to_param(::Type{Poisson}, param_tilde::Vector{T}) where T = param_tilde_to_param.(ExponentialLink, param_tilde, zero(T))
-jacobian_param_tilde(::Type{Poisson}, param_tilde::Vector{T}) where T = Diagonal(jacobian_param_tilde.(ExponentialLink, param_tilde, zero(T)))
+jacobian_link(::Type{Poisson}, param_tilde::Vector{T}) where T = Diagonal(jacobian_link.(ExponentialLink, param_tilde, zero(T)))
 
 # utils
 function update_dist(::Type{Poisson}, param::Vector{T}) where T
