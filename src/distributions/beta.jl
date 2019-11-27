@@ -28,7 +28,7 @@ Proof somewhere
 function log_likelihood(::Type{Beta}, y::Vector{T}, param::Vector{Vector{T}}, n::Int) where T
     loglik = 0.0
     for i in 1:n
-        loglik += (param[i][1] - 1)*log(y[i]) + (param[i][2] - 1)*log(1 - y[i]) - lbeta(param[i][1], param[i][2])
+        loglik += (param[i][1] - 1)*log(y[i]) + (param[i][2] - 1)*log(1 - y[i]) - logabsbeta(param[i][1], param[i][2])[1]
     end
     return -loglik
 end

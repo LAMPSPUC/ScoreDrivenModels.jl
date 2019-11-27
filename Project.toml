@@ -16,3 +16,9 @@ HypothesisTests = "09f84164-cd44-5f33-b23f-e6b0d136a0d5"
 
 [targets]
 test = ["Test", "Random", "HypothesisTests"]
+
+[compat]
+julia = "~1"
+Distributions = "~0.21"
+Optim = "~0.19"
+SpecialFunctions = "~0.8"

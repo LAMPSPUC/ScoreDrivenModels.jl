@@ -25,7 +25,7 @@ Proof somewhere
 function log_likelihood(::Type{Gamma}, y::Vector{T}, param::Vector{Vector{T}}, n::Int) where T
     loglik = 0.0
     for i in 1:n
-        loglik += (param[i][1] - 1)*log(y[i]) - y[i]/param[i][2] - lgamma(param[i][1]) - param[i][1]*log(param[i][2])
+        loglik += (param[i][1] - 1)*log(y[i]) - y[i]/param[i][2] - logabsgamma(param[i][1])[1] - param[i][1]*log(param[i][2])
     end
     return -loglik
 end
