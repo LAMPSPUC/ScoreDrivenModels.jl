@@ -37,7 +37,8 @@ function estimate!(sdm::SDM{D, T}, y::Vector{T};
             push!(psi, optseed.minimizer)
             push!(optseeds, optseed)
             println("seed $i of $nseeds - $(-optseed.minimum)")
-        catch
+        catch err
+            println(err)
             println("seed $i diverged")
         end
     end

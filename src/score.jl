@@ -17,7 +17,7 @@ function score_tilde(y::T, D::Type{<:Distribution}, param::Vector{T}, param_tild
 end
 
 # Scalings
-function scaling_invsqrt(jac::Matrix{T}, D::Type{Distribution}, param::Vector{T}) where T
+function scaling_invsqrt(jac::AbstractMatrix{T}, D::Type{<:Distribution}, param::Vector{T}) where T
     #TODO improve performace and check if this is right
     # chol = cholesky(fisher_information(dist, param))
     # cholmat = Matrix(chol)
@@ -25,7 +25,7 @@ function scaling_invsqrt(jac::Matrix{T}, D::Type{Distribution}, param::Vector{T}
     return jac'*inv(cholmat)*jac
 end
 
-function scaling_inv(jac::Matrix{T}, D::Type{Distribution}, param::Vector{T}) where T
+function scaling_inv(jac::AbstractMatrix{T}, D::Type{<:Distribution}, param::Vector{T}) where T
     #TODO improve performace
     return jac'*inv(fisher_information(D, param))*jac
 end

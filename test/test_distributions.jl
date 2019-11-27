@@ -34,7 +34,7 @@ end
     end
 end
 
-@testset "Log Likelihood" begin
+@testset "Log-likelihood" begin
     for dist in SDM.DISTS
         @testset "$dist" begin
             test_loglik(dist)

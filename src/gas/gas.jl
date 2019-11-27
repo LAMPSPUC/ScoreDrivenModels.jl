@@ -5,10 +5,6 @@ mutable struct GAS{D <: Distribution, T <: AbstractFloat} <: SDM{D, T}
     A::Dict{Int, Matrix{T}}
     B::Dict{Int, Matrix{T}}
     scaling::Real
-
-    function GAS{D, T}(ω::Vector{Float64}, A::Dict{Int, Matrix{T}}, B::Dict{Int, Matrix{T}}, scaling::Real) where {D <: Distribution, T <: AbstractFloat}
-        return new(ω, A, B, scaling)
-    end
 end
 
 function create_ω(num_params::Int)

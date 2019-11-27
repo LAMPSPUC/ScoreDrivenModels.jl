@@ -10,7 +10,7 @@ y = Vector{Float64}(vec(inflow'))
 
 # Specify GAS model: here we use lag 1 for trend characterization and 
 # lag 12 for seasonality characterization
-gas = GAS_Sarima([1, 12], [1, 12], LogNormal, 0.0)
+gas = GAS([1, 12], [1, 12], LogNormal, 0.0)
 
 # Estimate the model via MLE
 estimate!(gas, y)
