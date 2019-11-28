@@ -17,11 +17,11 @@ end
 function fisher_information(D::Type{<:Distribution}, param::Vector{T}) where T
     return error("fisher_information not implemented for $D distribution")
 end
-function param_to_param_tilde(D::Type{<:Distribution}, param::Vector{T}) where T 
-    return error("param_to_param_tilde not implemented for $D distribution")
+function link(D::Type{<:Distribution}, param::Vector{T}) where T 
+    return error("link not implemented for $D distribution")
 end
-function param_tilde_to_param(D::Type{<:Distribution}, param_tilde::Vector{T}) where T 
-    return error("param_tilde_to_param not implemented for $D distribution")
+function unlink(D::Type{<:Distribution}, param_tilde::Vector{T}) where T 
+    return error("unlink not implemented for $D distribution")
 end
 function jacobian_link(D::Type{<:Distribution}, param_tilde::Vector{T}) where T 
     return error("jacobian_link not implemented for $D distribution")
