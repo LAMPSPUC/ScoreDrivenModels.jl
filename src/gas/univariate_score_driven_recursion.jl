@@ -22,7 +22,7 @@ function score_driven_recursion(gas::GAS{D, T}, observations::Vector{T}, initial
     # initial_values  
     for i in 1:biggest_lag
         param_tilde[i] = initial_param_tilde[i]
-        param[i] = param_tilde_to_param(D, initial_param_tilde[i])
+        param[i] = unlink(D, initial_param_tilde[i])
         scores_tilde[i] = score_tilde(observations[i], D, param[i], param_tilde[i], gas.scaling)
     end
     
@@ -49,7 +49,7 @@ function univariate_score_driven_update!(param::Vector{Vector{T}}, param_tilde::
 end
 
 function update_param!(param::Vector{Vector{T}}, param_tilde::Vector{Vector{T}}, D::Type{<:Distribution}, i::Int) where T
-    param[i] = param_tilde_to_param(D, param_tilde[i])
+    param[i] = unlink(D, param_tilde[i])
     # Some treatments 
     NaN2zero!(param[i])
     big_threshold!(param[i], 1e10)

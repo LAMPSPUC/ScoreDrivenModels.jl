@@ -5,11 +5,11 @@
     rtol = 1e-7
 
     link = SDM.IdentityLink
-    @test SDM.param_to_param_tilde(link, SDM.param_tilde_to_param(link, x)) ≈ x atol = atol rtol = rtol
+    @test SDM.link(link, SDM.unlink(link, x)) ≈ x atol = atol rtol = rtol
 
-    link = SDM.ExponentialLink
+    link = SDM.LogLink
     lb = 1.0
-    @test SDM.param_to_param_tilde(link, SDM.param_tilde_to_param(link, x, lb), lb) ≈ x atol = atol rtol = rtol
+    @test SDM.link(link, SDM.unlink(link, x, lb), lb) ≈ x atol = atol rtol = rtol
     lb = 0.0
-    @test SDM.param_to_param_tilde(link, SDM.param_tilde_to_param(link, x, lb), lb) ≈ x atol = atol rtol = rtol
+    @test SDM.link(link, SDM.unlink(link, x, lb), lb) ≈ x atol = atol rtol = rtol
 end

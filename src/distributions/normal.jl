@@ -31,22 +31,22 @@ function log_likelihood(::Type{Normal}, y::Vector{T}, param::Vector{Vector{T}}, 
 end
 
 # Links
-function param_to_param_tilde(::Type{Normal}, param::Vector{T}) where T 
+function link(::Type{Normal}, param::Vector{T}) where T 
     return [
-        param_to_param_tilde(IdentityLink, param[1]);
-        param_to_param_tilde(ExponentialLink, param[2], zero(T))
+        link(IdentityLink, param[1]);
+        link(LogLink, param[2], zero(T))
     ]
 end
-function param_tilde_to_param(::Type{Normal}, param_tilde::Vector{T}) where T 
+function unlink(::Type{Normal}, param_tilde::Vector{T}) where T 
     return [
-        param_tilde_to_param(IdentityLink, param_tilde[1]);
-        param_tilde_to_param(ExponentialLink, param_tilde[2], zero(T))
+        unlink(IdentityLink, param_tilde[1]);
+        unlink(LogLink, param_tilde[2], zero(T))
     ]
 end
 function jacobian_link(::Type{Normal}, param_tilde::Vector{T}) where T 
     return Diagonal([
         jacobian_link(IdentityLink, param_tilde[1]);
-        jacobian_link(ExponentialLink, param_tilde[2], zero(T))
+        jacobian_link(LogLink, param_tilde[2], zero(T))
     ])
 end
 

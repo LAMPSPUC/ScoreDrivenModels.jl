@@ -7,8 +7,8 @@ Each distribution must have the following methods:
 * fisher information
 * log likelihood
 * link interface
-    * param_to_param_tilde
-    * param_tilde_to_param
+    * link
+    * unlink
     * jacobian_link
 * update_dist
 * num_params
