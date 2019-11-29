@@ -4,7 +4,7 @@ makedocs(
     modules = [ScoreDrivenModels],
     doctest  = false,
     clean    = true,
-    format   = Documenter.HTML(),
+    format   = Documenter.HTML(mathengine = Documenter.MathJax()),
     sitename = "ScoreDrivenModels.jl",
     authors  = "Guilherme Bodin and Raphael Saavedra",
     pages   = [
