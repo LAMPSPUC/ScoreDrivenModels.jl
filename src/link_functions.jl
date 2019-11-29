@@ -24,7 +24,7 @@ function jacobian_link end
 """
     IdentityLink <: Link
 
-Define the map ``\\tilde{f} = f`` where ``\\tilde{f} \\in \\mathbb{R}`` and ``\\tilde{f} \\in \\mathbb{R}``
+Define the map ``\\tilde{f} = f`` where ``f \\in \\mathbb{R}`` and ``\\tilde{f} \\in \\mathbb{R}``
 """
 struct IdentityLink <: Link end
 
