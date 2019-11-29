@@ -2,7 +2,7 @@
 
 ## Links
 
-Links are reparametrizations utilized in the estimation. For example, if we want to estimate a parameter ``f`` which is by definition strictly positive, then an obvious way to estimate ``f`` via numerical optimization is to model ``\tilde{f} = \ln{f}``. We refer to this procedure as **linking**. After obtaining the optimal value of ``\tilde{f}``, we can then **unlink** it to obtain ``f``.
+Links are reparametrizations utilized in the estimation. For example, if we want to estimate a parameter ``f`` which is by definition strictly positive, then an obvious way to estimate ``f`` via numerical optimization is to model ``\tilde{f} = \ln{f}``. We refer to this procedure as **linking**. After obtaining the optimal value of ``\tilde{f}``, we can then **unlink** it to obtain ``f`` by computing ``f = e^{\tilde{f}}``.
 
 ### Types of links
 
