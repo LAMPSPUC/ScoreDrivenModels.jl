@@ -10,7 +10,7 @@ function link end
 """
     unlink(args...)
 
-The unlink function is the inverse map of [`link`](@ref link). It brings ``\\tilde f`` in ``\\mathbb{R}`` to the subspace ``\\mathcal{F} \\subset \\mathbb{R}``.
+The unlink function is the inverse map of [`link`](@ref link). It brings ``\\tilde{f}`` in ``\\mathbb{R}`` to the subspace ``\\mathcal{F} \\subset \\mathbb{R}``.
 """
 function unlink end
 
@@ -24,7 +24,7 @@ function jacobian_link end
 """
     IdentityLink <: Link
 
-Define the map ``\\ \\tilde f = f`` where ``\\ \\tilde f \\in \\mathbb{R}`` and ``\\ \\tilde f \\in \\mathbb{R}``
+Define the map ``\\tilde{f} = f`` where ``\\tilde{f} \\in \\mathbb{R}`` and ``\\tilde{f} \\in \\mathbb{R}``
 """
 struct IdentityLink <: Link end
 
@@ -35,7 +35,7 @@ jacobian_link(::Type{IdentityLink}, param_tilde::T) where T = one(T)
 """
     LogLink <: Link
 
-Define the map ``\\ \\tilde f = \\ln(f - a)`` where ``\\ f \\in [a, \\infty), a \\in \\mathbb{R}`` and ``\\ \\tilde f \\in \\mathbb{R}``
+Define the map ``\\tilde{f} = \\ln(f - a)`` where ``f \\in [a, \\infty), a \\in \\mathbb{R}`` and ``\\tilde{f} \\in \\mathbb{R}``
 """
 struct LogLink <: Link end
 

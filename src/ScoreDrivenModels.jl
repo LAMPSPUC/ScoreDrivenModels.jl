@@ -25,7 +25,7 @@ include("distributions/common_interface.jl")
 include("distributions/normal.jl")
 include("distributions/poisson.jl")
 include("distributions/beta.jl")
-include("distributions/log_normal.jl")
+include("distributions/lognormal.jl")
 include("distributions/gamma.jl")
 include("distributions/weibull.jl")
 
