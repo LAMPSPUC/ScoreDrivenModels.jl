@@ -11,8 +11,8 @@ function simulate_GAS_1_1(D::Type{<:Distribution}, scaling::Float64, ω::Vector{
     return series
 end
 
-function simulate_GAS_1_12(D::Type{<:Distribution}, scaling::Float64)
-    Random.seed!(123)
+function simulate_GAS_1_12(D::Type{<:Distribution}, scaling::Float64, seed::Int)
+    Random.seed!(seed)
     v = [0.1, 0.1]
     gas = GAS([1, 12], [1, 12], D, scaling)
 
@@ -100,7 +100,7 @@ end
             test_coefficients_GAS_1_1(gas, ω, A, B)
         end
         @testset "GAS([1, 12], [1, 12])" begin
-            simulation = simulate_GAS_1_12(LogNormal, 0.0)
+            simulation = simulate_GAS_1_12(LogNormal, 0.0, 123)
             gas = GAS([1, 12], [1, 12], LogNormal, 0.0)
             estimate!(gas, simulation; verbose = 1, opt_method = ScoreDrivenModels.LBFGS(gas, 3))
             test_coefficients_GAS_1_12(gas)
