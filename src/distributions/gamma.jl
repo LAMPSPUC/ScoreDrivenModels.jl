@@ -31,12 +31,6 @@ function log_likelihood(::Type{Gamma}, y::Vector{T}, param::Vector{Vector{T}}, n
 end
 
 # Links
-function link(::Type{Gamma}, param::Vector{T}) where T 
-    return [
-        link(LogLink, param[1], zero(T));
-        link(LogLink, param[2], zero(T))
-    ]
-end
 function unlink(::Type{Gamma}, param_tilde::Vector{T}) where T 
     return [
         unlink(LogLink, param_tilde[1], zero(T));

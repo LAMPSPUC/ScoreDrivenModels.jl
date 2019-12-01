@@ -28,12 +28,6 @@ function log_likelihood(::Type{Weibull}, y::Vector{T}, param::Vector{Vector{T}},
 end
 
 # Links
-function link(::Type{Weibull}, param::Vector{T}) where T 
-    return [
-        link(LogLink, param[1], zero(T));
-        link(LogLink, param[2], zero(T))
-    ]
-end
 function unlink(::Type{Weibull}, param_tilde::Vector{T}) where T 
     return [
         unlink(LogLink, param_tilde[1], zero(T));

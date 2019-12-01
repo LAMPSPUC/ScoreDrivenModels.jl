@@ -43,10 +43,10 @@ function sample_observation(dist::Distribution)
     return rand(dist)
 end
 
-function find_unknowns(vec::Vector{T}) where T
-    return findall(isnan, vec)
+function find_unknowns(v::Vector{T}) where T
+    return findall(isnan, v)
 end
 
-function find_unknowns(mat::Matrix{T}) where T
-    return findall(isnan, vec(mat))
+function find_unknowns(m::Matrix{T}) where T
+    return findall(isnan, vec(m))
 end
