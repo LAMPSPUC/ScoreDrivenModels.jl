@@ -30,7 +30,7 @@ struct IdentityLink <: Link end
 
 link(::Type{IdentityLink}, param::T) where T = param
 unlink(::Type{IdentityLink}, param_tilde::T) where T = param_tilde
-jacobian_link(::Type{IdentityLink}, param_tilde::T) where T = one(T)
+jacobian_link(::Type{IdentityLink}, param::T) where T = one(T)
 
 """
     LogLink <: Link
@@ -41,11 +41,27 @@ struct LogLink <: Link end
 
 link(::Type{LogLink}, param::T, lower_bound::T) where T = log(param - lower_bound)
 unlink(::Type{LogLink}, param_tilde::T, lower_bound::T) where T = exp(param_tilde) + lower_bound
-jacobian_link(::Type{LogLink}, param_tilde::T, lower_bound::T) where T = 1/(param_tilde - lower_bound)
+jacobian_link(::Type{LogLink}, param::T, lower_bound::T) where T = 1/(param - lower_bound)
 
+"""
+    LogitLink <: Link
+
+Define the map ``\\tilde{f} = \\-ln(\\frac{b - a}{f + a} - 1)`` where ``f \\in [a, b], a, b \\in \\mathbb{R}`` and ``\\tilde{f} \\in \\mathbb{R}``
+"""
 struct LogitLink <: Link end
+
+function link(::Type{LogitLink}, param::T, lower_bound::T, upper_bound::T) where T 
+    return log((param - lower_bound)/(upper_bound - param))
+end
+function unlink(::Type{LogitLink}, param_tilde::T, lower_bound::T, upper_bound::T) where T 
+    return lower_bound + ((upper_bound - lower_bound)/(1 + exp(-param_tilde)))
+end
+function jacobian_link(::Type{LogitLink}, param::T, lower_bound::T, upper_bound::T) where T 
+    return (upper_bound + lower_bound)/((upper_bound - param) * (param - lower_bound))
+end
 
 const LINKS = [
     IdentityLink;
-    LogLink
+    LogLink;
+    LogitLink
 ]
