@@ -17,6 +17,7 @@ function score_driven_recursion(gas::GAS{D, T}, observations::Vector{T}, initial
     param_tilde = Vector{Vector{T}}(undef, n + 1)
     scores_tilde = Vector{Vector{T}}(undef, n)
 
+    # Query the biggest lag
     biggest_lag = length(initial_param_tilde)
 
     # initial_values  

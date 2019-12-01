@@ -17,9 +17,6 @@ end
 function fisher_information(D::Type{<:Distribution}, param::Vector{T}) where T
     return error("fisher_information not implemented for $D distribution")
 end
-function link(D::Type{<:Distribution}, param::Vector{T}) where T 
-    return error("link not implemented for $D distribution")
-end
 function unlink(D::Type{<:Distribution}, param_tilde::Vector{T}) where T 
     return error("unlink not implemented for $D distribution")
 end
