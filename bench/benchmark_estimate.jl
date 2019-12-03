@@ -1,17 +1,7 @@
-using ScoreDrivenModels, Distributions, BenchmarkTools, Random
+push!(LOAD_PATH, "/home/guilhermebodin/Documents/Github/ScoreDrivenModels.jl/src")
+using ScoreDrivenModels, Distributions, BenchmarkTools, Random, Test
 
-function simulate_GAS_1_1(D::Type{<:Distribution}, scaling::Real, ω::Vector{T}, A::Matrix{T}, 
-                            B::Matrix{T}, seed::Int) where T
-    Random.seed!(seed)
-    gas = GAS(1, 1, D, scaling)
-
-    gas.ω = ω
-    gas.A[1] = A
-    gas.B[1] = B
-    series, param = simulate(gas, 5000)
-
-    return series
-end
+include("test/utils.jl")
 
 scaling = 0.0
 ω = [0.1, 0.1]
@@ -27,14 +17,14 @@ num_seeds = 3
     opt_method = ScoreDrivenModels.LBFGS(gas, $num_seeds)
     estimate!(gas, $simulation; verbose = $verbose, opt_method = opt_method)
 end
-# BenchmarkTools.Trial: 
-#   memory estimate:  7.78 GiB
-#   allocs estimate:  101428072
+# BenchmarkTools.Trial:
+#   memory estimate:  7.33 GiB
+#   allocs estimate:  95576498
 #   --------------
-#   minimum time:     7.013 s (8.76% GC)
-#   median time:      7.013 s (8.76% GC)
-#   mean time:        7.013 s (8.76% GC)
-#   maximum time:     7.013 s (8.76% GC)
+#   minimum time:     5.597 s (15.34% GC)
+#   median time:      5.597 s (15.34% GC)
+#   mean time:        5.597 s (15.34% GC)
+#   maximum time:     5.597 s (15.34% GC)
 #   --------------
 #   samples:          1
 #   evals/sample:     1
@@ -53,14 +43,14 @@ num_seeds = 3
     opt_method = ScoreDrivenModels.LBFGS(gas, $num_seeds)
     estimate!(gas, $simulation; verbose = $verbose, opt_method = opt_method)
 end
-# BenchmarkTools.Trial: 
+# BenchmarkTools.Trial:
 #   memory estimate:  8.63 GiB
 #   allocs estimate:  112481074
 #   --------------
-#   minimum time:     6.900 s (10.20% GC)
-#   median time:      6.900 s (10.20% GC)
-#   mean time:        6.900 s (10.20% GC)
-#   maximum time:     6.900 s (10.20% GC)
+#   minimum time:     5.500 s (18.56% GC)
+#   median time:      5.500 s (18.56% GC)
+#   mean time:        5.500 s (18.56% GC)
+#   maximum time:     5.500 s (18.56% GC)
 #   --------------
 #   samples:          1
 #   evals/sample:     1
@@ -72,14 +62,14 @@ scaling = 0.5
     opt_method = ScoreDrivenModels.LBFGS(gas, $num_seeds)
     estimate!(gas, $simulation; verbose = $verbose, opt_method = opt_method)
 end
-# BenchmarkTools.Trial: 
+# BenchmarkTools.Trial:
 #   memory estimate:  17.39 GiB
 #   allocs estimate:  325680000
 #   --------------
-#   minimum time:     11.689 s (13.11% GC)
-#   median time:      11.689 s (13.11% GC)
-#   mean time:        11.689 s (13.11% GC)
-#   maximum time:     11.689 s (13.11% GC)
+#   minimum time:     10.204 s (23.11% GC)
+#   median time:      10.204 s (23.11% GC)
+#   mean time:        10.204 s (23.11% GC)
+#   maximum time:     10.204 s (23.11% GC)
 #   --------------
 #   samples:          1
 #   evals/sample:     1
@@ -90,14 +80,14 @@ scaling = 1.0
     opt_method = ScoreDrivenModels.LBFGS(gas, $num_seeds)
     estimate!(gas, $simulation; verbose = $verbose, opt_method = opt_method)
 end
-# BenchmarkTools.Trial: 
+# BenchmarkTools.Trial:
 #   memory estimate:  11.99 GiB
-#   allocs estimate:  172023822
+#   allocs estimate:  172023821
 #   --------------
-#   minimum time:     8.737 s (11.14% GC)
-#   median time:      8.737 s (11.14% GC)
-#   mean time:        8.737 s (11.14% GC)
-#   maximum time:     8.737 s (11.14% GC)
+#   minimum time:     7.312 s (21.09% GC)
+#   median time:      7.312 s (21.09% GC)
+#   mean time:        7.312 s (21.09% GC)
+#   maximum time:     7.312 s (21.09% GC)
 #   --------------
 #   samples:          1
 #   evals/sample:     1
