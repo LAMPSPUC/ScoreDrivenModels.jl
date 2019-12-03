@@ -20,10 +20,10 @@ end
 #   memory estimate:  7.33 GiB
 #   allocs estimate:  95576498
 #   --------------
-#   minimum time:     5.597 s (15.34% GC)
-#   median time:      5.597 s (15.34% GC)
-#   mean time:        5.597 s (15.34% GC)
-#   maximum time:     5.597 s (15.34% GC)
+#   minimum time:     5.632 s (15.93% GC)
+#   median time:      5.632 s (15.93% GC)
+#   mean time:        5.632 s (15.93% GC)
+#   maximum time:     5.632 s (15.93% GC)
 #   --------------
 #   samples:          1
 #   evals/sample:     1
@@ -38,7 +38,7 @@ p = 1
 q = 1
 num_seeds = 3
 @benchmark begin
-    gas = GAS($p, $q, LogNormal, $scaling)
+    gas = GAS($p, $q, $LogNormal, $scaling)
     opt_method = ScoreDrivenModels.LBFGS(gas, $num_seeds)
     estimate!(gas, $simulation; verbose = $verbose, opt_method = opt_method)
 end
@@ -46,10 +46,10 @@ end
 #   memory estimate:  8.63 GiB
 #   allocs estimate:  112481074
 #   --------------
-#   minimum time:     5.500 s (18.56% GC)
-#   median time:      5.500 s (18.56% GC)
-#   mean time:        5.500 s (18.56% GC)
-#   maximum time:     5.500 s (18.56% GC)
+#   minimum time:     5.418 s (19.27% GC)
+#   median time:      5.418 s (19.27% GC)
+#   mean time:        5.418 s (19.27% GC)
+#   maximum time:     5.418 s (19.27% GC)
 #   --------------
 #   samples:          1
 #   evals/sample:     1
@@ -57,25 +57,25 @@ end
 
 scaling = 0.5
 @benchmark begin
-    gas = GAS($p, $q, LogNormal, $scaling)
+    gas = GAS($p, $q, $LogNormal, $scaling)
     opt_method = ScoreDrivenModels.LBFGS(gas, $num_seeds)
     estimate!(gas, $simulation; verbose = $verbose, opt_method = opt_method)
 end
 # BenchmarkTools.Trial:
 #   memory estimate:  17.39 GiB
-#   allocs estimate:  325680000
+#   allocs estimate:  325680001
 #   --------------
-#   minimum time:     10.204 s (23.11% GC)
-#   median time:      10.204 s (23.11% GC)
-#   mean time:        10.204 s (23.11% GC)
-#   maximum time:     10.204 s (23.11% GC)
+#   minimum time:     9.760 s (23.28% GC)
+#   median time:      9.760 s (23.28% GC)
+#   mean time:        9.760 s (23.28% GC)
+#   maximum time:     9.760 s (23.28% GC)
 #   --------------
 #   samples:          1
 #   evals/sample:     1
 
 scaling = 1.0
 @benchmark begin
-    gas = GAS($p, $q, LogNormal, $scaling)
+    gas = GAS($p, $q, $LogNormal, $scaling)
     opt_method = ScoreDrivenModels.LBFGS(gas, $num_seeds)
     estimate!(gas, $simulation; verbose = $verbose, opt_method = opt_method)
 end
@@ -83,10 +83,10 @@ end
 #   memory estimate:  11.99 GiB
 #   allocs estimate:  172023821
 #   --------------
-#   minimum time:     7.312 s (21.09% GC)
-#   median time:      7.312 s (21.09% GC)
-#   mean time:        7.312 s (21.09% GC)
-#   maximum time:     7.312 s (21.09% GC)
+#   minimum time:     8.502 s (20.62% GC)
+#   median time:      8.502 s (20.62% GC)
+#   mean time:        8.502 s (20.62% GC)
+#   maximum time:     8.502 s (20.62% GC)
 #   --------------
 #   samples:          1
 #   evals/sample:     1
