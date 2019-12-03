@@ -1,4 +1,4 @@
-export stationary_initial_params_tilde, dynamic_initial_params
+export stationary_initial_params_tilde, stationary_initial_params, dynamic_initial_params
 
 """
     stationary_initial_param_tilde(gas::GAS{D, T}) where {D, T}
@@ -10,6 +10,20 @@ function stationary_initial_params_tilde(gas::GAS{D, T}) where {D, T}
         initial_params_tilde[i] = gas.ω./diag(I - gas.B[1])
     end
     return initial_params_tilde
+end
+
+"""
+    stationary_initial_params(gas::GAS{D, T}) where {D, T}
+"""
+function stationary_initial_params(gas::GAS{D, T}) where {D, T}
+    biggest_lag = number_of_lags(gas)
+    initial_params_tilde = Vector{Vector{T}}(undef, biggest_lag)
+    initial_params = Vector{Vector{T}}(undef, biggest_lag)
+    for i in 1:biggest_lag
+        initial_params_tilde[i] = gas.ω./diag(I - gas.B[1])
+        initial_params[i] = unlink(D, initial_params_tilde[i])
+    end
+    return initial_params
 end
 
 """

@@ -6,13 +6,7 @@ score_driven_recursion(sd_model::SDM, observations::Vector{T}) where T
 start with the stationary params for a 
 """
 function score_driven_recursion(gas::GAS{D, T}, observations::Vector{T}) where {D, T}
-    initial_params_tilde = stationary_initial_params_tilde(gas)
-
-    biggest_lag = number_of_lags(gas)
-    initial_params = Vector{Vector{T}}(undef, biggest_lag)
-    for i in 1:biggest_lag
-        initial_params[i] = unlink(D, initial_params_tilde[i])
-    end
+    initial_params = stationary_initial_params(gas)
     return score_driven_recursion(gas, observations, initial_params)
 end
 

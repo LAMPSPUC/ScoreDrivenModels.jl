@@ -11,13 +11,7 @@ function simulate(gas::GAS{D, T}, n::Int, s::Int) where {D, T}
 end
 
 function simulate(gas::GAS{D, T}, n::Int) where {D, T}
-    initial_params_tilde = stationary_initial_params_tilde(gas)
-
-    biggest_lag = number_of_lags(gas)
-    initial_params = Vector{Vector{T}}(undef, biggest_lag)
-    for i in 1:biggest_lag
-        initial_params[i] = unlink(D, initial_params_tilde[i])
-    end
+    initial_params = stationary_initial_params(gas)
     return simulate(gas, n, initial_params)
 end
 
