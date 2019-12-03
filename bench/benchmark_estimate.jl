@@ -1,4 +1,3 @@
-push!(LOAD_PATH, "/home/guilhermebodin/Documents/Github/ScoreDrivenModels.jl/src")
 using ScoreDrivenModels, Distributions, BenchmarkTools, Random, Test
 
 include("test/utils.jl")
