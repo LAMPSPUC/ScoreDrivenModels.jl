@@ -5,12 +5,12 @@ score_driven_recursion(sd_model::SDM, observations::Vector{T}) where T
 
 start with the stationary params for a 
 """
-function score_driven_recursion(gas::GAS, observations::Vector{T}) where T
-    initial_param_tilde = stationary_initial_params(gas)
-    return score_driven_recursion(gas, observations, initial_param_tilde)
+function score_driven_recursion(gas::GAS{D, T}, observations::Vector{T}) where {D, T}
+    initial_params = stationary_initial_params(gas)
+    return score_driven_recursion(gas, observations, initial_params)
 end
 
-function score_driven_recursion(gas::GAS{D, T}, observations::Vector{T}, initial_param_tilde::Vector{Vector{T}}) where {D, T}
+function score_driven_recursion(gas::GAS{D, T}, observations::Vector{T}, initial_param::Vector{Vector{T}}) where {D, T}
     # Allocations
     n = length(observations)
     param = Vector{Vector{T}}(undef, n + 1)
@@ -18,12 +18,12 @@ function score_driven_recursion(gas::GAS{D, T}, observations::Vector{T}, initial
     scores_tilde = Vector{Vector{T}}(undef, n)
 
     # Query the biggest lag
-    biggest_lag = length(initial_param_tilde)
+    biggest_lag = number_of_lags(gas)
 
     # initial_values  
     for i in 1:biggest_lag
-        param_tilde[i] = initial_param_tilde[i]
-        param[i] = unlink(D, initial_param_tilde[i])
+        param[i] = initial_param[i]
+        param_tilde[i] = link(D, param[i])
         scores_tilde[i] = score_tilde(observations[i], D, param[i], param_tilde[i], gas.scaling)
     end
     

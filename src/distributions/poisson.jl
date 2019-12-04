@@ -24,6 +24,7 @@ function log_likelihood(::Type{Poisson}, y::Vector{Int}, param::Vector{Vector{T}
 end
 
 # Links
+link(::Type{Poisson}, param::Vector{T}) where T = link.(LogLink, param, zero(T))
 unlink(::Type{Poisson}, param_tilde::Vector{T}) where T = unlink.(LogLink, param_tilde, zero(T))
 jacobian_link(::Type{Poisson}, param_tilde::Vector{T}) where T = Diagonal(jacobian_link.(LogLink, param_tilde, zero(T)))
 

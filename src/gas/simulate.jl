@@ -11,11 +11,11 @@ function simulate(gas::GAS{D, T}, n::Int, s::Int) where {D, T}
 end
 
 function simulate(gas::GAS{D, T}, n::Int) where {D, T}
-    initial_param_tilde = stationary_initial_params(gas)
-    return simulate(gas, n, initial_param_tilde)
+    initial_params = stationary_initial_params(gas)
+    return simulate(gas, n, initial_params)
 end
 
-function simulate(gas::GAS{D, T}, n::Int, initial_param_tilde::Vector{Vector{T}}) where {D, T}
+function simulate(gas::GAS{D, T}, n::Int, initial_params::Vector{Vector{T}}) where {D, T}
     # Allocations
     serie = zeros(n)
     param = Vector{Vector{T}}(undef, n)
@@ -26,8 +26,8 @@ function simulate(gas::GAS{D, T}, n::Int, initial_param_tilde::Vector{Vector{T}}
 
     # initial_values  
     for i in 1:biggest_lag
-        param_tilde[i] = initial_param_tilde[i]
-        param[i] = unlink(D, initial_param_tilde[i])
+        param[i] = initial_params[i]
+        param_tilde[i] = link(D, param[i])
         # Sample
         updated_dist = update_dist(D, unlink(D, param_tilde[i]))
         serie[i] = sample_observation(updated_dist)

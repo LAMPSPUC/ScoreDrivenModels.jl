@@ -31,6 +31,12 @@ function log_likelihood(::Type{Normal}, y::Vector{T}, param::Vector{Vector{T}}, 
 end
 
 # Links
+function link(::Type{Normal}, param::Vector{T}) where T 
+    return [
+        link(IdentityLink, param[1]);
+        link(LogLink, param[2], zero(T))
+    ]
+end
 function unlink(::Type{Normal}, param_tilde::Vector{T}) where T 
     return [
         unlink(IdentityLink, param_tilde[1]);
