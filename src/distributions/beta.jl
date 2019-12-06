@@ -11,13 +11,13 @@ end
 """
 Proof somewhere
 """
-function fisher_information(::Type{Beta}, param::Matrix{T}, t::Int) where T
+function fisher_information!(aux::AuxiliaryStruct{T},::Type{Beta}, param::Matrix{T}, t::Int) where T
     minus_trigamma_a_b = -trigamma(param[t, 1] + param[t, 2])
-
-    return [
-        trigamma(param[t, 1]) + minus_trigamma_a_b    minus_trigamma_a_b;
-        minus_trigamma_a_b                         trigamma(param[t, 2]) + minus_trigamma_a_b
-    ]
+    aux.fisher[1, 1] = trigamma(param[t, 1]) + minus_trigamma_a_b
+    aux.fisher[2, 2] = trigamma(param[t, 2]) + minus_trigamma_a_b
+    aux.fisher[2, 1] = minus_trigamma_a_b
+    aux.fisher[1, 2] = minus_trigamma_a_b
+    return
 end
 
 """

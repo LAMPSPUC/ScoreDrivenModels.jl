@@ -10,7 +10,7 @@ end
 """
 Proof somewhere
 """
-function fisher_information(::Type{Weibull}, param::Matrix{T}, t::Int) where T
+function fisher_information!(aux::AuxiliaryStruct{T},::Type{Weibull}, param::Matrix{T}, t::Int) where T
     return error("Fisher information not implemented for Weibull distribution.")
 end
 

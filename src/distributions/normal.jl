@@ -11,8 +11,12 @@ end
 """
 Proof somewhere
 """
-function fisher_information(::Type{Normal}, param::Vector{T}) where T
-    return Diagonal([1/(param[2]); 1/(2*(param[2]^2))])
+function fisher_information!(aux::AuxiliaryStruct{T},::Type{Normal}, param::Matrix{T}, t::Int) where T
+    aux.fisher[1, 1] = 1 / (param[t, 2])
+    aux.fisher[2, 2] = 1 / (2 * (param[t, 2] ^ 2))
+    aux.fisher[2, 1] = 0
+    aux.fisher[1, 2] = 0
+    return
 end
 
 """

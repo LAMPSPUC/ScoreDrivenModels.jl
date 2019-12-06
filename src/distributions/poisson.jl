@@ -9,8 +9,8 @@ end
 """
 Proof somewhere
 """
-function fisher_information(::Type{Poisson}, param::Vector{T}) where T
-    return (1/param[1])
+function fisher_information!(aux::AuxiliaryStruct{T},::Type{Poisson}, param::Matrix{T}, t::Int) where T
+    aux.fisher[1, 1] = 1/param[1]
 end
 
 """

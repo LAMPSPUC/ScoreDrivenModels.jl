@@ -11,11 +11,13 @@ end
 """
 Proof somewhere
 """
-function fisher_information(::Type{Gamma}, param::Vector{T}) where T
-    [
-        -trigamma(param[1])     -1/param[2];
-        -1/param[2]             -2*y/param[2]^3 + param[1]/param[2]^2
-    ]
+function fisher_information!(aux::AuxiliaryStruct{T},::Type{Gamma}, param::Matrix{T}, t::Int) where T
+    error("Fisher information not implemented for Gamma distribution.")
+    aux.fisher[1, 1] = -trigamma(param[t, 1])
+    aux.fisher[2, 2] = -2 * y / param[t, 2] ^ 3 + param[t, 1] / param[t, 2]^2
+    aux.fisher[2, 1] = -1/param[t, 2]
+    aux.fisher[1, 2] = -1/param[t, 2]
+    return
 end
 
 """

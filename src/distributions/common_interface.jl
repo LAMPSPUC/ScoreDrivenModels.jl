@@ -8,25 +8,28 @@ const DISTS = [
     Weibull
 ]
 
-function score!(y::T, D::Type{<:Distribution}, param::Vector{T}) where T
-    return error("score not implemented for $D distribution")
+function score!(score_til::Matrix{T}, y::T, ::Type{Beta}, param::Matrix{T}, t::Int) where T
+    return error("score! not implemented for $D distribution")
 end
-function score!(y::Int, D::Type{<:Distribution}, param::Vector{T}) where T
-    return error("score not implemented for $D distribution")
+function score!(score_til::Matrix{T}, y::Int, ::Type{Beta}, param::Matrix{T}, t::Int) where T
+    return error("score! not implemented for $D distribution")
 end
-function fisher_information!(D::Type{<:Distribution}, param::Vector{T}) where T
-    return error("fisher_information not implemented for $D distribution")
+function fisher_information!(aux::AuxiliaryStruct{T},::Type{Beta}, param::Matrix{T}, t::Int) where T
+    return error("fisher_information! not implemented for $D distribution")
 end
-function link!(D::Type{<:Distribution}, param::Vector{T}) where T 
-    return error("link not implemented for $D distribution")
+function log_likelihood(::Type{Beta}, y::Vector{T}, param::Matrix{T}, n::Int) where T
+    return error("log_likelihood not implemented for $D distribution")
 end
-function unlink!(D::Type{<:Distribution}, param_tilde::Vector{T}) where T 
-    return error("unlink not implemented for $D distribution")
+function link!(param_tilde::Matrix{T}, ::Type{Beta}, param::Matrix{T}, t::Int) where T 
+    return error("link! not implemented for $D distribution")
 end
-function jacobian_link!(D::Type{<:Distribution}, param::Vector{T}) where T 
-    return error("jacobian_link not implemented for $D distribution")
+function unlink!(param::Matrix{T}, ::Type{Beta}, param_tilde::Matrix{T}, t::Int) where T 
+    return error("unlink! not implemented for $D distribution")
 end
-function update_dist(D::Type{<:Distribution}, param::Vector{T}) where T
+function jacobian_link!(aux::AuxiliaryStruct{T}, ::Type{Beta}, param::Matrix{T}, t::Int) where T 
+    return error("jacobian_link! not implemented for $D distribution")
+end
+function update_dist(::Type{Beta}, param::Matrix{T}, t::Int) where T
     return error("update_dist not implemented for $D distribution")
 end 
 function num_params(D::Type{<:Distribution})
