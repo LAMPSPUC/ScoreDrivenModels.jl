@@ -21,10 +21,10 @@ p = 1/sqrt(2πσ²) exp(-0.5(y-μ)²/σ²)
 
 ln(p) = -0.5ln(2πσ²)-0.5(y-μ)²/σ²
 """
-function log_likelihood(::Type{Normal}, y::Vector{T}, param::Vector{Vector{T}}, n::Int) where T
-    loglik = -0.5*n*log(2*pi)
-    for i in 1:n
-        loglik -= 0.5*(log(param[i][2]) + (1/param[i][2])*(y[i] - param[i][1])^2)
+function log_likelihood(::Type{Normal}, y::Vector{T}, param::Matrix{T}, n::Int) where T
+    loglik = -0.5 * n * log(2 * pi)
+    for t in 1:n
+        loglik -= 0.5 * (log(param[t, 2]) + (1 / param[t, 2]) * (y[t] - param[t, 1]) ^ 2)
     end
     return -loglik
 end

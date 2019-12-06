@@ -8,22 +8,22 @@ const DISTS = [
     Weibull
 ]
 
-function score(y::T, D::Type{<:Distribution}, param::Vector{T}) where T
+function score!(y::T, D::Type{<:Distribution}, param::Vector{T}) where T
     return error("score not implemented for $D distribution")
 end
-function score(y::Int, D::Type{<:Distribution}, param::Vector{T}) where T
+function score!(y::Int, D::Type{<:Distribution}, param::Vector{T}) where T
     return error("score not implemented for $D distribution")
 end
-function fisher_information(D::Type{<:Distribution}, param::Vector{T}) where T
+function fisher_information!(D::Type{<:Distribution}, param::Vector{T}) where T
     return error("fisher_information not implemented for $D distribution")
 end
-function link(D::Type{<:Distribution}, param::Vector{T}) where T 
+function link!(D::Type{<:Distribution}, param::Vector{T}) where T 
     return error("link not implemented for $D distribution")
 end
-function unlink(D::Type{<:Distribution}, param_tilde::Vector{T}) where T 
+function unlink!(D::Type{<:Distribution}, param_tilde::Vector{T}) where T 
     return error("unlink not implemented for $D distribution")
 end
-function jacobian_link(D::Type{<:Distribution}, param::Vector{T}) where T 
+function jacobian_link!(D::Type{<:Distribution}, param::Vector{T}) where T 
     return error("jacobian_link not implemented for $D distribution")
 end
 function update_dist(D::Type{<:Distribution}, param::Vector{T}) where T
