@@ -40,10 +40,10 @@ function unlink(::Type{LogNormal}, param_tilde::Vector{T}) where T
         unlink(LogLink, param_tilde[2], zero(T))
     ]
 end
-function jacobian_link(::Type{LogNormal}, param_tilde::Vector{T}) where T 
+function jacobian_link(::Type{LogNormal}, param::Vector{T}) where T 
     return Diagonal([
-        jacobian_link(IdentityLink, param_tilde[1]);
-        jacobian_link(LogLink, param_tilde[2], zero(T))
+        jacobian_link(IdentityLink, param[1]);
+        jacobian_link(LogLink, param[2], zero(T))
     ])
 end
 

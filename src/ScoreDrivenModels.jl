@@ -5,6 +5,8 @@ using LinearAlgebra
 
 import Base.length
 
+const SCALINGS  = [0.0, 1/2, 1.0]
+
 # Core files
 include("abstracts.jl")
 include("utils.jl")

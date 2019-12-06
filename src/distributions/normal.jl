@@ -2,10 +2,10 @@
 Proof somewhere 
 parametrized in \\mu and \\sigma^2
 """
-function score(y::T, ::Type{Normal}, param::Vector{T}) where T
+function score(y::T, ::Type{Normal}, param::Matrix{T}, t::Int) where T
     return [
-        (y - param[1])/param[2];
-        -(0.5/param[2]) * (1 - ((y - param[1])^2)/param[2])
+        (y - param[t, 1])/param[t, 2];
+        -(0.5/param[t, 2]) * (1 - ((y - param[t, 1])^2)/param[t, 2])
     ]
 end
 
@@ -31,29 +31,29 @@ function log_likelihood(::Type{Normal}, y::Vector{T}, param::Vector{Vector{T}}, 
 end
 
 # Links
-function link(::Type{Normal}, param::Vector{T}) where T 
+function link(::Type{Normal}, param::Matrix{T}, t::Int) where T 
     return [
-        link(IdentityLink, param[1]);
-        link(LogLink, param[2], zero(T))
+        link(IdentityLink, param[t, 1]);
+        link(LogLink, param[t, 2], zero(T))
     ]
 end
-function unlink(::Type{Normal}, param_tilde::Vector{T}) where T 
+function unlink(::Type{Normal}, param_tilde::Matrix{T}, t::Int) where T 
     return [
-        unlink(IdentityLink, param_tilde[1]);
-        unlink(LogLink, param_tilde[2], zero(T))
+        unlink(IdentityLink, param_tilde[t, 1]);
+        unlink(LogLink, param_tilde[t, 2], zero(T))
     ]
 end
-function jacobian_link(::Type{Normal}, param_tilde::Vector{T}) where T 
+function jacobian_link(::Type{Normal}, param::Matrix{T}, t::Int) where T 
     return Diagonal([
-        jacobian_link(IdentityLink, param_tilde[1]);
-        jacobian_link(LogLink, param_tilde[2], zero(T))
+        jacobian_link(IdentityLink, param[t, 1]);
+        jacobian_link(LogLink, param[t, 2], zero(T))
     ])
 end
 
 # utils 
-function update_dist(::Type{Normal}, param::Vector{T}) where T
+function update_dist(::Type{Normal}, param::Matrix{T}, t::Int) where T
     # normal here is parametrized as sigma^2
-    return Normal(param[1], sqrt(param[2]))
+    return Normal(param[t, 1], sqrt(param[t, 2]))
 end 
 
 function num_params(::Type{Normal})

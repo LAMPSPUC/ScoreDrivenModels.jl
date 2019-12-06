@@ -15,8 +15,7 @@
         gas.A[1] = convert(Matrix{Float64}, Diagonal([0.0; 0.5]))
         gas.B[1] = convert(Matrix{Float64}, Diagonal([0.9; 0.5]))
         param = score_driven_recursion(gas, obs)
-        param_hcat = hcat(param...)'
         
-        @test all(parameters - param_hcat .< 1e-3)
+        @test all(parameters - param .< 1e-3)
     end
 end

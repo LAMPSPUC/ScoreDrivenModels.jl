@@ -39,6 +39,39 @@ function small_threshold!(v::Vector{T}, threshold::T) where T
     return 
 end
 
+function NaN2zero!(m::Matrix{T}, i::Integer) where T
+    for j in axes(m, 2)
+        if isnan(m[i, j])
+            m[i, j] = zero(T) 
+        end
+    end
+    return 
+end
+
+function big_threshold!(m::Matrix{T}, threshold::T, i::Integer) where T
+    for j in axes(m, 2)
+        if m[i, j] >= threshold
+            m[i, j] = threshold 
+        end
+        if m[i, j] <= -threshold
+            m[i, j] = -threshold 
+        end
+    end
+    return 
+end
+
+function small_threshold!(m::Matrix{T}, threshold::T, i::Integer) where T
+    for j in axes(m, 2)
+        if m[i, j] <= threshold && m[i, j] >= 0
+            m[i, j] = threshold 
+        end
+        if m[i, j] >= -threshold && m[i, j] <= 0
+            m[i, j] = -threshold 
+        end
+    end
+    return 
+end
+
 function sample_observation(dist::Distribution)
     return rand(dist)
 end

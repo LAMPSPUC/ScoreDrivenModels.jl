@@ -10,11 +10,13 @@ function score_driven_recursion(gas::GAS{D, T}, observations::Vector{T}) where {
     return score_driven_recursion(gas, observations, initial_params)
 end
 
-function score_driven_recursion(gas::GAS{D, T}, observations::Vector{T}, initial_param::Vector{Vector{T}}) where {D, T}
+function score_driven_recursion(gas::GAS{D, T}, observations::Vector{T}, initial_param::Matrix{T}) where {D, T}
+    @assert gas.scaling in SCALINGS
     # Allocations
     n = length(observations)
-    param = Vector{Vector{T}}(undef, n + 1)
-    param_tilde = Vector{Vector{T}}(undef, n + 1)
+    n_params = num_params(D)
+    param = Matrix{T}(undef, n + 1, n_params)
+    param_tilde = Matrix{T}(undef, n + 1, n_params)
     scores_tilde = Vector{Vector{T}}(undef, n)
 
     # Query the biggest lag
@@ -22,9 +24,11 @@ function score_driven_recursion(gas::GAS{D, T}, observations::Vector{T}, initial
 
     # initial_values  
     for i in 1:biggest_lag
-        param[i] = initial_param[i]
-        param_tilde[i] = link(D, param[i])
-        scores_tilde[i] = score_tilde(observations[i], D, param[i], param_tilde[i], gas.scaling)
+        for p in 1:n_params
+            param[i, p] = initial_param[i, p]
+        end
+        param_tilde[i, :] = link(D, param, i)
+        scores_tilde[i] = score_tilde(observations[i], D, param, gas.scaling, i)
     end
     
     update_param_tilde!(param_tilde, gas.ω, gas.A, gas.B, scores_tilde, biggest_lag)
@@ -37,35 +41,35 @@ function score_driven_recursion(gas::GAS{D, T}, observations::Vector{T}, initial
     return param
 end
 
-function univariate_score_driven_update!(param::Vector{Vector{T}}, param_tilde::Vector{Vector{T}},
+function univariate_score_driven_update!(param::Matrix{T}, param_tilde::Matrix{T},
                                          scores_tilde::Vector{Vector{T}},
                                          observation::T, gas::GAS{D, T}, i::Int) where {D <: Distribution, T <: AbstractFloat}
     # update param 
     update_param!(param, param_tilde, D, i)
     # evaluate score
-    scores_tilde[i] = score_tilde(observation, D, param[i], param_tilde[i], gas.scaling)
+    scores_tilde[i] = score_tilde(observation, D, param, gas.scaling, i)
     # update param_tilde
     update_param_tilde!(param_tilde, gas.ω, gas.A, gas.B, scores_tilde, i)
     return 
 end
 
-function update_param!(param::Vector{Vector{T}}, param_tilde::Vector{Vector{T}}, D::Type{<:Distribution}, i::Int) where T
-    param[i] = unlink(D, param_tilde[i])
+function update_param!(param::Matrix{T}, param_tilde::Matrix{T}, D::Type{<:Distribution}, i::Int) where T
+    param[i, :] = unlink(D, param_tilde, i)
     # Some treatments 
-    NaN2zero!(param[i])
-    big_threshold!(param[i], 1e10)
-    small_threshold!(param[i], 1e-10)
+    NaN2zero!(param, i)
+    big_threshold!(param, 1e10, i)
+    small_threshold!(param, 1e-10, i)
     return
 end
 
-function update_param_tilde!(param_tilde::Vector{Vector{T}}, ω::Vector{T}, A::Dict{Int, Matrix{T}}, 
+function update_param_tilde!(param_tilde::Matrix{T}, ω::Vector{T}, A::Dict{Int, Matrix{T}}, 
                              B::Dict{Int, Matrix{T}}, scores_tilde::Vector{Vector{T}}, i::Int) where T
-    param_tilde[i + 1] = copy(ω)
+    param_tilde[i + 1, :] = copy(ω)
     for (lag, mat) in A
-        param_tilde[i + 1] .+= mat*scores_tilde[i - lag + 1]
+        param_tilde[i + 1, :] .+= mat * scores_tilde[i - lag + 1]
     end
     for (lag, mat) in B
-        param_tilde[i + 1] .+= mat*param_tilde[i - lag + 1]
+        param_tilde[i + 1, :] .+= mat * param_tilde[i - lag + 1, :]
     end
     return 
 end

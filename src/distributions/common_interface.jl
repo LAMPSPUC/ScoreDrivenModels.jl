@@ -23,7 +23,7 @@ end
 function unlink(D::Type{<:Distribution}, param_tilde::Vector{T}) where T 
     return error("unlink not implemented for $D distribution")
 end
-function jacobian_link(D::Type{<:Distribution}, param_tilde::Vector{T}) where T 
+function jacobian_link(D::Type{<:Distribution}, param::Vector{T}) where T 
     return error("jacobian_link not implemented for $D distribution")
 end
 function update_dist(D::Type{<:Distribution}, param::Vector{T}) where T
