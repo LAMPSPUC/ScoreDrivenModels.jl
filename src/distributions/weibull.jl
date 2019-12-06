@@ -10,7 +10,7 @@ end
 """
 Proof somewhere
 """
-function fisher_information!(aux::AuxiliaryStruct{T},::Type{Weibull}, param::Matrix{T}, t::Int) where T
+function fisher_information!(aux::AuxiliaryLinAlg{T}, ::Type{Weibull}, param::Matrix{T}, t::Int) where T
     return error("Fisher information not implemented for Weibull distribution.")
 end
 
@@ -36,7 +36,7 @@ function unlink!(param::Matrix{T}, ::Type{Weibull}, param_tilde::Matrix{T}, t::I
     param[t, 2] = unlink(LogLink, param_tilde[t, 2], zero(T))
     return
 end
-function jacobian_link!(aux::AuxiliaryStruct{T}, ::Type{Weibull}, param::Matrix{T}, t::Int) where T 
+function jacobian_link!(aux::AuxiliaryLinAlg{T}, ::Type{Weibull}, param::Matrix{T}, t::Int) where T 
     aux.jac[1] = jacobian_link(LogLink, param[t, 1], zero(T))
     aux.jac[2] = jacobian_link(LogLink, param[t, 2], zero(T))
     return

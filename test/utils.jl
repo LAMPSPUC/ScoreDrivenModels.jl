@@ -6,7 +6,7 @@ function test_score_mean(D::Type{<:Distribution}; n::Int = 10^7, seed::Int = 10,
     n_params = SDM.num_params(D)
     avg  = zeros(1, n_params)
     for i = 1:n
-        score_aux = zeros(1, n_params)
+        score_aux = ones(1, n_params)
         SDM.score!(score_aux, rand(D(pars...)), D, pars, 1)
         avg .+= score_aux
     end

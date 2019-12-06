@@ -11,7 +11,7 @@ end
 """
 Proof somewhere
 """
-function fisher_information!(aux::AuxiliaryStruct{T},::Type{Beta}, param::Matrix{T}, t::Int) where T
+function fisher_information!(aux::AuxiliaryLinAlg{T}, ::Type{Beta}, param::Matrix{T}, t::Int) where T
     minus_trigamma_a_b = -trigamma(param[t, 1] + param[t, 2])
     aux.fisher[1, 1] = trigamma(param[t, 1]) + minus_trigamma_a_b
     aux.fisher[2, 2] = trigamma(param[t, 2]) + minus_trigamma_a_b
@@ -42,7 +42,7 @@ function unlink!(param::Matrix{T}, ::Type{Beta}, param_tilde::Matrix{T}, t::Int)
     param[t, 2] = unlink(LogLink, param_tilde[t, 2], zero(T))
     return
 end
-function jacobian_link!(aux::AuxiliaryStruct{T}, ::Type{Beta}, param::Matrix{T}, t::Int) where T 
+function jacobian_link!(aux::AuxiliaryLinAlg{T}, ::Type{Beta}, param::Matrix{T}, t::Int) where T 
     aux.jac[1] = jacobian_link(LogLink, param[t, 1], zero(T))
     aux.jac[2] = jacobian_link(LogLink, param[t, 2], zero(T))
     return

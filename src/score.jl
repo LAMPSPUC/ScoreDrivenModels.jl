@@ -1,11 +1,11 @@
 const SCORE_BIG_NUM = 1e5
 
-mutable struct AuxiliaryStruct{T <: AbstractFloat}
+mutable struct AuxiliaryLinAlg{T <: AbstractFloat}
     jac::Vector{T}
     fisher::Matrix{T}
     score_til_t::Vector{T}
 
-    function AuxiliaryStruct{T}(n_pars::Integer) where T
+    function AuxiliaryLinAlg{T}(n_pars::Integer) where T
         return new{T}(
             Vector{T}(undef, n_pars),
             Matrix{T}(undef, n_pars, n_pars),
@@ -15,7 +15,7 @@ mutable struct AuxiliaryStruct{T <: AbstractFloat}
 end
 
 function score_tilde!(score_til::Matrix{T}, y::T, D::Type{<:Distribution}, 
-                      param::Matrix{T}, aux::AuxiliaryStruct{T}, scaling::T, t::Int) where T
+                      param::Matrix{T}, aux::AuxiliaryLinAlg{T}, scaling::T, t::Int) where T
 
     if scaling == SCALINGS[1] # 0.0
         scaling_identity!(score_til, y, D, aux, param, t)
@@ -33,7 +33,7 @@ end
 
 # Scalings
 function scaling_identity!(score_til::Matrix{T}, y::T, D::Type{<:Distribution}, 
-                           aux::AuxiliaryStruct{T}, param::Matrix{T}, t::Int) where T
+                           aux::AuxiliaryLinAlg{T}, param::Matrix{T}, t::Int) where T
     jacobian_link!(aux, D, param, t)
     score!(score_til, y, D, param, t)
     for p in eachindex(aux.jac)
@@ -42,7 +42,7 @@ function scaling_identity!(score_til::Matrix{T}, y::T, D::Type{<:Distribution},
 end
 
 function scaling_invsqrt!(score_til::Matrix{T}, y::T, D::Type{<:Distribution}, 
-                          aux::AuxiliaryStruct{T}, param::Matrix{T}, t::Int) where T
+                          aux::AuxiliaryLinAlg{T}, param::Matrix{T}, t::Int) where T
     # Evaluate jacobian, score and FI
     jacobian_link!(aux, D, param, t)
     score!(score_til, y, D, param, t)
@@ -61,7 +61,7 @@ function scaling_invsqrt!(score_til::Matrix{T}, y::T, D::Type{<:Distribution},
 end
 
 function scaling_inv!(score_til::Matrix{T}, y::T, D::Type{<:Distribution}, 
-                      aux::AuxiliaryStruct{T}, param::Matrix{T}, t::Int) where T
+                      aux::AuxiliaryLinAlg{T}, param::Matrix{T}, t::Int) where T
     # Evaluate jacobian, score and FI
     jacobian_link!(aux, D, param, t)
     score!(score_til, y, D, param, t)

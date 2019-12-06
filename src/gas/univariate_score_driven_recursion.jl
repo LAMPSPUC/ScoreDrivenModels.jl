@@ -18,7 +18,7 @@ function score_driven_recursion(gas::GAS{D, T}, observations::Vector{T}, initial
     param = Matrix{T}(undef, n + 1, n_params)
     param_tilde = Matrix{T}(undef, n + 1, n_params)
     scores_tilde = Matrix{T}(undef, n, n_params)
-    aux = AuxiliaryStruct{T}(n_params)
+    aux = AuxiliaryLinAlg{T}(n_params)
 
     # Query the biggest lag
     biggest_lag = number_of_lags(gas)
@@ -44,7 +44,7 @@ end
 
 function univariate_score_driven_update!(param::Matrix{T}, param_tilde::Matrix{T},
                                          scores_tilde::Matrix{T},
-                                         observation::T, aux::AuxiliaryStruct{T},
+                                         observation::T, aux::AuxiliaryLinAlg{T},
                                          gas::GAS{D, T}, i::Int) where {D <: Distribution, T <: AbstractFloat}
     # update param 
     update_param!(param, param_tilde, D, i)

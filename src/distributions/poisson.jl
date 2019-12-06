@@ -9,7 +9,7 @@ end
 """
 Proof somewhere
 """
-function fisher_information!(aux::AuxiliaryStruct{T},::Type{Poisson}, param::Matrix{T}, t::Int) where T
+function fisher_information!(aux::AuxiliaryLinAlg{T}, ::Type{Poisson}, param::Matrix{T}, t::Int) where T
     aux.fisher[1, 1] = 1/param[1]
 end
 
@@ -33,7 +33,7 @@ function unlink!(param::Matrix{T}, ::Type{Poisson}, param_tilde::Matrix{T}, t::I
     param[t, 1] = unlink(LogLink, param_tilde[t, 1], zero(T))
     return
 end
-function jacobian_link!(aux::AuxiliaryStruct{T}, ::Type{Poisson}, param::Matrix{T}, t::Int) where T 
+function jacobian_link!(aux::AuxiliaryLinAlg{T}, ::Type{Poisson}, param::Matrix{T}, t::Int) where T 
     aux.jac[1] = jacobian_link(LogLink, param[t, 1], zero(T))
     return
 end

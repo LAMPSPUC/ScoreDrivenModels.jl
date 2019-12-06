@@ -4,14 +4,14 @@ parametrized in \\alpha and \\theta
 """
 function score!(score_til::Matrix{T}, y::T, ::Type{Gamma}, param::Matrix{T}, t::Int) where T
     score_til[t, 1] = log(y) - digamma(param[t, 1]) - log(param[t, 2])
-    score_til[t, 1] = y/param[t, 2]^2 - param[t, 1]/param[t, 2]
+    score_til[t, 2] = y/param[t, 2]^2 - param[t, 1]/param[t, 2]
     return 
 end
 
 """
 Proof somewhere
 """
-function fisher_information!(aux::AuxiliaryStruct{T},::Type{Gamma}, param::Matrix{T}, t::Int) where T
+function fisher_information!(aux::AuxiliaryLinAlg{T}, ::Type{Gamma}, param::Matrix{T}, t::Int) where T
     error("Fisher information not implemented for Gamma distribution.")
     aux.fisher[1, 1] = -trigamma(param[t, 1])
     aux.fisher[2, 2] = -2 * y / param[t, 2] ^ 3 + param[t, 1] / param[t, 2]^2
@@ -42,7 +42,7 @@ function unlink!(param::Matrix{T}, ::Type{Gamma}, param_tilde::Matrix{T}, t::Int
     param[t, 2] = unlink(LogLink, param_tilde[t, 2], zero(T))
     return
 end
-function jacobian_link!(aux::AuxiliaryStruct{T}, ::Type{Gamma}, param::Matrix{T}, t::Int) where T 
+function jacobian_link!(aux::AuxiliaryLinAlg{T}, ::Type{Gamma}, param::Matrix{T}, t::Int) where T 
     aux.jac[1] = jacobian_link(LogLink, param[t, 1], zero(T))
     aux.jac[2] = jacobian_link(LogLink, param[t, 2], zero(T))
     return
@@ -50,6 +50,7 @@ end
 
 # utils 
 function update_dist(::Type{Gamma}, param::Matrix{T}, t::Int) where T
+    small_threshold!(param, SMALL_NUM, t)
     return Gamma(param[t, 1], param[t, 2])
 end 
 

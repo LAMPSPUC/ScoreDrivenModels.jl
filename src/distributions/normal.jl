@@ -11,7 +11,7 @@ end
 """
 Proof somewhere
 """
-function fisher_information!(aux::AuxiliaryStruct{T},::Type{Normal}, param::Matrix{T}, t::Int) where T
+function fisher_information!(aux::AuxiliaryLinAlg{T}, ::Type{Normal}, param::Matrix{T}, t::Int) where T
     aux.fisher[1, 1] = 1 / (param[t, 2])
     aux.fisher[2, 2] = 1 / (2 * (param[t, 2] ^ 2))
     aux.fisher[2, 1] = 0
@@ -44,7 +44,7 @@ function unlink!(param::Matrix{T}, ::Type{Normal}, param_tilde::Matrix{T}, t::In
     param[t, 2] = unlink(LogLink, param_tilde[t, 2], zero(T))
     return
 end
-function jacobian_link!(aux::AuxiliaryStruct{T}, ::Type{Normal}, param::Matrix{T}, t::Int) where T 
+function jacobian_link!(aux::AuxiliaryLinAlg{T}, ::Type{Normal}, param::Matrix{T}, t::Int) where T 
     aux.jac[1] = jacobian_link(IdentityLink, param[t, 1])
     aux.jac[2] = jacobian_link(LogLink, param[t, 2], zero(T))
     return
