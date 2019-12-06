@@ -3,7 +3,7 @@
         ω = [0.1, 0.1]
         A = [0.5 0; 0 0.5]
         B = [0.5 0; 0 0.5]
-        simulation = simulate_GAS_1_1(Beta, 0.0, ω, A, B, 1)
+        simulation = readdlm("data/Beta_1_1.csv")[:]
         @testset "Estimation by passing number of seeds" begin
             gas = GAS(1, 1, Beta, 0.0)
             estimate!(gas, simulation; verbose = 1, opt_method = ScoreDrivenModels.LBFGS(gas, 3))
