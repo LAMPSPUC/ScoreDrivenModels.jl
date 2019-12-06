@@ -2,12 +2,10 @@
 Proof somewhere 
 parametrized in \\alpha and \\beta
 """
-function score(y::T, ::Type{Beta}, param::Matrix{T}, t::Int) where T
-    digamma_a_b = digamma(param[t, 1] + param[t, 2])
-    return [
-        log(y) + digamma_a_b - digamma(param[t, 1]);
-        log(1 - y) + digamma_a_b - digamma(param[t, 2])
-    ]
+function score!(score_til::Vector{Vector{T}}, y::T, ::Type{Beta}, param::Matrix{T}, t::Int) where T
+    score_til[t][1] = log(y) + digamma(param[t, 1] + param[t, 2]) - digamma(param[t, 1])
+    score_til[t][2] = log(1 - y) + digamma(param[t, 1] + param[t, 2]) - digamma(param[t, 2])
+    return
 end
 
 """
@@ -37,21 +35,22 @@ end
 function link!(param_tilde::Matrix{T}, ::Type{Beta}, param::Matrix{T}, t::Int) where T 
     param_tilde[t, 1] = link(LogLink, param[t, 1], zero(T))
     param_tilde[t, 2] = link(LogLink, param[t, 2], zero(T))
+    return
 end
 function unlink!(param::Matrix{T}, ::Type{Beta}, param_tilde::Matrix{T}, t::Int) where T 
     param[t, 1] = unlink(LogLink, param_tilde[t, 1], zero(T))
     param[t, 2] = unlink(LogLink, param_tilde[t, 2], zero(T))
+    return
 end
-function jacobian_link(::Type{Beta}, param::Matrix{T}, t::Int) where T 
-    return Diagonal([
-        jacobian_link(LogLink, param[t, 1], zero(T));
-        jacobian_link(LogLink, param[t, 2], zero(T))
-    ])
+function jacobian_link!(aux::AuxiliaryStruct{T}, ::Type{Beta}, param::Matrix{T}, t::Int) where T 
+    aux.jac[1] = jacobian_link(LogLink, param[t, 1], zero(T))
+    aux.jac[2] = jacobian_link(LogLink, param[t, 2], zero(T))
+    return
 end
 
 # utils
 function update_dist(::Type{Beta}, param::Matrix{T}, t::Int) where T
-    small_threshold!(param, ZERO_ROUNDING, t)
+    small_threshold!(param, SMALL_NUM, t)
     return Beta(param[t, 1], param[t, 2])
 end 
 

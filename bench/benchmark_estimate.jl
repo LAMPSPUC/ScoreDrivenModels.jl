@@ -1,3 +1,4 @@
+push!(LOAD_PATH, "/Users/guilhermebodin/Documents/ScoreDrivenModels.jl/src")
 using ScoreDrivenModels, Distributions, BenchmarkTools, Random, Test
 
 include("test/utils.jl")
@@ -42,16 +43,16 @@ num_seeds = 3
     opt_method = ScoreDrivenModels.LBFGS(gas, $num_seeds)
     estimate!(gas, $simulation; verbose = $verbose, opt_method = opt_method)
 end
-# BenchmarkTools.Trial:
-#   memory estimate:  8.63 GiB
-#   allocs estimate:  112481074
+# BenchmarkTools.Trial: 
+#   memory estimate:  1.24 GiB
+#   allocs estimate:  9806219
 #   --------------
-#   minimum time:     5.418 s (19.27% GC)
-#   median time:      5.418 s (19.27% GC)
-#   mean time:        5.418 s (19.27% GC)
-#   maximum time:     5.418 s (19.27% GC)
+#   minimum time:     3.769 s (2.16% GC)
+#   median time:      3.957 s (3.17% GC)
+#   mean time:        3.957 s (3.17% GC)
+#   maximum time:     4.146 s (4.10% GC)
 #   --------------
-#   samples:          1
+#   samples:          2
 #   evals/sample:     1
 
 

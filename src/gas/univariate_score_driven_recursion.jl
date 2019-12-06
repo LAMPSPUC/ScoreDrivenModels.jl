@@ -17,7 +17,8 @@ function score_driven_recursion(gas::GAS{D, T}, observations::Vector{T}, initial
     n_params = num_params(D)
     param = Matrix{T}(undef, n + 1, n_params)
     param_tilde = Matrix{T}(undef, n + 1, n_params)
-    scores_tilde = Vector{Vector{T}}(undef, n)
+    scores_tilde = [zeros(T, n_params) for _ in 1:n]
+    aux = AuxiliaryStruct{T}(n_params)
 
     # Query the biggest lag
     biggest_lag = number_of_lags(gas)
@@ -28,13 +29,13 @@ function score_driven_recursion(gas::GAS{D, T}, observations::Vector{T}, initial
             param[i, p] = initial_param[i, p]
         end
         link!(param_tilde, D, param, i)
-        scores_tilde[i] = score_tilde(observations[i], D, param, gas.scaling, i)
+        score_tilde!(scores_tilde, observations[i], D, param, aux, gas.scaling, i)
     end
     
     update_param_tilde!(param_tilde, gas.ω, gas.A, gas.B, scores_tilde, biggest_lag)
 
     for i in biggest_lag + 1:n
-        univariate_score_driven_update!(param, param_tilde, scores_tilde, observations[i], gas, i)
+        univariate_score_driven_update!(param, param_tilde, scores_tilde, observations[i], aux, gas, i)
     end
     update_param!(param, param_tilde, D, n + 1)
 
@@ -43,11 +44,12 @@ end
 
 function univariate_score_driven_update!(param::Matrix{T}, param_tilde::Matrix{T},
                                          scores_tilde::Vector{Vector{T}},
-                                         observation::T, gas::GAS{D, T}, i::Int) where {D <: Distribution, T <: AbstractFloat}
+                                         observation::T, aux::AuxiliaryStruct{T},
+                                         gas::GAS{D, T}, i::Int) where {D <: Distribution, T <: AbstractFloat}
     # update param 
     update_param!(param, param_tilde, D, i)
     # evaluate score
-    scores_tilde[i] = score_tilde(observation, D, param, gas.scaling, i)
+    score_tilde!(scores_tilde, observation, D, param, aux, gas.scaling, i)
     # update param_tilde
     update_param_tilde!(param_tilde, gas.ω, gas.A, gas.B, scores_tilde, i)
     return 
@@ -57,8 +59,8 @@ function update_param!(param::Matrix{T}, param_tilde::Matrix{T}, D::Type{<:Distr
     unlink!(param, D, param_tilde, i)
     # Some treatments 
     NaN2zero!(param, i)
-    big_threshold!(param, PARAM_NUM_UB, i)
-    small_threshold!(param, ZERO_ROUNDING, i)
+    big_threshold!(param, BIG_NUM, i)
+    small_threshold!(param, SMALL_NUM, i)
     return
 end
 

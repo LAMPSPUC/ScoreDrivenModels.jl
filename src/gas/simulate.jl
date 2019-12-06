@@ -21,7 +21,8 @@ function simulate(gas::GAS{D, T}, n::Int, initial_params::Matrix{T}) where {D, T
     n_params = num_params(D)
     param = Matrix{T}(undef, n, n_params)
     param_tilde = Matrix{T}(undef, n, n_params)
-    scores_tilde = Vector{Vector{T}}(undef, n)
+    scores_tilde = [zeros(T, n_params) for _ in 1:n]
+    aux = AuxiliaryStruct{T}(n_params)
 
     # Auxiliary Allocation
     param_dist = zeros(T, 1, n_params)
@@ -37,7 +38,7 @@ function simulate(gas::GAS{D, T}, n::Int, initial_params::Matrix{T}) where {D, T
         # Sample
         updated_dist = update_dist(D, param, t)
         serie[t] = sample_observation(updated_dist)
-        scores_tilde[t] = score_tilde(serie[t], D, param, gas.scaling, t)
+        score_tilde!(scores_tilde, serie[t], D, param, aux, gas.scaling, t)
     end
     
     update_param_tilde!(param_tilde, gas.ω, gas.A, gas.B, scores_tilde, biggest_lag)
@@ -47,7 +48,7 @@ function simulate(gas::GAS{D, T}, n::Int, initial_params::Matrix{T}) where {D, T
 
     for i in biggest_lag + 1:n-1
         # update step
-        univariate_score_driven_update!(param, param_tilde, scores_tilde, serie[i], gas, i)
+        univariate_score_driven_update!(param, param_tilde, scores_tilde, serie[i], aux, gas, i)
         # Sample from the updated distribution
         unlink!(param, D, param_tilde, i + 1)
         updated_dist = update_dist(D, param, i + 1)

@@ -1,23 +1,40 @@
-function score_tilde(y::T, D::Type{<:Distribution}, param::Matrix{T}, scaling::T, t::Int) where T
+struct AuxiliaryStruct{T <: AbstractFloat}
+    jac::Vector{T}
+    fisher::Matrix{T}
+
+    function AuxiliaryStruct{T}(n_pars::Integer) where T
+        return new{T}(
+            Vector{T}(undef, n_pars),
+            Matrix{T}(undef, n_pars, n_pars)
+        )
+    end
+end
+
+function score_tilde!(score_til::Vector{Vector{T}}, y::T, D::Type{<:Distribution}, 
+                      param::Matrix{T}, aux::AuxiliaryStruct{T}, scaling::T, t::Int) where T
 
     if scaling == 0
-        score_til = scaling_identity(y, D, param, t)
+        scaling_identity!(score_til, y, D, aux, param, t)
     elseif scaling == 1/2
         score_til = scaling_invsqrt(y, D, param)
     elseif scaling == 1.0
         score_til = scaling_inv(y, D, param)
     end
 
-    NaN2zero!(score_til)
-    big_threshold!(score_til, 1e5)
-    small_threshold!(score_til, 1e-10)
-    return score_til
+    NaN2zero!(score_til[t])
+    big_threshold!(score_til[t], 1e5)
+    small_threshold!(score_til[t], 1e-10)
+    return
 end
 
 # Scalings
-function scaling_identity(y::T, D::Type{<:Distribution}, param::Matrix{T}, t::Int) where T
-    jac = jacobian_link(D, param, t)
-    return jac\score(y, D, param, t)
+function scaling_identity!(score_til::Vector{Vector{T}}, y::T, D::Type{<:Distribution}, 
+                           aux::AuxiliaryStruct{T}, param::Matrix{T}, t::Int) where T
+    jacobian_link!(aux, D, param, t)
+    score!(score_til, y, D, param, t)
+    for p in eachindex(aux.jac)
+        score_til[t][p] = score_til[t][p]/aux.jac[p]
+    end
 end
 
 function scaling_invsqrt(y::T, D::Type{<:Distribution}, param::Vector{T}) where T
