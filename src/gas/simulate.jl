@@ -23,6 +23,9 @@ function simulate(gas::GAS{D, T}, n::Int, initial_params::Matrix{T}) where {D, T
     param_tilde = Matrix{T}(undef, n, n_params)
     scores_tilde = Vector{Vector{T}}(undef, n)
 
+    # Auxiliary Allocation
+    param_dist = zeros(T, 1, n_params)
+
     biggest_lag = number_of_lags(gas)
 
     # initial_values  
@@ -44,7 +47,8 @@ function simulate(gas::GAS{D, T}, n::Int, initial_params::Matrix{T}) where {D, T
         # update step
         univariate_score_driven_update!(param, param_tilde, scores_tilde, serie[i], gas, i)
         # Sample from the updated distribution
-        updated_dist = update_dist(D, param, i)
+        param_dist[1, :] = unlink(D, param_tilde, i + 1)
+        updated_dist = update_dist(D, param_dist, 1)
         serie[i + 1] = sample_observation(updated_dist)
     end
     update_param!(param, param_tilde, D, n)
