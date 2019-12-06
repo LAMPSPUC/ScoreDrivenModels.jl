@@ -87,14 +87,14 @@ end
 
 return the fitted mean.. #TODO
 """
-function fitted_mean(gas::GAS{D, T}, observations::Vector{T}, initial_params::Vector{Vector{T}}) where {D, T}
+function fitted_mean(gas::GAS{D, T}, observations::Vector{T}, initial_params::Matrix{T}) where {D, T}
     params_fitted = score_driven_recursion(gas, observations, initial_params)
-    n = length(params_fitted)
+    n = size(params_fitted, 1)
     fitted_mean = Vector{T}(undef, n)
 
-    for (i, param) in enumerate(params_fitted)
-        sdm_dist = update_dist(D, param)
-        fitted_mean[i] = mean(sdm_dist)
+    for t in axes(params_fitted, 1)
+        sdm_dist = update_dist(D, params_fitted, t)
+        fitted_mean[t] = mean(sdm_dist)
     end
     
     return fitted_mean

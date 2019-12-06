@@ -6,39 +6,6 @@ function check_model_estimated(len::Int)
     return false
 end
 
-# function NaN2zero!(v::Vector{T}) where T
-#     for i in eachindex(v)
-#         if isnan(v[i])
-#             v[i] = zero(T) 
-#         end
-#     end
-#     return 
-# end
-
-# function big_threshold!(v::Vector{T}, threshold::T) where T
-#     for i in eachindex(v)
-#         if v[i] >= threshold
-#             v[i] = threshold 
-#         end
-#         if v[i] <= -threshold
-#             v[i] = -threshold 
-#         end
-#     end
-#     return 
-# end
-
-# function small_threshold!(v::Vector{T}, threshold::T) where T
-#     for i in eachindex(v)
-#         if v[i] <= threshold && v[i] >= 0
-#             v[i] = threshold 
-#         end
-#         if v[i] >= -threshold && v[i] <= 0
-#             v[i] = -threshold 
-#         end
-#     end
-#     return 
-# end
-
 function NaN2zero!(m::Matrix{T}, i::Integer) where T
     for j in axes(m, 2)
         if isnan(m[i, j])
