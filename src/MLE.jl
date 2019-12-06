@@ -26,7 +26,7 @@ function estimate!(sdm::SDM{D, T}, y::Vector{T};
     optseeds = Vector{Optim.OptimizationResults}(undef, 0)
 
     for i = 1:nseeds
-        # try 
+        try 
             optseed = optimize(psi_tilde -> log_lik(psi_tilde, y, sdm, initial_params, unknowns, n), 
                                                     opt_method.seeds[i],
                                                     opt_method.method, Optim.Options(f_tol = opt_method.f_tol, 
@@ -37,10 +37,10 @@ function estimate!(sdm::SDM{D, T}, y::Vector{T};
             push!(psi, optseed.minimizer)
             push!(optseeds, optseed)
             println("seed $i of $nseeds - $(-optseed.minimum)")
-        # catch err
-        #     println(err)
-        #     println("seed $i diverged")
-        # end
+        catch err
+            println(err)
+            println("seed $i diverged")
+        end
     end
 
     if isempty(loglikelihood) 

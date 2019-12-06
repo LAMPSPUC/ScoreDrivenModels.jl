@@ -11,8 +11,12 @@ end
 """
 Proof somewhere
 """
-function fisher_information(::Type{LogNormal}, param::Vector{T}) where T
-    Diagonal([1/(param[2]); 1/(2*(param[2]^2))])
+function fisher_information!(aux::AuxiliaryStruct{T}, ::Type{LogNormal}, param::Matrix{T}, t::Int) where T
+    aux.fisher[1, 1] = 1/(param[t, 2])
+    aux.fisher[2, 2] = 1/(2*(param[t, 2]^2))
+    aux.fisher[2, 1] = 0
+    aux.fisher[1, 2] = 0
+    return
 end
 
 """
@@ -36,7 +40,7 @@ function unlink!(param::Matrix{T}, ::Type{LogNormal}, param_tilde::Matrix{T}, t:
     param[t, 2] = unlink(LogLink, param_tilde[t, 2], zero(T))
 end
 function jacobian_link!(aux::AuxiliaryStruct{T}, ::Type{LogNormal}, param::Matrix{T}, t::Int) where T 
-    aux.jac[1] = jacobian_link(LogLink, param[t, 1], zero(T))
+    aux.jac[1] = jacobian_link(IdentityLink, param[t, 1])
     aux.jac[2] = jacobian_link(LogLink, param[t, 2], zero(T))
     return
 end
@@ -50,3 +54,5 @@ end
 function num_params(::Type{LogNormal})
     return 2
 end
+
+A = rand(1000, 1000)
