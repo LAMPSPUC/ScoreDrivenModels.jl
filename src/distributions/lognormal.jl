@@ -2,11 +2,10 @@
 Proof somewhere 
 parametrized in \\mu and \\sigma^2
 """
-function score(y::T, ::Type{LogNormal}, param::Matrix{T}, t::Int) where T
-    return [
-        (log(y) - param[t, 1])/param[t, 2] ;
-        -(0.5/param[t, 2]) * (1 - ((log(y) - param[t, 1])^2)/param[t, 2])
-    ]
+function score!(score_til::Matrix{T}, y::T, ::Type{LogNormal}, param::Matrix{T}, t::Int) where T
+    score_til[t, 1] = (log(y) - param[t, 1])/param[t, 2]
+    score_til[t, 2] = -(0.5/param[t, 2]) * (1 - ((log(y) - param[t, 1])^2)/param[t, 2])
+    return
 end
 
 """
@@ -36,11 +35,10 @@ function unlink!(param::Matrix{T}, ::Type{LogNormal}, param_tilde::Matrix{T}, t:
     param[t, 1] = unlink(IdentityLink, param_tilde[t, 1])
     param[t, 2] = unlink(LogLink, param_tilde[t, 2], zero(T))
 end
-function jacobian_link(::Type{LogNormal}, param::Matrix{T}, t::Int) where T 
-    return Diagonal([
-        jacobian_link(IdentityLink, param[t, 1]);
-        jacobian_link(LogLink, param[t, 2], zero(T))
-    ])
+function jacobian_link!(aux::AuxiliaryStruct{T}, ::Type{LogNormal}, param::Matrix{T}, t::Int) where T 
+    aux.jac[1] = jacobian_link(LogLink, param[t, 1], zero(T))
+    aux.jac[2] = jacobian_link(LogLink, param[t, 2], zero(T))
+    return
 end
 
 # utils 

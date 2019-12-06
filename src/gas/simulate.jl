@@ -21,7 +21,8 @@ function simulate(gas::GAS{D, T}, n::Int, initial_params::Matrix{T}) where {D, T
     n_params = num_params(D)
     param = Matrix{T}(undef, n, n_params)
     param_tilde = Matrix{T}(undef, n, n_params)
-    scores_tilde = [zeros(T, n_params) for _ in 1:n]
+    scores_tilde = Matrix{T}(undef, n, n_params)
+    
     aux = AuxiliaryStruct{T}(n_params)
 
     # Auxiliary Allocation

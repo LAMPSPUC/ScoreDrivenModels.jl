@@ -17,7 +17,7 @@ function score_driven_recursion(gas::GAS{D, T}, observations::Vector{T}, initial
     n_params = num_params(D)
     param = Matrix{T}(undef, n + 1, n_params)
     param_tilde = Matrix{T}(undef, n + 1, n_params)
-    scores_tilde = [zeros(T, n_params) for _ in 1:n]
+    scores_tilde = Matrix{T}(undef, n, n_params)
     aux = AuxiliaryStruct{T}(n_params)
 
     # Query the biggest lag
@@ -43,7 +43,7 @@ function score_driven_recursion(gas::GAS{D, T}, observations::Vector{T}, initial
 end
 
 function univariate_score_driven_update!(param::Matrix{T}, param_tilde::Matrix{T},
-                                         scores_tilde::Vector{Vector{T}},
+                                         scores_tilde::Matrix{T},
                                          observation::T, aux::AuxiliaryStruct{T},
                                          gas::GAS{D, T}, i::Int) where {D <: Distribution, T <: AbstractFloat}
     # update param 
@@ -65,13 +65,13 @@ function update_param!(param::Matrix{T}, param_tilde::Matrix{T}, D::Type{<:Distr
 end
 
 function update_param_tilde!(param_tilde::Matrix{T}, ω::Vector{T}, A::Dict{Int, Matrix{T}}, 
-                             B::Dict{Int, Matrix{T}}, scores_tilde::Vector{Vector{T}}, i::Int) where T
+                             B::Dict{Int, Matrix{T}}, scores_tilde::Matrix{T}, i::Int) where T
     for p in eachindex(ω)
         param_tilde[i + 1, p] = ω[p]
     end
     for (lag, mat) in A
         for p in axes(mat, 1)
-            param_tilde[i + 1, p] += mat[p, p] * scores_tilde[i - lag + 1][p]
+            param_tilde[i + 1, p] += mat[p, p] * scores_tilde[i - lag + 1, p]
         end
     end
     for (lag, mat) in B

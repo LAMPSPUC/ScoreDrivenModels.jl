@@ -2,9 +2,9 @@
 Proof somewhere 
 parametrized in \\alpha and \\beta
 """
-function score!(score_til::Vector{Vector{T}}, y::T, ::Type{Beta}, param::Matrix{T}, t::Int) where T
-    score_til[t][1] = log(y) + digamma(param[t, 1] + param[t, 2]) - digamma(param[t, 1])
-    score_til[t][2] = log(1 - y) + digamma(param[t, 1] + param[t, 2]) - digamma(param[t, 2])
+function score!(score_til::Matrix{T}, y::T, ::Type{Beta}, param::Matrix{T}, t::Int) where T
+    score_til[t, 1] = log(y) + digamma(param[t, 1] + param[t, 2]) - digamma(param[t, 1])
+    score_til[t, 2] = log(1 - y) + digamma(param[t, 1] + param[t, 2]) - digamma(param[t, 2])
     return
 end
 

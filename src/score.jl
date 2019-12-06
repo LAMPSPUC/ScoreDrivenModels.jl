@@ -10,7 +10,7 @@ struct AuxiliaryStruct{T <: AbstractFloat}
     end
 end
 
-function score_tilde!(score_til::Vector{Vector{T}}, y::T, D::Type{<:Distribution}, 
+function score_tilde!(score_til::Matrix{T}, y::T, D::Type{<:Distribution}, 
                       param::Matrix{T}, aux::AuxiliaryStruct{T}, scaling::T, t::Int) where T
 
     if scaling == 0
@@ -21,19 +21,19 @@ function score_tilde!(score_til::Vector{Vector{T}}, y::T, D::Type{<:Distribution
         score_til = scaling_inv(y, D, param)
     end
 
-    NaN2zero!(score_til[t])
-    big_threshold!(score_til[t], 1e5)
-    small_threshold!(score_til[t], 1e-10)
+    NaN2zero!(score_til, t)
+    big_threshold!(score_til, 1e5, t)
+    small_threshold!(score_til, 1e-10, t)
     return
 end
 
 # Scalings
-function scaling_identity!(score_til::Vector{Vector{T}}, y::T, D::Type{<:Distribution}, 
+function scaling_identity!(score_til::Matrix{T}, y::T, D::Type{<:Distribution}, 
                            aux::AuxiliaryStruct{T}, param::Matrix{T}, t::Int) where T
     jacobian_link!(aux, D, param, t)
     score!(score_til, y, D, param, t)
     for p in eachindex(aux.jac)
-        score_til[t][p] = score_til[t][p]/aux.jac[p]
+        score_til[t, p] = score_til[t, p]/aux.jac[p]
     end
 end
 

@@ -2,9 +2,9 @@
 Proof somewhere 
 parametrized in \\mu and \\sigma^2
 """
-function score!(score_til::Vector{Vector{T}}, y::T, ::Type{Normal}, param::Matrix{T}, t::Int) where T
-    score_til[t][1] = (y - param[t, 1])/param[t, 2]
-    score_til[t][2] = -(0.5/param[t, 2]) * (1 - ((y - param[t, 1])^2)/param[t, 2])
+function score!(score_til::Matrix{T}, y::T, ::Type{Normal}, param::Matrix{T}, t::Int) where T
+    score_til[t, 1] = (y - param[t, 1])/param[t, 2]
+    score_til[t, 2] = -(0.5/param[t, 2]) * (1 - ((y - param[t, 1])^2)/param[t, 2])
     return
 end
 
