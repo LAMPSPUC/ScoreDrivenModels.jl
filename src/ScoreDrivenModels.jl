@@ -6,6 +6,8 @@ using LinearAlgebra
 import Base.length
 
 const SCALINGS  = [0.0, 1/2, 1.0]
+const PARAM_NUM_UB = 1e8
+const ZERO_ROUNDING = 1e-8
 
 # Core files
 include("abstracts.jl")

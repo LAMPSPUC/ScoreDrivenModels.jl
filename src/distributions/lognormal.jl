@@ -2,10 +2,10 @@
 Proof somewhere 
 parametrized in \\mu and \\sigma^2
 """
-function score(y::T, ::Type{LogNormal}, param::Vector{T}) where T
+function score(y::T, ::Type{LogNormal}, param::Matrix{T}, t::Int) where T
     return [
-        (log(y) - param[1])/param[2] ;
-        -(0.5/param[2]) * (1 - ((log(y) - param[1])^2)/param[2])
+        (log(y) - param[t, 1])/param[t, 2] ;
+        -(0.5/param[t, 2]) * (1 - ((log(y) - param[t, 1])^2)/param[t, 2])
     ]
 end
 
@@ -19,38 +19,34 @@ end
 """
 Proof somewhere
 """
-function log_likelihood(::Type{LogNormal}, y::Vector{T}, param::Vector{Vector{T}}, n::Int) where T
+function log_likelihood(::Type{LogNormal}, y::Vector{T}, param::Matrix{T}, n::Int) where T
     loglik = -0.5*log(2*pi)*n
-    for i in 1:n
-        loglik -= log(y[i]*sqrt(param[i][2])) + 0.5*(log(y[i]) - param[i][1])^2/param[i][2]
+    for t in 1:n
+        loglik -= log(y[t] * sqrt(param[t, 2])) + 0.5*(log(y[t]) - param[t, 1])^2/param[t, 2]
     end
     return -loglik
 end
 
 # Links
-function link(::Type{LogNormal}, param::Vector{T}) where T 
-    return [
-        link(IdentityLink, param[1]);
-        link(LogLink, param[2], zero(T))
-    ]
+function link!(param_tilde::Matrix{T}, ::Type{LogNormal}, param::Matrix{T}, t::Int) where T 
+    param_tilde[t, 1] = link(IdentityLink, param[t, 1])
+    param_tilde[t, 2] = link(LogLink, param[t, 2], zero(T))
 end
-function unlink(::Type{LogNormal}, param_tilde::Vector{T}) where T 
-    return [
-        unlink(IdentityLink, param_tilde[1]);
-        unlink(LogLink, param_tilde[2], zero(T))
-    ]
+function unlink!(param::Matrix{T}, ::Type{LogNormal}, param_tilde::Matrix{T}, t::Int) where T 
+    param[t, 1] = unlink(IdentityLink, param_tilde[t, 1])
+    param[t, 2] = unlink(LogLink, param_tilde[t, 2], zero(T))
 end
-function jacobian_link(::Type{LogNormal}, param::Vector{T}) where T 
+function jacobian_link(::Type{LogNormal}, param::Matrix{T}, t::Int) where T 
     return Diagonal([
-        jacobian_link(IdentityLink, param[1]);
-        jacobian_link(LogLink, param[2], zero(T))
+        jacobian_link(IdentityLink, param[t, 1]);
+        jacobian_link(LogLink, param[t, 2], zero(T))
     ])
 end
 
 # utils 
-function update_dist(::Type{LogNormal}, param::Vector{T}) where T
+function update_dist(::Type{LogNormal}, param::Matrix{T}, t::Int) where T
     # lognormal here is parametrized as sigma^2
-    return LogNormal(param[1], sqrt(param[2]))
+    return LogNormal(param[t, 1], sqrt(param[t, 2]))
 end 
 
 function num_params(::Type{LogNormal})

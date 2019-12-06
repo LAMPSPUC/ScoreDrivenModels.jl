@@ -29,17 +29,19 @@ function simulate(gas::GAS{D, T}, n::Int, initial_params::Matrix{T}) where {D, T
     biggest_lag = number_of_lags(gas)
 
     # initial_values  
-    for i in 1:biggest_lag
-        param[i, :] = initial_params[i, :]
-        param_tilde[i, :] = link(D, param, i)
+    for t in 1:biggest_lag
+        for p in 1:n_params
+            param[t, p] = initial_params[t, p]
+        end
+        link!(param_tilde, D, param, t)
         # Sample
-        updated_dist = update_dist(D, param, i)
-        serie[i] = sample_observation(updated_dist)
-        scores_tilde[i] = score_tilde(serie[i], D, param, gas.scaling, i)
+        updated_dist = update_dist(D, param, t)
+        serie[t] = sample_observation(updated_dist)
+        scores_tilde[t] = score_tilde(serie[t], D, param, gas.scaling, t)
     end
     
     update_param_tilde!(param_tilde, gas.ω, gas.A, gas.B, scores_tilde, biggest_lag)
-    param[biggest_lag + 1, :] = unlink(D, param_tilde, biggest_lag + 1)
+    unlink!(param, D, param_tilde, biggest_lag + 1)
     updated_dist = update_dist(D, param, biggest_lag + 1)
     serie[biggest_lag + 1] = sample_observation(updated_dist)
 
@@ -47,8 +49,8 @@ function simulate(gas::GAS{D, T}, n::Int, initial_params::Matrix{T}) where {D, T
         # update step
         univariate_score_driven_update!(param, param_tilde, scores_tilde, serie[i], gas, i)
         # Sample from the updated distribution
-        param_dist[1, :] = unlink(D, param_tilde, i + 1)
-        updated_dist = update_dist(D, param_dist, 1)
+        unlink!(param, D, param_tilde, i + 1)
+        updated_dist = update_dist(D, param, i + 1)
         serie[i + 1] = sample_observation(updated_dist)
     end
     update_param!(param, param_tilde, D, n)

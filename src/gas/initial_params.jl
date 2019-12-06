@@ -23,7 +23,7 @@ function stationary_initial_params(gas::GAS{D, T}) where {D, T}
     initial_params = Matrix{T}(undef, biggest_lag, n_params)
     for t in 1:biggest_lag
         initial_params_tilde[t, :] = gas.ω./diag(I - gas.B[1])
-        initial_params[t, :] = unlink(D, initial_params_tilde, t)
+        unlink!(initial_params, D, initial_params_tilde, t)
     end
     return initial_params
 end

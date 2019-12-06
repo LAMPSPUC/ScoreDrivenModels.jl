@@ -27,7 +27,7 @@ function score_driven_recursion(gas::GAS{D, T}, observations::Vector{T}, initial
         for p in 1:n_params
             param[i, p] = initial_param[i, p]
         end
-        param_tilde[i, :] = link(D, param, i)
+        link!(param_tilde, D, param, i)
         scores_tilde[i] = score_tilde(observations[i], D, param, gas.scaling, i)
     end
     
@@ -54,22 +54,28 @@ function univariate_score_driven_update!(param::Matrix{T}, param_tilde::Matrix{T
 end
 
 function update_param!(param::Matrix{T}, param_tilde::Matrix{T}, D::Type{<:Distribution}, i::Int) where T
-    param[i, :] = unlink(D, param_tilde, i)
+    unlink!(param, D, param_tilde, i)
     # Some treatments 
     NaN2zero!(param, i)
-    big_threshold!(param, 1e10, i)
-    small_threshold!(param, 1e-10, i)
+    big_threshold!(param, PARAM_NUM_UB, i)
+    small_threshold!(param, ZERO_ROUNDING, i)
     return
 end
 
 function update_param_tilde!(param_tilde::Matrix{T}, ω::Vector{T}, A::Dict{Int, Matrix{T}}, 
                              B::Dict{Int, Matrix{T}}, scores_tilde::Vector{Vector{T}}, i::Int) where T
-    param_tilde[i + 1, :] = copy(ω)
+    for p in eachindex(ω)
+        param_tilde[i + 1, p] = ω[p]
+    end
     for (lag, mat) in A
-        param_tilde[i + 1, :] .+= mat * scores_tilde[i - lag + 1]
+        for p in axes(mat, 1)
+            param_tilde[i + 1, p] += mat[p, p] * scores_tilde[i - lag + 1][p]
+        end
     end
     for (lag, mat) in B
-        param_tilde[i + 1, :] .+= mat * param_tilde[i - lag + 1, :]
+        for p in axes(mat, 1)
+            param_tilde[i + 1, p] += mat[p, p] * param_tilde[i - lag + 1, p]
+        end
     end
     return 
 end
