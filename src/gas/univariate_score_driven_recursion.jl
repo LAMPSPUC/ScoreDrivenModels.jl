@@ -10,62 +10,74 @@ function score_driven_recursion(gas::GAS{D, T}, observations::Vector{T}) where {
     return score_driven_recursion(gas, observations, initial_params)
 end
 
-function score_driven_recursion(gas::GAS{D, T}, observations::Vector{T}, initial_param::Vector{Vector{T}}) where {D, T}
+function score_driven_recursion(gas::GAS{D, T}, observations::Vector{T}, initial_param::Matrix{T}) where {D, T}
+    @assert gas.scaling in SCALINGS
     # Allocations
     n = length(observations)
-    param = Vector{Vector{T}}(undef, n + 1)
-    param_tilde = Vector{Vector{T}}(undef, n + 1)
-    scores_tilde = Vector{Vector{T}}(undef, n)
+    n_params = num_params(D)
+    param = Matrix{T}(undef, n + 1, n_params)
+    param_tilde = Matrix{T}(undef, n + 1, n_params)
+    scores_tilde = Matrix{T}(undef, n, n_params)
+    aux = AuxiliaryLinAlg{T}(n_params)
 
     # Query the biggest lag
     biggest_lag = number_of_lags(gas)
 
     # initial_values  
     for i in 1:biggest_lag
-        param[i] = initial_param[i]
-        param_tilde[i] = link(D, param[i])
-        scores_tilde[i] = score_tilde(observations[i], D, param[i], param_tilde[i], gas.scaling)
+        for p in 1:n_params
+            param[i, p] = initial_param[i, p]
+        end
+        link!(param_tilde, D, param, i)
+        score_tilde!(scores_tilde, observations[i], D, param, aux, gas.scaling, i)
     end
     
     update_param_tilde!(param_tilde, gas.ω, gas.A, gas.B, scores_tilde, biggest_lag)
 
     for i in biggest_lag + 1:n
-        univariate_score_driven_update!(param, param_tilde, scores_tilde, observations[i], gas, i)
+        univariate_score_driven_update!(param, param_tilde, scores_tilde, observations[i], aux, gas, i)
     end
     update_param!(param, param_tilde, D, n + 1)
 
     return param
 end
 
-function univariate_score_driven_update!(param::Vector{Vector{T}}, param_tilde::Vector{Vector{T}},
-                                         scores_tilde::Vector{Vector{T}},
-                                         observation::T, gas::GAS{D, T}, i::Int) where {D <: Distribution, T <: AbstractFloat}
+function univariate_score_driven_update!(param::Matrix{T}, param_tilde::Matrix{T},
+                                         scores_tilde::Matrix{T},
+                                         observation::T, aux::AuxiliaryLinAlg{T},
+                                         gas::GAS{D, T}, i::Int) where {D <: Distribution, T <: AbstractFloat}
     # update param 
     update_param!(param, param_tilde, D, i)
     # evaluate score
-    scores_tilde[i] = score_tilde(observation, D, param[i], param_tilde[i], gas.scaling)
+    score_tilde!(scores_tilde, observation, D, param, aux, gas.scaling, i)
     # update param_tilde
     update_param_tilde!(param_tilde, gas.ω, gas.A, gas.B, scores_tilde, i)
     return 
 end
 
-function update_param!(param::Vector{Vector{T}}, param_tilde::Vector{Vector{T}}, D::Type{<:Distribution}, i::Int) where T
-    param[i] = unlink(D, param_tilde[i])
+function update_param!(param::Matrix{T}, param_tilde::Matrix{T}, D::Type{<:Distribution}, i::Int) where T
+    unlink!(param, D, param_tilde, i)
     # Some treatments 
-    NaN2zero!(param[i])
-    big_threshold!(param[i], 1e10)
-    small_threshold!(param[i], 1e-10)
+    NaN2zero!(param, i)
+    big_threshold!(param, BIG_NUM, i)
+    small_threshold!(param, SMALL_NUM, i)
     return
 end
 
-function update_param_tilde!(param_tilde::Vector{Vector{T}}, ω::Vector{T}, A::Dict{Int, Matrix{T}}, 
-                             B::Dict{Int, Matrix{T}}, scores_tilde::Vector{Vector{T}}, i::Int) where T
-    param_tilde[i + 1] = copy(ω)
+function update_param_tilde!(param_tilde::Matrix{T}, ω::Vector{T}, A::Dict{Int, Matrix{T}}, 
+                             B::Dict{Int, Matrix{T}}, scores_tilde::Matrix{T}, i::Int) where T
+    for p in eachindex(ω)
+        param_tilde[i + 1, p] = ω[p]
+    end
     for (lag, mat) in A
-        param_tilde[i + 1] .+= mat*scores_tilde[i - lag + 1]
+        for p in axes(mat, 1)
+            param_tilde[i + 1, p] += mat[p, p] * scores_tilde[i - lag + 1, p]
+        end
     end
     for (lag, mat) in B
-        param_tilde[i + 1] .+= mat*param_tilde[i - lag + 1]
+        for p in axes(mat, 1)
+            param_tilde[i + 1, p] += mat[p, p] * param_tilde[i - lag + 1, p]
+        end
     end
     return 
 end
@@ -75,14 +87,14 @@ end
 
 return the fitted mean.. #TODO
 """
-function fitted_mean(gas::GAS{D, T}, observations::Vector{T}, initial_params::Vector{Vector{T}}) where {D, T}
+function fitted_mean(gas::GAS{D, T}, observations::Vector{T}, initial_params::Matrix{T}) where {D, T}
     params_fitted = score_driven_recursion(gas, observations, initial_params)
-    n = length(params_fitted)
+    n = size(params_fitted, 1)
     fitted_mean = Vector{T}(undef, n)
 
-    for (i, param) in enumerate(params_fitted)
-        sdm_dist = update_dist(D, param)
-        fitted_mean[i] = mean(sdm_dist)
+    for t in axes(params_fitted, 1)
+        sdm_dist = update_dist(D, params_fitted, t)
+        fitted_mean[t] = mean(sdm_dist)
     end
     
     return fitted_mean

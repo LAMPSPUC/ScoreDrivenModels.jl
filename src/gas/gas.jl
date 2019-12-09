@@ -125,12 +125,12 @@ function length(unknowns::Unknowns_GAS)
 end
 
 function log_lik(psitilde::Vector{T}, y::Vector{T}, gas::GAS{D, T}, 
-                 initial_params::Vector{Vector{T}}, unknowns::Unknowns_GAS, n::Int) where {D, T}
+                 initial_params::Matrix{T}, unknowns::Unknowns_GAS, n::Int) where {D, T}
     
     # Use the unkowns vectors to fill the right positions
     fill_psitilde!(gas, psitilde, unknowns)
 
-    if isnan(initial_params[1][1]) # Means default stationary initialization
+    if isnan(initial_params[1]) # Means default stationary initialization
         params = score_driven_recursion(gas, y)
     else
         params = score_driven_recursion(gas, y, initial_params)

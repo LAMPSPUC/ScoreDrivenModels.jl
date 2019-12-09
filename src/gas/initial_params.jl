@@ -5,9 +5,10 @@ export stationary_initial_params_tilde, stationary_initial_params, dynamic_initi
 """
 function stationary_initial_params_tilde(gas::GAS{D, T}) where {D, T}
     biggest_lag = number_of_lags(gas)
-    initial_params_tilde = Vector{Vector{T}}(undef, biggest_lag)
-    for i in 1:biggest_lag
-        initial_params_tilde[i] = gas.ω./diag(I - gas.B[1])
+    n_params = num_params(D)
+    initial_params_tilde = Matrix{T}(undef, biggest_lag, n_params)
+    for t in 1:biggest_lag
+        initial_params_tilde[t, :] = gas.ω./diag(I - gas.B[1])
     end
     return initial_params_tilde
 end
@@ -17,11 +18,12 @@ end
 """
 function stationary_initial_params(gas::GAS{D, T}) where {D, T}
     biggest_lag = number_of_lags(gas)
-    initial_params_tilde = Vector{Vector{T}}(undef, biggest_lag)
-    initial_params = Vector{Vector{T}}(undef, biggest_lag)
-    for i in 1:biggest_lag
-        initial_params_tilde[i] = gas.ω./diag(I - gas.B[1])
-        initial_params[i] = unlink(D, initial_params_tilde[i])
+    n_params = num_params(D)
+    initial_params_tilde = Matrix{T}(undef, biggest_lag, n_params)
+    initial_params = Matrix{T}(undef, biggest_lag, n_params)
+    for t in 1:biggest_lag
+        initial_params_tilde[t, :] = gas.ω./diag(I - gas.B[1])
+        unlink!(initial_params, D, initial_params_tilde, t)
     end
     return initial_params
 end
@@ -29,12 +31,12 @@ end
 """
     dynamic_initial_params
 """
-function dynamic_initial_params(obs::Vector{T}, gas::GAS{D, T}) where {D <: Distribution, T <: AbstractFloat}
+function dynamic_initial_params(obs::Vector{T}, gas::GAS{D, T}) where {D, T}
     # Take the biggest lag
     biggest_lag = number_of_lags(gas)
 
     # Allocate memory 
-    initial_params = Vector{Vector{T}}(undef, biggest_lag)
+    initial_params = Matrix{T}(undef, biggest_lag, num_params(D))
     obs_separated = Vector{Vector{T}}(undef, biggest_lag)
 
     # Loop to fit mle in every component of seasonality
@@ -47,9 +49,9 @@ function dynamic_initial_params(obs::Vector{T}, gas::GAS{D, T}) where {D <: Dist
         # Adequate to the ScoreDrivenModels standard
         # In Distributions Normal is \mu and \sigma
         # In ScoreDrivenModels Normal is \mu and \sigma^2
-        sdm_dist = update_dist(D, [params(dist)...])
+        sdm_dist = update_dist(D, permutedims([params(dist)...]), 1)
 
-        initial_params[i] = [params(sdm_dist)...]
+        initial_params[i, :] = [params(sdm_dist)...]
     end
 
     return initial_params

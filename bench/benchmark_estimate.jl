@@ -17,15 +17,15 @@ num_seeds = 3
     estimate!(gas, $simulation; verbose = $verbose, opt_method = opt_method)
 end
 # BenchmarkTools.Trial:
-#   memory estimate:  7.33 GiB
-#   allocs estimate:  95576498
+#   memory estimate:  466.69 MiB
+#   allocs estimate:  40237
 #   --------------
-#   minimum time:     5.632 s (15.93% GC)
-#   median time:      5.632 s (15.93% GC)
-#   mean time:        5.632 s (15.93% GC)
-#   maximum time:     5.632 s (15.93% GC)
+#   minimum time:     2.553 s (0.57% GC)
+#   median time:      2.655 s (0.59% GC)
+#   mean time:        2.655 s (0.59% GC)
+#   maximum time:     2.756 s (0.60% GC)
 #   --------------
-#   samples:          1
+#   samples:          2
 #   evals/sample:     1
 
 scaling = 0.0
@@ -43,15 +43,15 @@ num_seeds = 3
     estimate!(gas, $simulation; verbose = $verbose, opt_method = opt_method)
 end
 # BenchmarkTools.Trial:
-#   memory estimate:  8.63 GiB
-#   allocs estimate:  112481074
+#   memory estimate:  353.02 MiB
+#   allocs estimate:  30598
 #   --------------
-#   minimum time:     5.418 s (19.27% GC)
-#   median time:      5.418 s (19.27% GC)
-#   mean time:        5.418 s (19.27% GC)
-#   maximum time:     5.418 s (19.27% GC)
+#   minimum time:     1.008 s (1.41% GC)
+#   median time:      1.265 s (1.36% GC)
+#   mean time:        1.281 s (1.35% GC)
+#   maximum time:     1.587 s (1.28% GC)
 #   --------------
-#   samples:          1
+#   samples:          4
 #   evals/sample:     1
 
 
@@ -62,13 +62,13 @@ scaling = 0.5
     estimate!(gas, $simulation; verbose = $verbose, opt_method = opt_method)
 end
 # BenchmarkTools.Trial:
-#   memory estimate:  17.39 GiB
-#   allocs estimate:  325680001
+#   memory estimate:  8.26 GiB
+#   allocs estimate:  159942290
 #   --------------
-#   minimum time:     9.760 s (23.28% GC)
-#   median time:      9.760 s (23.28% GC)
-#   mean time:        9.760 s (23.28% GC)
-#   maximum time:     9.760 s (23.28% GC)
+#   minimum time:     7.361 s (18.19% GC)
+#   median time:      7.361 s (18.19% GC)
+#   mean time:        7.361 s (18.19% GC)
+#   maximum time:     7.361 s (18.19% GC)
 #   --------------
 #   samples:          1
 #   evals/sample:     1
@@ -80,13 +80,13 @@ scaling = 1.0
     estimate!(gas, $simulation; verbose = $verbose, opt_method = opt_method)
 end
 # BenchmarkTools.Trial:
-#   memory estimate:  11.99 GiB
-#   allocs estimate:  172023821
+#   memory estimate:  666.69 MiB
+#   allocs estimate:  8744603
 #   --------------
-#   minimum time:     8.502 s (20.62% GC)
-#   median time:      8.502 s (20.62% GC)
-#   mean time:        8.502 s (20.62% GC)
-#   maximum time:     8.502 s (20.62% GC)
+#   minimum time:     2.908 s (2.08% GC)
+#   median time:      3.382 s (2.07% GC)
+#   mean time:        3.382 s (2.07% GC)
+#   maximum time:     3.855 s (2.07% GC)
 #   --------------
-#   samples:          1
+#   samples:          2
 #   evals/sample:     1

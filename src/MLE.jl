@@ -1,12 +1,14 @@
 export estimate!
 
+const DEFAULT_INITIAL_PARAM = NaN.*ones(1, 1)
+
 function log_lik(psitilde::Vector{T}, y::Vector{T}, sdm::SDM{D, T}, 
                  initial_params::Vector{Vector{T}}, unknowns::Unknowns_SDM, n::Int) where {D, T}
     return error("log_lik not defined for a model of type ", typeof(sdm))
 end
 
 function estimate!(sdm::SDM{D, T}, y::Vector{T};
-                   initial_params::Vector{Vector{Float64}} = [[NaN]], # Means default initializations
+                   initial_params::Matrix{T} = DEFAULT_INITIAL_PARAM,
                    opt_method::AbstractOptimizationMethod = LBFGS(sdm, 3),
                    verbose::Int = 0) where {D, T}
 

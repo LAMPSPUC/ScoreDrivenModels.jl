@@ -2,13 +2,16 @@ function test_score_mean(D::Type{<:Distribution}; n::Int = 10^7, seed::Int = 10,
                             atol::Float64 = 1e-3, rtol::Float64 = 1e-3)
     Random.seed!(seed)
     dist = D()
-    pars = [params(dist)...]
-    avg  = zeros(SDM.num_params(D))
+    pars = permutedims([params(dist)...])
+    n_params = SDM.num_params(D)
+    avg  = zeros(1, n_params)
     for i = 1:n
-        avg += SDM.score(rand(D(pars...)), D, pars)
+        score_aux = ones(1, n_params)
+        SDM.score!(score_aux, rand(D(pars...)), D, pars, 1)
+        avg .+= score_aux
     end
     avg ./= n
-    @test avg ≈ zeros(SDM.num_params(D)) atol = atol rtol = rtol
+    @test avg ≈ zeros(1, SDM.num_params(D)) atol = atol rtol = rtol
 end
 
 function test_loglik(D::Type{<:Distribution}; atol::Float64 = 1e-3, rtol::Float64 = 1e-3,
@@ -16,7 +19,11 @@ function test_loglik(D::Type{<:Distribution}; atol::Float64 = 1e-3, rtol::Float6
     Random.seed!(seed)
     dist = D()
     y = rand(dist, n)
-    pars = [vcat(params(dist)...) for _ in 1:n]
+    pars = Matrix{Float64}(undef, n, SDM.num_params(D))
+    pars_dist = params(dist)
+    for t in axes(pars, 1), p in axes(pars, 2)
+        pars[t, p] = pars_dist[p]
+    end
     log_lik = SDM.log_likelihood(D, y, pars, n)
     @test log_lik ≈ -loglikelihood(dist, y) atol = atol rtol = rtol
     return
@@ -28,9 +35,9 @@ function test_dynamic(sigma::Float64, lags::Int; seed::Int = 12, atol::Float64 =
     obs_dynamic = kron(ones(n), collect(1:lags)) + rand(dist, n*lags)
     gas_lag_lag = GAS(lags, lags, Normal, 0.0)
     initial_params = dynamic_initial_params(obs_dynamic, gas_lag_lag)
-    for i in eachindex(initial_params)
-        @test initial_params[i][1] ≈ i atol = atol rtol = rtol
-        @test initial_params[i][2] ≈ sigma atol = atol rtol = rtol
+    for i in axes(initial_params, 1)
+        @test initial_params[i, 1] ≈ i atol = atol rtol = rtol
+        @test initial_params[i, 2] ≈ sigma atol = atol rtol = rtol
     end
 end
 
@@ -97,8 +104,8 @@ function normality_quantile_and_pearson_residuals(D, n::Int, lags::Int; seed::In
     gas.B[1][[1; 4]] .= 0.2
 
     y, params = simulate(gas, n)
-    quant_res = quantile_residuals(y, gas, [params[1]])
-    pearson = pearson_residuals(y, gas, [params[1]])
+    quant_res = quantile_residuals(y, gas, params[1:1, :])
+    pearson = pearson_residuals(y, gas, params[1:1, :])
 
     # quantile residuals
     jb = JarqueBeraTest(quant_res)

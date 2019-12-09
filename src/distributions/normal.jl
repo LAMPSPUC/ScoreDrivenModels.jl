@@ -2,18 +2,21 @@
 Proof somewhere 
 parametrized in \\mu and \\sigma^2
 """
-function score(y::T, ::Type{Normal}, param::Vector{T}) where T
-    return [
-        (y - param[1])/param[2];
-        -(0.5/param[2]) * (1 - ((y - param[1])^2)/param[2])
-    ]
+function score!(score_til::Matrix{T}, y::T, ::Type{Normal}, param::Matrix{T}, t::Int) where T
+    score_til[t, 1] = (y - param[t, 1])/param[t, 2]
+    score_til[t, 2] = -(0.5/param[t, 2]) * (1 - ((y - param[t, 1])^2)/param[t, 2])
+    return
 end
 
 """
 Proof somewhere
 """
-function fisher_information(::Type{Normal}, param::Vector{T}) where T
-    return Diagonal([1/(param[2]); 1/(2*(param[2]^2))])
+function fisher_information!(aux::AuxiliaryLinAlg{T}, ::Type{Normal}, param::Matrix{T}, t::Int) where T
+    aux.fisher[1, 1] = 1 / (param[t, 2])
+    aux.fisher[2, 2] = 1 / (2 * (param[t, 2] ^ 2))
+    aux.fisher[2, 1] = 0
+    aux.fisher[1, 2] = 0
+    return
 end
 
 """
@@ -22,38 +25,35 @@ p = 1/sqrt(2πσ²) exp(-0.5(y-μ)²/σ²)
 
 ln(p) = -0.5ln(2πσ²)-0.5(y-μ)²/σ²
 """
-function log_likelihood(::Type{Normal}, y::Vector{T}, param::Vector{Vector{T}}, n::Int) where T
-    loglik = -0.5*n*log(2*pi)
-    for i in 1:n
-        loglik -= 0.5*(log(param[i][2]) + (1/param[i][2])*(y[i] - param[i][1])^2)
+function log_likelihood(::Type{Normal}, y::Vector{T}, param::Matrix{T}, n::Int) where T
+    loglik = -0.5 * n * log(2 * pi)
+    for t in 1:n
+        loglik -= 0.5 * (log(param[t, 2]) + (1 / param[t, 2]) * (y[t] - param[t, 1]) ^ 2)
     end
     return -loglik
 end
 
 # Links
-function link(::Type{Normal}, param::Vector{T}) where T 
-    return [
-        link(IdentityLink, param[1]);
-        link(LogLink, param[2], zero(T))
-    ]
+function link!(param_tilde::Matrix{T}, ::Type{Normal}, param::Matrix{T}, t::Int) where T 
+    param_tilde[t, 1] = link(IdentityLink, param[t, 1])
+    param_tilde[t, 2] = link(LogLink, param[t, 2], zero(T))
+    return
 end
-function unlink(::Type{Normal}, param_tilde::Vector{T}) where T 
-    return [
-        unlink(IdentityLink, param_tilde[1]);
-        unlink(LogLink, param_tilde[2], zero(T))
-    ]
+function unlink!(param::Matrix{T}, ::Type{Normal}, param_tilde::Matrix{T}, t::Int) where T 
+    param[t, 1] = unlink(IdentityLink, param_tilde[t, 1])
+    param[t, 2] = unlink(LogLink, param_tilde[t, 2], zero(T))
+    return
 end
-function jacobian_link(::Type{Normal}, param_tilde::Vector{T}) where T 
-    return Diagonal([
-        jacobian_link(IdentityLink, param_tilde[1]);
-        jacobian_link(LogLink, param_tilde[2], zero(T))
-    ])
+function jacobian_link!(aux::AuxiliaryLinAlg{T}, ::Type{Normal}, param::Matrix{T}, t::Int) where T 
+    aux.jac[1] = jacobian_link(IdentityLink, param[t, 1])
+    aux.jac[2] = jacobian_link(LogLink, param[t, 2], zero(T))
+    return
 end
 
 # utils 
-function update_dist(::Type{Normal}, param::Vector{T}) where T
+function update_dist(::Type{Normal}, param::Matrix{T}, t::Int) where T
     # normal here is parametrized as sigma^2
-    return Normal(param[1], sqrt(param[2]))
+    return Normal(param[t, 1], sqrt(param[t, 2]))
 end 
 
 function num_params(::Type{Normal})
