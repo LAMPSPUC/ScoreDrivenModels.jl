@@ -1,6 +1,6 @@
 using ScoreDrivenModels, Distributions, LinearAlgebra
 
-using Test, Random, HypothesisTests, DelimitedFiles
+using Test, Random, HypothesisTests
 
 const SDM = ScoreDrivenModels
 
