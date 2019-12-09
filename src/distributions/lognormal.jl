@@ -54,5 +54,3 @@ end
 function num_params(::Type{LogNormal})
     return 2
 end
-
-A = rand(1000, 1000)
