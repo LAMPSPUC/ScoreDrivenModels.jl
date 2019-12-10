@@ -1,61 +1,48 @@
-export simulate
+export simulate, forecast
 
-function simulate(gas::GAS{D, T}, n::Int, s::Int) where {D, T}
-    scenarios_series = Matrix{T}(undef, n, s)
+"""
+    simulate(serie::Vector{T}, gas::GAS{D, T}, N::Int, S::Int, kwargs...) where {D, T}
 
-    for i in 1:s
-        serie, params = simulate(gas, n)
-        scenarios_series[:, i] = serie
-    end
-    return scenarios_series
-end
-
-function simulate(gas::GAS{D, T}, n::Int) where {D, T}
-    initial_params = stationary_initial_params(gas)
-    return simulate(gas, n, initial_params)
-end
-
-function simulate(gas::GAS{D, T}, n::Int, initial_params::Matrix{T}) where {D, T}
-    # Allocations
-    serie = zeros(n)
-    n_params = num_params(D)
-    param = Matrix{T}(undef, n, n_params)
-    param_tilde = Matrix{T}(undef, n, n_params)
-    scores_tilde = Matrix{T}(undef, n, n_params)
-    
-    aux = AuxiliaryLinAlg{T}(n_params)
-
-    # Auxiliary Allocation
-    param_dist = zeros(T, 1, n_params)
+Generate scenarios for the future of a time series by updating the GAS recursion `N` times and taking 
+a sample of the distribution until generate `S` scenarios.
+"""
+function simulate(serie::Vector{T}, gas::GAS{D, T}, N::Int, S::Int;
+                    initial_params::Matrix{T} = stationary_initial_params(gas)) where {D, T}
+    # Filter params estimated on the time series
+    params = score_driven_recursion(gas, serie; initial_params = initial_params)
 
     biggest_lag = number_of_lags(gas)
 
-    # initial_values  
-    for t in 1:biggest_lag
-        for p in 1:n_params
-            param[t, p] = initial_params[t, p]
-        end
-        link!(param_tilde, D, param, t)
-        # Sample
-        updated_dist = update_dist(D, param, t)
-        serie[t] = sample_observation(updated_dist)
-        score_tilde!(scores_tilde, serie[t], D, param, aux, gas.scaling, t)
+    params_simulation = params[(end - biggest_lag):(end - 1), :]
+    # Create scenarios matrix
+    scenarios = Matrix{T}(undef, N, S)
+    for scenario in 1:s
+        sim, param = simulate_recursion(gas, N + biggest_lag; initial_params = params_simulation)
+        scenarios[:, scenario] = sim[biggest_lag + 1:end]
     end
-    
-    update_param_tilde!(param_tilde, gas.ω, gas.A, gas.B, scores_tilde, biggest_lag)
-    unlink!(param, D, param_tilde, biggest_lag + 1)
-    updated_dist = update_dist(D, param, biggest_lag + 1)
-    serie[biggest_lag + 1] = sample_observation(updated_dist)
 
-    for i in biggest_lag + 1:n-1
-        # update step
-        univariate_score_driven_update!(param, param_tilde, scores_tilde, serie[i], aux, gas, i)
-        # Sample from the updated distribution
-        unlink!(param, D, param_tilde, i + 1)
-        updated_dist = update_dist(D, param, i + 1)
-        serie[i + 1] = sample_observation(updated_dist)
-    end
-    update_param!(param, param_tilde, D, n)
+    return scenarios
+end
 
-    return serie, param
+
+"""
+    forecast(serie::Vector{T}, gas::GAS{D, T}, N::Int; kwargs...) where {D, T}
+
+Forecast future values of a time series by updating the GAS recursion `N` times and 
+taking the mean of the distribution at each time.
+"""
+function forecast(serie::Vector{T}, gas::GAS{D, T}, N::Int;
+                    initial_params::Matrix{T} = stationary_initial_params(gas)) where {D, T}
+    # Filter params estimated on the time series
+    params = score_driven_recursion(gas, serie; initial_params = initial_params)
+
+    biggest_lag = number_of_lags(gas)
+
+    params_simulation = params[(end - biggest_lag):(end - 1), :]
+    # Create scenarios matrix
+    forec = Vector{T}(undef, N)
+    sim, param = simulate_recursion(gas, N + biggest_lag; initial_params = params_simulation, update = mean)
+    forec = sim[biggest_lag + 1:end]
+
+    return forec
 end

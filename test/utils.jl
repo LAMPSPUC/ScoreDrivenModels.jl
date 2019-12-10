@@ -49,7 +49,7 @@ function simulate_GAS_1_1(D::Type{<:Distribution}, scaling::Float64, ω::Vector{
     gas.ω = ω
     gas.A[1] = A
     gas.B[1] = B
-    series, param = simulate(gas, 5000)
+    series, param = simulate_recursion(gas, 5000)
 
     return series
 end
@@ -65,7 +65,7 @@ function simulate_GAS_1_12(D::Type{<:Distribution}, scaling::Float64, seed::Int)
     gas.B[1]  = convert(Matrix{Float64}, Diagonal(3*v))
     gas.B[12] = convert(Matrix{Float64}, Diagonal(-3*v))
 
-    series, param = simulate(gas, 5000)
+    series, param = simulate_recursion(gas, 5000)
 
     return series
 end
@@ -103,9 +103,9 @@ function normality_quantile_and_pearson_residuals(D, n::Int, lags::Int; seed::In
     gas.A[1][[1; 4]] .= 0.2
     gas.B[1][[1; 4]] .= 0.2
 
-    y, params = simulate(gas, n)
-    quant_res = quantile_residuals(y, gas, params[1:1, :])
-    pearson = pearson_residuals(y, gas, params[1:1, :])
+    y, params = simulate_recursion(gas, n)
+    quant_res = quantile_residuals(y, gas; initial_params = params[1:1, :])
+    pearson = pearson_residuals(y, gas, initial_params = params[1:1, :])
 
     # quantile residuals
     jb = JarqueBeraTest(quant_res)
