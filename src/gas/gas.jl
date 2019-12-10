@@ -133,7 +133,7 @@ function log_lik(psitilde::Vector{T}, y::Vector{T}, gas::GAS{D, T},
     if isnan(initial_params[1]) # Means default stationary initialization
         params = score_driven_recursion(gas, y)
     else
-        params = score_driven_recursion(gas, y, initial_params)
+        params = score_driven_recursion(gas, y; initial_params = initial_params)
     end
 
     return log_likelihood(D, y, params, n)
