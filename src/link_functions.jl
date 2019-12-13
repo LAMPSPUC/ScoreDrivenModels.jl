@@ -60,6 +60,12 @@ function jacobian_link(::Type{LogitLink}, param::T, lower_bound::T, upper_bound:
     return (upper_bound + lower_bound)/((upper_bound - param) * (param - lower_bound))
 end
 
+struct SquareLink <: Link end
+
+link(::Type{SquareLink}, param::T, lower_bound::T) where T = sqrt(param)
+unlink(::Type{SquareLink}, param_tilde::T, lower_bound::T) where T = param_tilde ^ 2
+jacobian_link(::Type{SquareLink}, param::T, lower_bound::T) where T = 0.5/sqrt(param)
+
 const LINKS = [
     IdentityLink;
     LogLink;
