@@ -12,7 +12,8 @@
 
         gas_1_2 = GAS(1, 2, Normal, 0.0)
         gas_1_2.ω = [1; 1]
-        gas_1_2.B[1] = [0.8 0;0 0.5]
+        gas_1_2.B[1] = [0.4 0;0 0.25]
+        gas_1_2.B[2] = [0.4 0;0 0.25]
         initial_params_tilde = stationary_initial_params_tilde(gas_1_2)
         initial_params = stationary_initial_params(gas_1_2)
         @test initial_params_tilde[1, 1] ≈ 5 atol = 1e-2 rtol = 1e-2

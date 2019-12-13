@@ -16,7 +16,7 @@ function simulate(serie::Vector{T}, gas::GAS{D, T}, N::Int, S::Int;
     params_simulation = params[(end - biggest_lag):(end - 1), :]
     # Create scenarios matrix
     scenarios = Matrix{T}(undef, N, S)
-    for scenario in 1:s
+    for scenario in 1:S
         sim, param = simulate_recursion(gas, N + biggest_lag; initial_params = params_simulation)
         scenarios[:, scenario] = sim[biggest_lag + 1:end]
     end
