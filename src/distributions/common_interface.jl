@@ -8,6 +8,8 @@ const DISTS = [
     Weibull
 ]
 
+export Normal, Beta, Poisson, LogNormal, Gamma, Weibull
+
 function score!(score_til::Matrix{T}, y::T, ::Type{<:Distribution}, param::Matrix{T}, t::Int) where T
     return error("score! not implemented for $D distribution")
 end

@@ -52,4 +52,42 @@
             test_coefficients_GAS_1_12(gas)
         end
     end
+    @testset "GARCH(1, 1)" begin
+        # Compare results with ARCHModels
+        y = readdlm("$(@__DIR__)/data/BG96.csv")[:]
+
+        # Redefine links
+        function SDM.link!(param_tilde::Matrix{T}, ::Type{Normal}, param::Matrix{T}, t::Int) where T 
+            param_tilde[t, 1] = link(IdentityLink, param[t, 1])
+            param_tilde[t, 2] = link(IdentityLink, param[t, 2])
+            return
+        end
+        function SDM.unlink!(param::Matrix{T}, ::Type{Normal}, param_tilde::Matrix{T}, t::Int) where T 
+            param[t, 1] = unlink(IdentityLink, param_tilde[t, 1])
+            param[t, 2] = unlink(IdentityLink, param_tilde[t, 2])
+            return
+        end
+        function SDM.jacobian_link!(aux::AuxiliaryLinAlg{T}, ::Type{Normal}, param::Matrix{T}, t::Int) where T 
+            aux.jac[1] = jacobian_link(IdentityLink, param[t, 1])
+            aux.jac[2] = jacobian_link(IdentityLink, param[t, 2])
+            return
+        end
+        test_GARCH_1_1(y, 1)
+        # Back to default links
+        function SDM.link!(param_tilde::Matrix{T}, ::Type{Normal}, param::Matrix{T}, t::Int) where T 
+            param_tilde[t, 1] = link(IdentityLink, param[t, 1])
+            param_tilde[t, 2] = link(LogLink, param[t, 2], zero(T))
+            return
+        end
+        function SDM.unlink!(param::Matrix{T}, ::Type{Normal}, param_tilde::Matrix{T}, t::Int) where T 
+            param[t, 1] = unlink(IdentityLink, param_tilde[t, 1])
+            param[t, 2] = unlink(LogLink, param_tilde[t, 2], zero(T))
+            return
+        end
+        function SDM.jacobian_link!(aux::AuxiliaryLinAlg{T}, ::Type{Normal}, param::Matrix{T}, t::Int) where T 
+            aux.jac[1] = jacobian_link(IdentityLink, param[t, 1])
+            aux.jac[2] = jacobian_link(LogLink, param[t, 2], zero(T))
+            return
+        end
+    end
 end

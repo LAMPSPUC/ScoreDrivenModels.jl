@@ -47,3 +47,11 @@ function LBFGS(model::SDM{D, T}, seeds::Vector{Vector{T}}; f_tol::T = T(1e-6), g
     
     return LBFGS{T}(f_tol, g_tol, iterations, n_seeds, seeds, Optim.LBFGS())
 end
+
+function optimize(func::Optim.TwiceDifferentiable, opt_method::LBFGS{T}, verbose::Int, i::Int) where T
+    return Optim.optimize(func, opt_method.seeds[i], opt_method.method,
+                                                     Optim.Options(f_tol = opt_method.f_tol, 
+                                                                   g_tol = opt_method.g_tol, 
+                                                                   iterations = opt_method.iterations,
+                                                                   show_trace = (verbose == 2 ? true : false) ))
+end

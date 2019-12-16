@@ -1,5 +1,7 @@
 const SCORE_BIG_NUM = 1e5
 
+export AuxiliaryLinAlg
+
 mutable struct AuxiliaryLinAlg{T <: AbstractFloat}
     jac::Vector{T}
     fisher::Matrix{T}

@@ -118,3 +118,18 @@ function normality_quantile_and_pearson_residuals(D, n::Int, lags::Int; seed::In
     @test pvalue(Ljb) >= 0.05
     return 
 end
+
+function test_GARCH_1_1(y, seed::Int; atol = 1e-4, rtol = 1e-4)
+    Random.seed!(seed)
+    ini = [mean(y) var(y)]
+    ub = [1.0; 1.0; 1.0; 1.0]
+    lb = [-1.0; 0.0; 0.0; 0.0]
+    gas = GAS(1, 1, Normal, 1.0, time_varying_params = [2])
+    res = estimate!(gas, y; initial_params = ini, verbose = 1, opt_method = IPNewton(gas, 10; ub = ub, lb = lb))
+
+    @test gas.ω[1] - -0.00616637237701241 ≈ 0 atol = atol rtol = rtol
+    @test gas.ω[2] - 0.010760592759725487 ≈ 0 atol = atol rtol = rtol
+    @test gas.A[1][2, 2] - 0.15341133818189595 ≈ 0 atol = atol rtol = rtol
+    @test gas.B[1][2, 2] - (0.15341133818189595 + 0.8058745318161223) ≈ 0 atol = atol rtol = rtol
+    return
+end

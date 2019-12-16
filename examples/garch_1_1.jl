@@ -1,5 +1,6 @@
 push!(LOAD_PATH, "/home/guilhermebodin/Documents/Github/ScoreDrivenModels.jl/src")
-using ARCHModels, ScoreDrivenModels, Distributions
+using ARCHModels, ScoreDrivenModels
+const SDM = ScoreDrivenModels
 
 f = fit(GARCH{1, 1}, BG96)
 vols = volatilities(f)
@@ -7,35 +8,36 @@ me = means(f)
 c = coef(f)
 loglikelihood(f)
 
-ini = [me[1] vols[1]]
+function SDM.link!(param_tilde::Matrix{T}, ::Type{Normal}, param::Matrix{T}, t::Int) where T 
+    param_tilde[t, 1] = link(IdentityLink, param[t, 1])
+    param_tilde[t, 2] = link(IdentityLink, param[t, 2])
+    return
+end
+function SDM.unlink!(param::Matrix{T}, ::Type{Normal}, param_tilde::Matrix{T}, t::Int) where T 
+    param[t, 1] = unlink(IdentityLink, param_tilde[t, 1])
+    param[t, 2] = unlink(IdentityLink, param_tilde[t, 2])
+    return
+end
+function SDM.jacobian_link!(aux::AuxiliaryLinAlg{T}, ::Type{Normal}, param::Matrix{T}, t::Int) where T 
+    aux.jac[1] = jacobian_link(IdentityLink, param[t, 1])
+    aux.jac[2] = jacobian_link(IdentityLink, param[t, 2])
+    return
+end
 
+y = BG96
+using Statistics
+ini = [mean(y) var(y)]
+ub = [1.0; 1.0; 1.0; 1.0]
+lb = [-1.0; 0.0; 0.0; 0.0]
 gas = GAS(1, 1, Normal, 1.0, time_varying_params = [2])
-# gas.ω[1] = me[1]
-# res = estimate!(gas, BG96; opt_method = LBFGS(gas, 10), initial_params = ini)
-
-seed = [c[4]; c[1]; c[3]; c[2] + c[3]]
-
-res = estimate!(gas, BG96; opt_method = LBFGS(gas, [seed], f_tol = 1e-8, g_tol = 1e-6), verbose = 4)
-gas
+res = estimate!(gas, BG96; initial_params = ini, opt_method = IPNewton(gas, 50; ub = ub, lb = lb))
+res.coefs
 res.llk
+loglikelihood(f)
+c = coef(f)
 
-# param = score_driven_recursion(gas, BG96; initial_params = ini)
-param = score_driven_recursion(gas, BG96)
-
-ScoreDrivenModels.log_likelihood(Normal, BG96, param, 1974)
-
-vols_gas = param[1:end-1, 2]
-vols
-
-using Plots
-plot([vols_gas vols])
-
-
-gas = GAS(1, 1, Normal, 1.0, time_varying_params = [2])
-gas.ω[1] = c[4]
-gas.ω[2] = c[1]
-gas.A[1][2, 2] = c[3]
-gas.B[1][2, 2] = c[2] + c[3]
-param = score_driven_recursion(gas, BG96; initial_params = ini)
-param[:, 2]
-vols
+using Test
+@test gas.ω[1] - -0.00616637237701241 ≈ 0 atol = 1e-4 rtol = 1e-4
+@test gas.ω[2] - 0.010760592759725487 ≈ 0 atol = 1e-4 rtol = 1e-4
+@test gas.A[1][2, 2] - 0.15341133818189595 ≈ 0 atol = 1e-4 rtol = 1e-4
+@test gas.B[1][2, 2] - (0.15341133818189595 + 0.8058745318161223) ≈ 0 atol = 1e-4 rtol = 1e-4
