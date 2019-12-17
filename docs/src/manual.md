@@ -1,9 +1,24 @@
 # Manual
 
+## Model Specification
+
+## Recursion
+
 ## Links
 
-TODO rewrite this. The reparametrization changes the dynamics.
-<!-- Links are reparametrizations utilized to assure certain parameter is within . For example, if we want to estimate a parameter ``f`` which is by definition strictly positive, then an obvious way to estimate ``f`` via numerical optimization is to model ``\tilde{f} = \ln{f}``. We refer to this procedure as **linking**. After obtaining the optimal value of ``\tilde{f}``, we can then **unlink** it to obtain ``f`` by computing ``f = e^{\tilde{f}}``. -->
+Links are reparametrizations utilized to assure certain parameter is within its original domain, i.e. in a distribution one would like to ensure that the time varying parameter ``f \in \mathbb{R}^+``. The way to do this is to model ``\tilde{f} = \ln{f}``. More generally one can stablish that ``\tilde{f} = h(f)``. We refer to this procedure as **linking**. When the parameter is linked the GAS recursion happens in the domain of ``\tilde{f}`` and then one can recover the orginal parameter by ``f = \left(h\right)^-1(\tilde f)``. We refer to this procedure as **unlinking**. The new GAS recursion becomes.
+
+```math
+\begin{equation*}\left\{\begin{array}{ccl}
+    f_{t} &=& h^{-1}(\tilde f_t), \\
+    \tilde f_{t+1} &=& \omega + \sum_{i=1}^p A_{i}\tilde s_{t-i+1} + \sum_{j=1}^q B_{j}\tilde f_{t-j+1}
+    \end{array}
+    \right.
+\end{equation*}
+```
+
+Notice that the change in parametrization changes the dynamics of the model. The GAS(1,1) for a Normal distribution with inverse scaling ``d = 1`` is equivalent to the GARCH(1, 1) model, but only on the original parameter, if you work with a different parametrization the model is no longer equivalent.
+
 
 ### Types of links
 
@@ -12,6 +27,7 @@ The abstract type `Link` subsumes any type of link that can be expressed.
 ```@docs
 ScoreDrivenModels.IdentityLink
 ScoreDrivenModels.LogLink
+ScoreDrivenModels.LogitLink
 ```
 
 ### Link functions

@@ -6,7 +6,6 @@ mutable struct LBFGS{T <: Real} <: AbstractOptimizationMethod{T}
     iterations::Int
     n_seeds::Int
     seeds::Vector{Vector{T}}
-    method::Optim.AbstractOptimizer
 end
 
 """
@@ -28,7 +27,7 @@ function LBFGS(model::SDM{D, T}, n_seeds::Int; f_tol::T = T(1e-6), g_tol::T = T(
         seeds[i] = rand(Distributions.Uniform(LB, UB), n_psi)
     end
     
-    return LBFGS{T}(f_tol, g_tol, iterations, n_seeds, seeds, Optim.LBFGS())
+    return LBFGS{T}(f_tol, g_tol, iterations, n_seeds, seeds)
 end
 
 function LBFGS(model::SDM{D, T}, seeds::Vector{Vector{T}}; f_tol::T = T(1e-6), g_tol::T = T(1e-6), 
@@ -45,11 +44,11 @@ function LBFGS(model::SDM{D, T}, seeds::Vector{Vector{T}}; f_tol::T = T(1e-6), g
         end
     end
     
-    return LBFGS{T}(f_tol, g_tol, iterations, n_seeds, seeds, Optim.LBFGS())
+    return LBFGS{T}(f_tol, g_tol, iterations, n_seeds, seeds)
 end
 
 function optimize(func::Optim.TwiceDifferentiable, opt_method::LBFGS{T}, verbose::Int, i::Int) where T
-    return Optim.optimize(func, opt_method.seeds[i], opt_method.method,
+    return Optim.optimize(func, opt_method.seeds[i], Optim.LBFGS(),
                                                      Optim.Options(f_tol = opt_method.f_tol, 
                                                                    g_tol = opt_method.g_tol, 
                                                                    iterations = opt_method.iterations,

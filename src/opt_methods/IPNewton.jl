@@ -8,7 +8,6 @@ mutable struct IPNewton{T <: Real} <: AbstractOptimizationMethod{T}
     iterations::Int
     n_seeds::Int
     seeds::Vector{Vector{T}}
-    method::Optim.AbstractOptimizer
 end
 
 """
@@ -34,7 +33,7 @@ function IPNewton(model::SDM{D, T}, n_seeds::Int; f_tol::T = T(1e-6), g_tol::T =
         seeds[i] = rand(Distributions.Uniform(LB, UB), n_psi)
     end
     
-    return IPNewton{T}(f_tol, g_tol, ub, lb, iterations, n_seeds, seeds, Optim.IPNewton())
+    return IPNewton{T}(f_tol, g_tol, ub, lb, iterations, n_seeds, seeds)
 end
 
 function IPNewton(model::SDM{D, T}, seeds::Vector{Vector{T}}; f_tol::T = T(1e-6), g_tol::T = T(1e-6), 
@@ -54,12 +53,12 @@ function IPNewton(model::SDM{D, T}, seeds::Vector{Vector{T}}; f_tol::T = T(1e-6)
         end
     end
     
-    return IPNewton{T}(f_tol, g_tol, ub, lb, iterations, n_seeds, seeds, Optim.IPNewton())
+    return IPNewton{T}(f_tol, g_tol, ub, lb, iterations, n_seeds, seeds)
 end
 
 function optimize(func::Optim.TwiceDifferentiable, opt_method::IPNewton{T}, verbose::Int, i::Int) where T
     cons = TwiceDifferentiableConstraints(opt_method.lb, opt_method.ub)
-    return Optim.optimize(func, cons, opt_method.seeds[i], opt_method.method,
+    return Optim.optimize(func, cons, opt_method.seeds[i], Optim.IPNewton(),
                                                      Optim.Options(f_tol = opt_method.f_tol, 
                                                                    g_tol = opt_method.g_tol, 
                                                                    iterations = opt_method.iterations,

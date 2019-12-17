@@ -1,12 +1,6 @@
-push!(LOAD_PATH, "/home/guilhermebodin/Documents/Github/ScoreDrivenModels.jl/src")
-using ARCHModels, ScoreDrivenModels
-const SDM = ScoreDrivenModels
+using ScoreDrivenModels
 
-f = fit(GARCH{1, 1}, BG96)
-vols = volatilities(f)
-me = means(f)
-c = coef(f)
-loglikelihood(f)
+const SDM = ScoreDrivenModels
 
 function SDM.link!(param_tilde::Matrix{T}, ::Type{Normal}, param::Matrix{T}, t::Int) where T 
     param_tilde[t, 1] = link(IdentityLink, param[t, 1])

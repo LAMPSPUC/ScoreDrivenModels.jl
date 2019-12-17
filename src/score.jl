@@ -50,12 +50,12 @@ function scaling_invsqrt!(score_til::Matrix{T}, y::T, D::Type{<:Distribution},
     score!(score_til, y, D, param, t)
     fisher_information!(aux, D, param, t)
 
-    cholesky!(aux.fisher)
     for p in eachindex(aux.score_til_t)
         aux.score_til_t[p] = score_til[t, p]
     end
-    aux.fisher = cholesky(aux.fisher).L
-    aux.score_til_t = aux.fisher\aux.score_til_t
+
+    cholesky!(aux.fisher) # Overwrite aux.fisher with it upper triangular cholesky factorization
+    LinearAlgebra.LAPACK.posv!('U', aux.fisher, aux.score_til_t)
     for p in eachindex(aux.score_til_t)
         score_til[t, p] = aux.score_til_t[p]
     end
