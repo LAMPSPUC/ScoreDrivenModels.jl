@@ -64,13 +64,13 @@ find_unknowns
 dim_unknowns
 length
 """
-mutable struct Unknowns_GAS <: Unknowns_SDM
+mutable struct UnknownsGAS <: UnknownsSDM
     ω::Vector{Int}
     A::Dict{Int, Vector{Int}}
     B::Dict{Int, Vector{Int}}
 end
 
-function fill_psitilde!(gas::GAS, psitilde::Vector{T}, unknowns::Unknowns_GAS) where T
+function fill_psitilde!(gas::GAS, psitilde::Vector{T}, unknowns::UnknownsGAS) where T
     offset = 0
     # fill ω
     for i in unknowns.ω
@@ -106,14 +106,14 @@ function find_unknowns(gas::GAS)
     for (k, v) in gas.B
         unknowns_B[k] = find_unknowns(v)
     end
-    return Unknowns_GAS(unknowns_ω, unknowns_A, unknowns_B)
+    return UnknownsGAS(unknowns_ω, unknowns_A, unknowns_B)
 end
 
 function dim_unknowns(gas::GAS)
     return length(find_unknowns(gas))
 end
 
-function length(unknowns::Unknowns_GAS)
+function length(unknowns::UnknownsGAS)
     len = length(values(unknowns.ω))
     for (k, v) in unknowns.A
         len += length(v)
@@ -125,7 +125,7 @@ function length(unknowns::Unknowns_GAS)
 end
 
 function log_lik(psitilde::Vector{T}, y::Vector{T}, gas::GAS{D, T}, 
-                 initial_params::Matrix{T}, unknowns::Unknowns_GAS, n::Int) where {D, T}
+                 initial_params::Matrix{T}, unknowns::UnknownsGAS, n::Int) where {D, T}
     
     # Use the unkowns vectors to fill the right positions
     fill_psitilde!(gas, psitilde, unknowns)

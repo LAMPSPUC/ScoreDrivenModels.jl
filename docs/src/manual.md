@@ -6,7 +6,7 @@
 
 ## Links
 
-Links are reparametrizations utilized to assure certain parameter is within its original domain, i.e. in a distribution one would like to ensure that the time varying parameter ``f \in \mathbb{R}^+``. The way to do this is to model ``\tilde{f} = \ln{f}``. More generally one can stablish that ``\tilde{f} = h(f)``. We refer to this procedure as **linking**. When the parameter is linked the GAS recursion happens in the domain of ``\tilde{f}`` and then one can recover the orginal parameter by ``f = \left(h\right)^-1(\tilde f)``. We refer to this procedure as **unlinking**. The new GAS recursion becomes.
+Links are reparametrizations utilized to ensure certain parameter is within its original domain, i.e. in a distribution one would like to ensure that the time varying parameter ``f \in \mathbb{R}^+``. The way to do this is to model ``\tilde{f} = \ln{f}``. More generally one can stablish that ``\tilde{f} = h(f)``. We refer to this procedure as **linking**. When the parameter is linked the GAS recursion happens in the domain of ``\tilde{f}`` and then one can recover the orginal parameter by ``f = \left(h\right)^-1(\tilde f)``. We refer to this procedure as **unlinking**. The new GAS recursion becomes.
 
 ```math
 \begin{equation*}\left\{\begin{array}{ccl}

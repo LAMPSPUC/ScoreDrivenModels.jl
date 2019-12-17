@@ -17,8 +17,10 @@ include("score.jl")
 include("MLE.jl")
 
 # Optimization methods
+include("opt_methods/common_methods.jl")
 include("opt_methods/LBFGS.jl")
 include("opt_methods/IPNewton.jl")
+include("opt_methods/NelderMead.jl")
 
 # GAS
 include("gas/gas.jl")
