@@ -47,8 +47,4 @@ function optimize(func::Optim.TwiceDifferentiable, opt_method::AbstractOptimizat
                                                                    show_trace = show_trace(verbose) ))
 end
 
-function is_constrained(opt_method::AbstractOptimizationMethod{T}) where T
-    return (opt_method.ub != [T(Inf)]) || (opt_method.lb != [T(-Inf)])
-end
-
 show_trace(verbose::Int) =  (verbose == 2 ? true : false)
