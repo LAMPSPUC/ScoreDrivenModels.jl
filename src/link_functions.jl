@@ -1,3 +1,6 @@
+export IdentityLink, LogLink, LogitLink
+export link, unlink, jacobian_link
+
 abstract type Link end
 
 """

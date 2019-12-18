@@ -1,6 +1,6 @@
 abstract type ScoreDrivenModel{D, T} end
 
-abstract type Unknowns_SDM end
+abstract type UnknownsSDM end
 
 """
     AbstractOptimizationMethod

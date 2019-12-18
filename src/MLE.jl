@@ -7,13 +7,24 @@ struct EstimationResults{T <: AbstractFloat}
     aic::T
     bic::T
     llk::T
-    minimizer::Vector{T}
+    coefs::Vector{T}
     numerical_hessian::Matrix{T}
 end
 
-function log_lik(psitilde::Vector{T}, y::Vector{T}, sdm::SDM{D, T}, 
-                 initial_params::Vector{Vector{T}}, unknowns::Unknowns_SDM, n::Int) where {D, T}
-    return error("log_lik not defined for a model of type ", typeof(sdm))
+mutable struct AuxEstimation{T <: AbstractFloat}
+    psi::Vector{Vector{T}}
+    numerical_hessian::Vector{Matrix{T}}
+    loglikelihood::Vector{T}
+    opt_result::Vector{Optim.OptimizationResults}
+
+    function AuxEstimation{T}() where T
+        return new(
+            Vector{Vector{T}}(undef, 0), #psi
+            Vector{Matrix{T}}(undef, 0), 
+            Vector{T}(undef, 0), # loglikelihood
+            Vector{Optim.OptimizationResults}(undef, 0) # opt_result
+            )
+    end
 end
 
 function AIC(n_unknowns::Int, log_lik::T) where T
@@ -24,13 +35,23 @@ function BIC(n::Int, n_unknowns::Int, log_lik::T) where T
     return T(log(n) * n_unknowns - 2 * log_lik)
 end
 
+function update_aux_estimation!(aux_est::AuxEstimation{T}, func::Optim.TwiceDifferentiable,
+                                opt_result::Optim.OptimizationResults) where T
+                                
+    push!(aux_est.loglikelihood, -opt_result.minimum)
+    push!(aux_est.psi, opt_result.minimizer)
+    push!(aux_est.numerical_hessian, Optim.hessian!(func, opt_result.minimizer))
+    push!(aux_est.opt_result, opt_result)
+    return
+end
+
 function estimate!(sdm::SDM{D, T}, y::Vector{T};
                    initial_params::Matrix{T} = DEFAULT_INITIAL_PARAM,
                    opt_method::AbstractOptimizationMethod = LBFGS(sdm, DEFAULT_NUM_SEEDS),
                    verbose::Int = 0) where {D, T}
 
     # Number of seed and number of params to estimate
-    nseeds = length(opt_method.seeds)
+    n_seeds = length(opt_method.seeds)
     n = length(y)
 
     unknowns = find_unknowns(sdm)
@@ -40,49 +61,39 @@ function estimate!(sdm::SDM{D, T}, y::Vector{T};
     check_model_estimated(n_unknowns) && return sdm
 
     # optimize for each seed
-    psi = Vector{Vector{T}}(undef, 0)
-    numerical_hessian = Vector{Matrix{T}}(undef, 0)
-    loglikelihood = Vector{T}(undef, 0)
-    optseeds = Vector{Optim.OptimizationResults}(undef, 0)
+    aux_est = AuxEstimation{T}()
 
-    for i = 1:nseeds
+    for i = 1:n_seeds
         try 
             func = TwiceDifferentiable(psi_tilde -> log_lik(psi_tilde, y, sdm, initial_params, unknowns, n), opt_method.seeds[i])
-            optseed = optimize(func, opt_method.seeds[i],
-                                     opt_method.method, Optim.Options(f_tol = opt_method.f_tol, 
-                                                                      g_tol = opt_method.g_tol, 
-                                                                      iterations = opt_method.iterations,
-                                                                      show_trace = (verbose == 2 ? true : false) ))
-            push!(loglikelihood, -optseed.minimum)
-            push!(psi, optseed.minimizer)
-            push!(numerical_hessian, Optim.hessian!(func, optseed.minimizer))
-            push!(optseeds, optseed)
-            println("seed $i of $nseeds - $(-optseed.minimum)")
+            opt_result = optimize(func, opt_method, verbose, i)
+            update_aux_estimation!(aux_est, func, opt_result)
+            println("seed $i of $n_seeds - $(-opt_result.minimum)")
         catch err
             println(err)
             println("seed $i diverged")
         end
     end
 
-    if isempty(loglikelihood) 
+    if isempty(aux_est.loglikelihood) 
         println("No seed converged.")
         return
     end
 
-    best_llk, best_seed = findmax(loglikelihood)
-    num_hessian = numerical_hessian[best_seed]
-    best_psi = psi[best_seed]
+    best_llk, best_seed = findmax(aux_est.loglikelihood)
+    num_hessian = aux_est.numerical_hessian[best_seed]
+    coefs = aux_est.psi[best_seed]
     aic = AIC(n_unknowns, best_llk)
     bic = BIC(n, n_unknowns, best_llk)
 
     if verbose >= 1
         println("\nBest seed optimization result:")
-        println(optseeds[best_seed])
+        println(aux_est.opt_result[best_seed])
     end
 
     # return the estimated 
-    fill_psitilde!(sdm, best_psi, unknowns)
+    fill_psitilde!(sdm, coefs, unknowns)
 
     println("Finished!")
-    return EstimationResults{T}(aic, bic, best_llk, best_psi, num_hessian)
+    return EstimationResults{T}(aic, bic, best_llk, coefs, num_hessian)
 end
