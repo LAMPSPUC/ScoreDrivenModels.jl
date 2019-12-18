@@ -1,4 +1,3 @@
-push!(LOAD_PATH, "/home/guilhermebodin/Documents/Github/ScoreDrivenModels.jl/src")
 using ScoreDrivenModels, Statistics, DelimitedFiles
 
 const SDM = ScoreDrivenModels
