@@ -1,9 +1,10 @@
-export estimate!
+export fit, fit!
 
 const DEFAULT_INITIAL_PARAM = NaN.*ones(1, 1)
 const DEFAULT_NUM_SEEDS = 3
+const DEFAULT_VERBOSE = 0
 
-struct EstimationResults{T <: AbstractFloat}
+struct FittedSDM{T <: AbstractFloat}
     aic::T
     bic::T
     llk::T
@@ -45,27 +46,30 @@ function update_aux_estimation!(aux_est::AuxEstimation{T}, func::Optim.TwiceDiff
     return
 end
 
-function estimate!(sdm::SDM{D, T}, y::Vector{T};
-                   initial_params::Matrix{T} = DEFAULT_INITIAL_PARAM,
-                   opt_method::AbstractOptimizationMethod = LBFGS(sdm, DEFAULT_NUM_SEEDS),
-                   verbose::Int = 0) where {D, T}
+function fit(sdm::SDM{D, T}, y::Vector{T};
+             initial_params::Matrix{T} = DEFAULT_INITIAL_PARAM,
+             opt_method::AbstractOptimizationMethod = LBFGS(sdm, DEFAULT_NUM_SEEDS),
+             verbose::Int = DEFAULT_VERBOSE) where {D, T}
 
     # Number of seed and number of params to estimate
     n_seeds = length(opt_method.seeds)
     n = length(y)
-
+    
     unknowns = find_unknowns(sdm)
     n_unknowns = length(unknowns)
-
+    
     # Check if the model has no unknowns
     check_model_estimated(n_unknowns) && return sdm
 
+    # Create a copy of the model to estimate
+    sdm_fit = deepcopy(sdm)
+    
     # optimize for each seed
     aux_est = AuxEstimation{T}()
 
     for i = 1:n_seeds
         try 
-            func = TwiceDifferentiable(psi_tilde -> log_lik(psi_tilde, y, sdm, initial_params, unknowns, n), opt_method.seeds[i])
+            func = TwiceDifferentiable(psi_tilde -> log_lik(psi_tilde, y, sdm_fit, initial_params, unknowns, n), opt_method.seeds[i])
             opt_result = optimize(func, opt_method, verbose, i)
             update_aux_estimation!(aux_est, func, opt_result)
             println("seed $i of $n_seeds - $(-opt_result.minimum)")
@@ -91,9 +95,21 @@ function estimate!(sdm::SDM{D, T}, y::Vector{T};
         println(aux_est.opt_result[best_seed])
     end
 
-    # return the estimated 
-    fill_psitilde!(sdm, coefs, unknowns)
-
     println("Finished!")
-    return EstimationResults{T}(aic, bic, best_llk, coefs, num_hessian)
+    return FittedSDM{T}(aic, bic, best_llk, coefs, num_hessian)
+end
+
+function fit!(sdm::SDM{D, T}, y::Vector{T};
+              initial_params::Matrix{T} = DEFAULT_INITIAL_PARAM,
+              opt_method::AbstractOptimizationMethod = LBFGS(sdm, DEFAULT_NUM_SEEDS),
+              verbose::Int = DEFAULT_VERBOSE) where {D, T}
+
+    unknowns = find_unknowns(sdm)
+    # Check if the model has no unknowns
+    n_unknowns = length(unknowns)
+    check_model_estimated(n_unknowns) && return sdm
+    
+    f = fit(sdm, y; initial_params = initial_params, opt_method = opt_method, verbose = verbose)
+    fill_psitilde!(sdm, f.coefs, unknowns)
+    return f
 end
