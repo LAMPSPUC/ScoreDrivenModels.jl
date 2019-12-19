@@ -7,6 +7,10 @@ mutable struct GAS{D <: Distribution, T <: AbstractFloat} <: SDM{D, T}
     scaling::Real
 end
 
+function deepcopy(gas::GAS{D, T}) where {D, T}
+    return GAS{D, T}(deepcopy(gas.ω), deepcopy(gas.A), deepcopy(gas.B), deepcopy(gas.scaling))
+end
+
 function create_ω(num_params::Int)
     return fill(NaN, num_params)
 end

@@ -3,7 +3,7 @@ module ScoreDrivenModels
 using Distributions, Optim, SpecialFunctions
 using LinearAlgebra
 
-import Base.length
+import Base.length, Base.deepcopy
 
 const SCALINGS  = [0.0, 1/2, 1.0]
 const BIG_NUM = 1e8

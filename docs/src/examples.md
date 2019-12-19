@@ -13,7 +13,7 @@ y = Vector{Float64}(vec(inflow'))
 gas = GAS([1, 12], [1, 12], LogNormal, 0.0)
 
 # Estimate the model via MLE
-estimate!(gas, y)
+fit!(gas, y)
 
 # Obtain in-sample estimates for the inflow
 y_gas = fitted_mean(gas, y, dynamic_initial_params(y, gas))

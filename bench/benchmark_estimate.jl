@@ -14,7 +14,7 @@ num_seeds = 3
 @benchmark begin
     gas = GAS($p, $q, $Beta, $scaling)
     opt_method = ScoreDrivenModels.LBFGS(gas, $num_seeds)
-    estimate!(gas, $simulation; verbose = $verbose, opt_method = opt_method)
+    fit!(gas, $simulation; verbose = $verbose, opt_method = opt_method)
 end
 # BenchmarkTools.Trial:
 #   memory estimate:  466.69 MiB
@@ -40,7 +40,7 @@ num_seeds = 3
 @benchmark begin
     gas = GAS($p, $q, $LogNormal, $scaling)
     opt_method = ScoreDrivenModels.LBFGS(gas, $num_seeds)
-    estimate!(gas, $simulation; verbose = $verbose, opt_method = opt_method)
+    fit!(gas, $simulation; verbose = $verbose, opt_method = opt_method)
 end
 # BenchmarkTools.Trial:
 #   memory estimate:  353.02 MiB
@@ -59,7 +59,7 @@ scaling = 0.5
 @benchmark begin
     gas = GAS($p, $q, $LogNormal, $scaling)
     opt_method = ScoreDrivenModels.LBFGS(gas, $num_seeds)
-    estimate!(gas, $simulation; verbose = $verbose, opt_method = opt_method)
+    fit!(gas, $simulation; verbose = $verbose, opt_method = opt_method)
 end
 # BenchmarkTools.Trial:
 #   memory estimate:  8.26 GiB
@@ -77,7 +77,7 @@ scaling = 1.0
 @benchmark begin
     gas = GAS($p, $q, $LogNormal, $scaling)
     opt_method = ScoreDrivenModels.LBFGS(gas, $num_seeds)
-    estimate!(gas, $simulation; verbose = $verbose, opt_method = opt_method)
+    fit!(gas, $simulation; verbose = $verbose, opt_method = opt_method)
 end
 # BenchmarkTools.Trial:
 #   memory estimate:  666.69 MiB
