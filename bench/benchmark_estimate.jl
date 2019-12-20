@@ -1,4 +1,3 @@
-push!(LOAD_PATH, "/home/guilhermebodin/Documents/Github/ScoreDrivenModels.jl/src")
 using ScoreDrivenModels, Distributions, BenchmarkTools, Random, Test
 
 const SDM = ScoreDrivenModels
@@ -44,13 +43,13 @@ num_seeds = 3
     fit!(gas, $simulation; verbose = $verbose, opt_method = opt_method)
 end
 # BenchmarkTools.Trial:
-#   memory estimate:  466.69 MiB
-#   allocs estimate:  40237
+#   memory estimate:  1.27 GiB
+#   allocs estimate:  51637326
 #   --------------
-#   minimum time:     2.553 s (0.57% GC)
-#   median time:      2.655 s (0.59% GC)
-#   mean time:        2.655 s (0.59% GC)
-#   maximum time:     2.756 s (0.60% GC)
+#   minimum time:     4.329 s (2.79% GC)
+#   median time:      4.456 s (2.01% GC)
+#   mean time:        4.456 s (2.01% GC)
+#   maximum time:     4.582 s (1.28% GC)
 #   --------------
 #   samples:          2
 #   evals/sample:     1
@@ -70,15 +69,15 @@ num_seeds = 3
     fit!(gas, $simulation; verbose = $verbose, opt_method = opt_method)
 end
 # BenchmarkTools.Trial:
-#   memory estimate:  353.02 MiB
-#   allocs estimate:  30598
+#   memory estimate:  3.05 GiB
+#   allocs estimate:  162735474
 #   --------------
-#   minimum time:     1.008 s (1.41% GC)
-#   median time:      1.265 s (1.36% GC)
-#   mean time:        1.281 s (1.35% GC)
-#   maximum time:     1.587 s (1.28% GC)
+#   minimum time:     6.504 s (2.29% GC)
+#   median time:      6.504 s (2.29% GC)
+#   mean time:        6.504 s (2.29% GC)
+#   maximum time:     6.504 s (2.29% GC)
 #   --------------
-#   samples:          4
+#   samples:          1
 #   evals/sample:     1
 
 
@@ -89,13 +88,13 @@ scaling = 0.5
     fit!(gas, $simulation; verbose = $verbose, opt_method = opt_method)
 end
 # BenchmarkTools.Trial:
-#   memory estimate:  8.26 GiB
-#   allocs estimate:  159942290
+#   memory estimate:  3.98 GiB
+#   allocs estimate:  187569916
 #   --------------
-#   minimum time:     7.361 s (18.19% GC)
-#   median time:      7.361 s (18.19% GC)
-#   mean time:        7.361 s (18.19% GC)
-#   maximum time:     7.361 s (18.19% GC)
+#   minimum time:     9.068 s (4.12% GC)
+#   median time:      9.068 s (4.12% GC)
+#   mean time:        9.068 s (4.12% GC)
+#   maximum time:     9.068 s (4.12% GC)
 #   --------------
 #   samples:          1
 #   evals/sample:     1
@@ -107,13 +106,13 @@ scaling = 1.0
     fit!(gas, $simulation; verbose = $verbose, opt_method = opt_method)
 end
 # BenchmarkTools.Trial:
-#   memory estimate:  666.69 MiB
-#   allocs estimate:  8744603
+#   memory estimate:  3.44 GiB
+#   allocs estimate:  175127573
 #   --------------
-#   minimum time:     2.908 s (2.08% GC)
-#   median time:      3.382 s (2.07% GC)
-#   mean time:        3.382 s (2.07% GC)
-#   maximum time:     3.855 s (2.07% GC)
+#   minimum time:     9.172 s (2.29% GC)
+#   median time:      9.172 s (2.29% GC)
+#   mean time:        9.172 s (2.29% GC)
+#   maximum time:     9.172 s (2.29% GC)
 #   --------------
-#   samples:          2
+#   samples:          1
 #   evals/sample:     1

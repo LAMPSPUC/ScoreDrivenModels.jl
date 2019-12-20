@@ -4,30 +4,6 @@ const DEFAULT_INITIAL_PARAM = NaN.*ones(1, 1)
 const DEFAULT_NUM_SEEDS = 3
 const DEFAULT_VERBOSE = 0
 
-struct FittedSDM{T <: AbstractFloat}
-    aic::T
-    bic::T
-    llk::T
-    coefs::Vector{T}
-    numerical_hessian::Matrix{T}
-end
-
-mutable struct AuxEstimation{T <: AbstractFloat}
-    psi::Vector{Vector{T}}
-    numerical_hessian::Vector{Matrix{T}}
-    loglikelihood::Vector{T}
-    opt_result::Vector{Optim.OptimizationResults}
-
-    function AuxEstimation{T}() where T
-        return new(
-            Vector{Vector{T}}(undef, 0), #psi
-            Vector{Matrix{T}}(undef, 0), 
-            Vector{T}(undef, 0), # loglikelihood
-            Vector{Optim.OptimizationResults}(undef, 0) # opt_result
-            )
-    end
-end
-
 function AIC(n_unknowns::Int, log_lik::T) where T
     return T(2 * n_unknowns - 2 * log_lik)
 end

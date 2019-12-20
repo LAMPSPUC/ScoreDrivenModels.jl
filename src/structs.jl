@@ -1,4 +1,4 @@
-export AuxiliaryLinAlg
+export AuxiliaryLinAlg, GAS
 
 abstract type ScoreDrivenModel{D, T} end
 
@@ -29,12 +29,34 @@ mutable struct AuxiliaryLinAlg{T <: AbstractFloat}
     end
 end
 
-export GAS
-
 mutable struct GAS{D <: Distribution, T <: AbstractFloat} <: SDM{D, T}
     ω::Vector{T}
     A::Dict{Int, Matrix{T}}
     B::Dict{Int, Matrix{T}}
     scaling::Real
     links::Vector{<:Link}
+end
+
+struct FittedSDM{T <: AbstractFloat}
+    aic::T
+    bic::T
+    llk::T
+    coefs::Vector{T}
+    numerical_hessian::Matrix{T}
+end
+
+mutable struct AuxEstimation{T <: AbstractFloat}
+    psi::Vector{Vector{T}}
+    numerical_hessian::Vector{Matrix{T}}
+    loglikelihood::Vector{T}
+    opt_result::Vector{Optim.OptimizationResults}
+
+    function AuxEstimation{T}() where T
+        return new(
+            Vector{Vector{T}}(undef, 0), #psi
+            Vector{Matrix{T}}(undef, 0), 
+            Vector{T}(undef, 0), # loglikelihood
+            Vector{Optim.OptimizationResults}(undef, 0) # opt_result
+            )
+    end
 end
