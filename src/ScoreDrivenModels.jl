@@ -10,7 +10,7 @@ const BIG_NUM = 1e8
 const SMALL_NUM = 1e-8
 
 # Core files
-include("abstracts.jl")
+include("structs.jl")
 include("utils.jl")
 include("link_functions.jl")
 include("score.jl")
