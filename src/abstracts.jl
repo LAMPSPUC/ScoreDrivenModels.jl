@@ -15,7 +15,6 @@ const SDM{D, T} = ScoreDrivenModel{D, T}
 
 abstract type Link end
 
-
 mutable struct AuxiliaryLinAlg{T <: AbstractFloat}
     jac::Vector{T}
     fisher::Matrix{T}
