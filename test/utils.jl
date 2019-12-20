@@ -124,7 +124,8 @@ function test_GARCH_1_1(y, seed::Int, optimizer; atol = 1e-4, rtol = 1e-4)
     ini = [mean(y) var(y)]
     ub = [1.0; 1.0; 1.0; 1.0]
     lb = [-1.0; 0.0; 0.0; 0.0]
-    gas = GAS(1, 1, Normal, 1.0, time_varying_params = [2])
+    links = [IdentityLink(); IdentityLink()]
+    gas = GAS(1, 1, Normal, 1.0; time_varying_params = [2], links = links)
     res = fit!(gas, y; initial_params = ini, verbose = 1, opt_method = optimizer(gas, 10; ub = ub, lb = lb))
 
     @test gas.ω[1] - -0.00616637237701241 ≈ 0 atol = atol rtol = rtol

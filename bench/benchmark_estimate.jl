@@ -1,6 +1,8 @@
 push!(LOAD_PATH, "/home/guilhermebodin/Documents/Github/ScoreDrivenModels.jl/src")
 using ScoreDrivenModels, Distributions, BenchmarkTools, Random, Test
 
+const SDM = ScoreDrivenModels
+
 include("test/utils.jl")
 
 scaling = 0.0
@@ -11,8 +13,21 @@ simulation = simulate_GAS_1_1(Beta, scaling, ω, A, B, 1)
 p = 1
 q = 1
 gas = GAS(p, q, Beta, scaling)
+gas.ω = ω
+gas.A[1] = A
+gas.B[1] = B
 @benchmark score_driven_recursion($gas, $simulation)
-
+# BenchmarkTools.Trial:
+#   memory estimate:  235.38 KiB
+#   allocs estimate:  18
+#   --------------
+#   minimum time:     1.084 ms (0.00% GC)
+#   median time:      1.130 ms (0.00% GC)
+#   mean time:        1.244 ms (2.41% GC)
+#   maximum time:     79.034 ms (98.52% GC)
+#   --------------
+#   samples:          4007
+#   evals/sample:     1
 
 scaling = 0.0
 ω = [0.1, 0.1]

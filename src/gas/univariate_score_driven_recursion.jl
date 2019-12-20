@@ -24,8 +24,8 @@ function score_driven_recursion(gas::GAS{D, T}, observations::Vector{T};
         for p in 1:n_params
             param[i, p] = initial_params[i, p]
         end
-        link!(param_tilde, gas, param, i)
-        score_tilde!(scores_tilde, observations[i], gas, param, aux, i)
+        link!(param_tilde, gas.links, param, i)
+        score_tilde!(scores_tilde, observations[i], gas.links, D, gas.scaling, param, aux, i)
     end
     
     update_param_tilde!(param_tilde, gas.ω, gas.A, gas.B, scores_tilde, biggest_lag)
@@ -33,7 +33,7 @@ function score_driven_recursion(gas::GAS{D, T}, observations::Vector{T};
     for i in biggest_lag + 1:n
         univariate_score_driven_update!(param, param_tilde, scores_tilde, observations[i], aux, gas, i)
     end
-    update_param!(param, param_tilde, gas, n + 1)
+    update_param!(param, param_tilde, gas.links, n + 1)
 
     return param
 end
@@ -61,15 +61,15 @@ function simulate_recursion(gas::GAS{D, T}, n::Int;
         for p in 1:n_params
             param[t, p] = initial_params[t, p]
         end
-        link!(param_tilde, gas, param, t)
+        link!(param_tilde, gas.links, param, t)
         # Sample
         updated_dist = update_dist(D, param, t)
         serie[t] = update(updated_dist)
-        score_tilde!(scores_tilde, serie[t], gas, param, aux, t)
+        score_tilde!(scores_tilde, serie[t], gas.links, D, gas.scaling, param, aux, t)
     end
     
     update_param_tilde!(param_tilde, gas.ω, gas.A, gas.B, scores_tilde, biggest_lag)
-    unlink!(param, gas, param_tilde, biggest_lag + 1)
+    unlink!(param, gas.links, param_tilde, biggest_lag + 1)
     updated_dist = update_dist(D, param, biggest_lag + 1)
     serie[biggest_lag + 1] = update(updated_dist)
 
@@ -77,11 +77,11 @@ function simulate_recursion(gas::GAS{D, T}, n::Int;
         # update step
         univariate_score_driven_update!(param, param_tilde, scores_tilde, serie[i], aux, gas, i)
         # Sample from the updated distribution
-        unlink!(param, gas, param_tilde, i + 1)
+        unlink!(param, gas.links, param_tilde, i + 1)
         updated_dist = update_dist(D, param, i + 1)
         serie[i + 1] = update(updated_dist)
     end
-    update_param!(param, param_tilde, gas, n)
+    update_param!(param, param_tilde, gas.links, n)
 
     return serie, param
 end
@@ -91,16 +91,16 @@ function univariate_score_driven_update!(param::Matrix{T}, param_tilde::Matrix{T
                                          observation::T, aux::AuxiliaryLinAlg{T},
                                          gas::GAS{D, T}, i::Int) where {D <: Distribution, T <: AbstractFloat}
     # update param 
-    update_param!(param, param_tilde, gas, i)
+    update_param!(param, param_tilde, gas.links, i)
     # evaluate score
-    score_tilde!(scores_tilde, observation, gas, param, aux, i)
+    score_tilde!(scores_tilde, observation, gas.links, D, gas.scaling, param, aux, i)
     # update param_tilde
     update_param_tilde!(param_tilde, gas.ω, gas.A, gas.B, scores_tilde, i)
     return 
 end
 
-function update_param!(param::Matrix{T}, param_tilde::Matrix{T}, gas::GAS{D, T}, i::Int) where {D, T}
-    unlink!(param, gas, param_tilde, i)
+function update_param!(param::Matrix{T}, param_tilde::Matrix{T}, links::Vector{<:Link}, i::Int) where {T}
+    unlink!(param, links, param_tilde, i)
     # Some treatments 
     NaN2zero!(param, i)
     big_threshold!(param, BIG_NUM, i)
@@ -144,3 +144,58 @@ function fitted_mean(gas::GAS{D, T}, observations::Vector{T};
     
     return fitted_mean
 end
+
+
+# link2(::Type{IdentityLink}, param::T) where T = param
+# link2(::Type{LogLink}, param::T, lb::T) where T = log(param - lb)
+
+# function link1!(param_tilde::Matrix{T}, gas::GAS{D, T}, param::Matrix{T}, t::Int) where {D, T}
+#     @inbounds for i in axes(param, 2)
+#         param_tilde[t, i] = link(gas.links[i], param[t, i])
+#     end
+#     return
+# end
+
+# function link3!(param_tilde::Matrix{T}, links::Vector{<:SDM.Link}, param::Matrix{T}, t::Int) where {D, T}
+#     @inbounds for i in axes(param, 2)
+#         param_tilde[t, i] = link(links[i], param[t, i])
+#     end
+#     return
+# end
+
+# function link4!(param_tilde::Matrix{T}, links::Vector{<:SDM.Link}, param::Matrix{T}, t::Int) where {D, T}
+#     param_tilde[t, 1] = link(links[1], param[t, 1])
+#     param_tilde[t, 2] = link(links[2], param[t, 2])
+#     return
+# end
+
+# function link5!(param_tilde::Matrix{T}, links::Vector{<:SDM.Link}, param::Matrix{T}, t::Int) where T
+#     param_tilde[t, 1] = link(links[1], param[t, 1])
+#     param_tilde[t, 2] = link(links[2], param[t, 2])
+#     return
+# end
+
+# function link2!(param_tilde::Matrix{T}, gas::GAS{D, T}, param::Matrix{T}, t::Int) where {D, T}
+#     param_tilde[t, 1] = link2(IdentityLink, param[t, 1])
+#     param_tilde[t, 2] = link2(LogLink, param[t, 2], zero(T))
+#     return
+# end
+
+# @btime link1!($param_tilde, $gas, $param, $i)
+# @btime link2!($param_tilde, $gas, $param, $i)
+# @btime link3!($param_tilde, $gas.links, $param, $i)
+# @btime link4!($param_tilde, $gas.links, $param, $i)
+# @btime link5!($param_tilde, $gas.links, $param, $i)
+
+# link2(::Type{IdentityLink}, param::T) where T = param
+# link2(::Type{LogLink}, param::T, lb::T) where T = log(param - lb)
+
+
+# @code_warntype link1!(param_tilde, gas, param, i)
+# @code_warntype link2!(param_tilde, gas, param, i)
+
+# @code_warntype link5!(param_tilde, gas.links, param, i)
+# @code_warntype link2!(param_tilde, gas, param, i)
+
+# @code_warntype link5!(param_tilde, gas.links, param, i)
+# @code_warntype link2!(param_tilde, gas, param, i)

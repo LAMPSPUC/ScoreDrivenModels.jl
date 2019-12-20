@@ -138,21 +138,21 @@ function log_lik(psitilde::Vector{T}, y::Vector{T}, gas::GAS{D, T},
 end
 
 # Link functions for GAS
-function link!(param_tilde::Matrix{T}, gas::GAS{D, T}, param::Matrix{T}, t::Int) where {D, T}
+function link!(param_tilde::Matrix{T}, links::Vector{<:Link}, param::Matrix{T}, t::Int) where {D, T}
     @inbounds for i in axes(param, 2)
-        param_tilde[t, i] = link(gas.links[i], param[t, i])
+        param_tilde[t, i] = link(links[i], param[t, i])
     end
     return
 end
-function unlink!(param::Matrix{T}, gas::GAS{D, T}, param_tilde::Matrix{T}, t::Int) where {D, T}
+function unlink!(param::Matrix{T}, links::Vector{<:Link}, param_tilde::Matrix{T}, t::Int) where {D, T}
     @inbounds for i in axes(param, 2)
-        param[t, i] = unlink(gas.links[i], param_tilde[t, i])
+        param[t, i] = unlink(links[i], param_tilde[t, i])
     end
     return
 end
-function jacobian_link!(aux::AuxiliaryLinAlg{T}, gas::GAS{D, T}, param::Matrix{T}, t::Int) where {D, T}
+function jacobian_link!(aux::AuxiliaryLinAlg{T}, links::Vector{<:Link}, param::Matrix{T}, t::Int) where {D, T}
     @inbounds for i in axes(param, 2)
-        aux.jac[i] = jacobian_link(gas.links[i], param[t, i])
+        aux.jac[i] = jacobian_link(links[i], param[t, i])
     end
     return
 end

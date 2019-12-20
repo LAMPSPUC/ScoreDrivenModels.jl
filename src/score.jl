@@ -1,14 +1,15 @@
 const SCORE_BIG_NUM = 1e5
 
-function score_tilde!(score_til::Matrix{T}, y::T, gas::GAS{D, T}, 
-                      param::Matrix{T}, aux::AuxiliaryLinAlg{T}, t::Int) where {D, T}
+function score_tilde!(score_til::Matrix{T}, y::T, links::Vector{<:Link}, 
+                      D::Type{<:Distribution}, scaling::Real,
+                      param::Matrix{T}, aux::AuxiliaryLinAlg{T}, t::Int) where T
 
-    if gas.scaling == SCALINGS[1] # 0.0
-        scaling_identity!(score_til, y, gas, aux, param, t)
-    elseif gas.scaling == SCALINGS[2] # 1/2
-        scaling_invsqrt!(score_til, y, gas, aux, param, t)
-    elseif gas.scaling == SCALINGS[3] # 1
-        scaling_inv!(score_til, y, gas, aux, param, t)
+    if scaling == SCALINGS[1] # 0.0
+        scaling_identity!(score_til, y, links, D, aux, param, t)
+    elseif scaling == SCALINGS[2] # 1/2
+        scaling_invsqrt!(score_til, y, links, D, aux, param, t)
+    elseif scaling == SCALINGS[3] # 1
+        scaling_inv!(score_til, y, links, D, aux, param, t)
     end
 
     NaN2zero!(score_til, t)
@@ -18,19 +19,19 @@ function score_tilde!(score_til::Matrix{T}, y::T, gas::GAS{D, T},
 end
 
 # Scalings
-function scaling_identity!(score_til::Matrix{T}, y::T, gas::GAS{D, T}, 
-                           aux::AuxiliaryLinAlg{T}, param::Matrix{T}, t::Int) where {D, T}
-    jacobian_link!(aux, gas, param, t)
+function scaling_identity!(score_til::Matrix{T}, y::T, links::Vector{<:Link}, D::Type{<:Distribution},
+                           aux::AuxiliaryLinAlg{T}, param::Matrix{T}, t::Int) where T
+    jacobian_link!(aux, links, param, t)
     score!(score_til, y, D, param, t)
     for p in eachindex(aux.jac)
         score_til[t, p] = score_til[t, p]/aux.jac[p]
     end
 end
 
-function scaling_invsqrt!(score_til::Matrix{T}, y::T, gas::GAS{D, T}, 
-                          aux::AuxiliaryLinAlg{T}, param::Matrix{T}, t::Int) where {D, T}
+function scaling_invsqrt!(score_til::Matrix{T}, y::T, links::Vector{<:Link}, D::Type{<:Distribution},
+                          aux::AuxiliaryLinAlg{T}, param::Matrix{T}, t::Int) where T
     # Evaluate jacobian, score and FI
-    jacobian_link!(aux, gas, param, t)
+    jacobian_link!(aux, links, param, t)
     score!(score_til, y, D, param, t)
     fisher_information!(aux, D, param, t)
 
@@ -46,10 +47,10 @@ function scaling_invsqrt!(score_til::Matrix{T}, y::T, gas::GAS{D, T},
     return
 end
 
-function scaling_inv!(score_til::Matrix{T}, y::T, gas::GAS{D, T}, 
-                      aux::AuxiliaryLinAlg{T}, param::Matrix{T}, t::Int) where {D, T}
+function scaling_inv!(score_til::Matrix{T}, y::T, links::Vector{<:Link}, D::Type{<:Distribution},
+                      aux::AuxiliaryLinAlg{T}, param::Matrix{T}, t::Int) where T
     # Evaluate jacobian, score and FI
-    jacobian_link!(aux, gas, param, t)
+    jacobian_link!(aux, links, param, t)
     score!(score_til, y, D, param, t)
     fisher_information!(aux, D, param, t)
     for p in eachindex(aux.score_til_t)
