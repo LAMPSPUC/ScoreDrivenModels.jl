@@ -31,21 +31,8 @@ function log_likelihood(::Type{Beta}, y::Vector{T}, param::Matrix{T}, n::Int) wh
     return -loglik
 end
 
-# Links
-function link!(param_tilde::Matrix{T}, ::Type{Beta}, param::Matrix{T}, t::Int) where T 
-    param_tilde[t, 1] = link(LogLink, param[t, 1], zero(T))
-    param_tilde[t, 2] = link(LogLink, param[t, 2], zero(T))
-    return
-end
-function unlink!(param::Matrix{T}, ::Type{Beta}, param_tilde::Matrix{T}, t::Int) where T 
-    param[t, 1] = unlink(LogLink, param_tilde[t, 1], zero(T))
-    param[t, 2] = unlink(LogLink, param_tilde[t, 2], zero(T))
-    return
-end
-function jacobian_link!(aux::AuxiliaryLinAlg{T}, ::Type{Beta}, param::Matrix{T}, t::Int) where T 
-    aux.jac[1] = jacobian_link(LogLink, param[t, 1], zero(T))
-    aux.jac[2] = jacobian_link(LogLink, param[t, 2], zero(T))
-    return
+function default_links(::Type{Beta})
+    return [LogLink(0.0); LogLink(0.0)]
 end
 
 # utils

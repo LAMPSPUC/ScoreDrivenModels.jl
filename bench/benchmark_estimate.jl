@@ -1,6 +1,18 @@
+push!(LOAD_PATH, "/home/guilhermebodin/Documents/Github/ScoreDrivenModels.jl/src")
 using ScoreDrivenModels, Distributions, BenchmarkTools, Random, Test
 
 include("test/utils.jl")
+
+scaling = 0.0
+ω = [0.1, 0.1]
+A = [0.2 0; 0 0.2]
+B = [0.2 0; 0 0.2]
+simulation = simulate_GAS_1_1(Beta, scaling, ω, A, B, 1)
+p = 1
+q = 1
+gas = GAS(p, q, Beta, scaling)
+@benchmark score_driven_recursion($gas, $simulation)
+
 
 scaling = 0.0
 ω = [0.1, 0.1]

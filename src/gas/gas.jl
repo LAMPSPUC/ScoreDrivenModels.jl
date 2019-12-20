@@ -1,14 +1,6 @@
-export GAS
-
-mutable struct GAS{D <: Distribution, T <: AbstractFloat} <: SDM{D, T}
-    ω::Vector{T}
-    A::Dict{Int, Matrix{T}}
-    B::Dict{Int, Matrix{T}}
-    scaling::Real
-end
-
 function deepcopy(gas::GAS{D, T}) where {D, T}
-    return GAS{D, T}(deepcopy(gas.ω), deepcopy(gas.A), deepcopy(gas.B), deepcopy(gas.scaling))
+    return GAS{D, T}(deepcopy(gas.ω), deepcopy(gas.A), deepcopy(gas.B), 
+                     deepcopy(gas.scaling), deepcopy(gas.links))
 end
 
 function create_ω(num_params::Int)
@@ -27,6 +19,7 @@ function create_lagged_matrix(lags::Vector{Int}, time_varying_params::Vector{Int
 end
 
 function GAS(p::Int, q::Int, D::Type{<:Distribution}, scaling::Real; 
+             links::Vector{<:Link} = default_links(D),
              time_varying_params::Vector{Int} = collect(1:num_params(D)))
 
     # Vector of unkowns
@@ -37,10 +30,11 @@ function GAS(p::Int, q::Int, D::Type{<:Distribution}, scaling::Real;
     A = create_lagged_matrix(collect(1:p), time_varying_params, zeros_params)
     B = create_lagged_matrix(collect(1:q), time_varying_params, zeros_params)
 
-    return GAS{D, Float64}(ω, A, B, scaling)
+    return GAS{D, Float64}(ω, A, B, scaling, links)
 end
 
-function GAS(ps::Vector{Int}, qs::Vector{Int}, D::Type{<:Distribution}, scaling::Real; 
+function GAS(ps::Vector{Int}, qs::Vector{Int}, D::Type{<:Distribution}, scaling::Real;
+             links::Vector{<:Link} = default_links(D),
              time_varying_params::Vector{Int} = collect(1:num_params(D)))
 
     # Vector of unkowns
@@ -51,7 +45,7 @@ function GAS(ps::Vector{Int}, qs::Vector{Int}, D::Type{<:Distribution}, scaling:
     A = create_lagged_matrix(ps, time_varying_params, zeros_params)
     B = create_lagged_matrix(qs, time_varying_params, zeros_params)
 
-    return GAS{D, Float64}(ω, A, B, scaling)
+    return GAS{D, Float64}(ω, A, B, scaling, links)
 end
 
 function number_of_lags(gas::GAS)
@@ -141,4 +135,24 @@ function log_lik(psitilde::Vector{T}, y::Vector{T}, gas::GAS{D, T},
     end
 
     return log_likelihood(D, y, params, n)
+end
+
+# Link functions for GAS
+function link!(param_tilde::Matrix{T}, gas::GAS{D, T}, param::Matrix{T}, t::Int) where {D, T}
+    @inbounds for i in axes(param, 2)
+        param_tilde[t, i] = link(gas.links[i], param[t, i])
+    end
+    return
+end
+function unlink!(param::Matrix{T}, gas::GAS{D, T}, param_tilde::Matrix{T}, t::Int) where {D, T}
+    @inbounds for i in axes(param, 2)
+        param[t, i] = unlink(gas.links[i], param_tilde[t, i])
+    end
+    return
+end
+function jacobian_link!(aux::AuxiliaryLinAlg{T}, gas::GAS{D, T}, param::Matrix{T}, t::Int) where {D, T}
+    @inbounds for i in axes(param, 2)
+        aux.jac[i] = jacobian_link(gas.links[i], param[t, i])
+    end
+    return
 end

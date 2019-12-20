@@ -29,7 +29,7 @@ function stationary_initial_params(gas::GAS{D, T}) where {D, T}
     for t in 1:biggest_lag, p in 1:n_params
         # ω/(1 - sum(B[p, p]))
         initial_params_tilde[t, p] = gas.ω[p]/(1 - sum(v[p, p] for (k, v) in gas.B))
-        unlink!(initial_params, D, initial_params_tilde, t)
+        unlink!(initial_params, gas, initial_params_tilde, t)
     end
     return initial_params
 end

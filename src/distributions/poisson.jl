@@ -24,18 +24,8 @@ function log_likelihood(::Type{Poisson}, y::Vector{Int}, param::Matrix{T}, n::In
     return -loglik
 end
 
-# Links
-function link!(param_tilde::Matrix{T}, ::Type{Poisson}, param::Matrix{T}, t::Int) where T 
-    param_tilde[t, 1] = link(LogLink, param[t, 1], zero(T))
-    return
-end
-function unlink!(param::Matrix{T}, ::Type{Poisson}, param_tilde::Matrix{T}, t::Int) where T 
-    param[t, 1] = unlink(LogLink, param_tilde[t, 1], zero(T))
-    return
-end
-function jacobian_link!(aux::AuxiliaryLinAlg{T}, ::Type{Poisson}, param::Matrix{T}, t::Int) where T 
-    aux.jac[1] = jacobian_link(LogLink, param[t, 1], zero(T))
-    return
+function default_links(::Type{Poisson})
+    return [IdentityLink()]
 end
 
 # utils
