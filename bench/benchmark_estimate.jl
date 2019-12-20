@@ -18,15 +18,15 @@ gas.A[1] = A
 gas.B[1] = B
 @benchmark score_driven_recursion($gas, $simulation)
 # BenchmarkTools.Trial:
-#   memory estimate:  235.38 KiB
-#   allocs estimate:  18
+#   memory estimate:  594.09 KiB
+#   allocs estimate:  22976
 #   --------------
-#   minimum time:     1.084 ms (0.00% GC)
-#   median time:      1.130 ms (0.00% GC)
-#   mean time:        1.244 ms (2.41% GC)
-#   maximum time:     79.034 ms (98.52% GC)
+#   minimum time:     1.597 ms (0.00% GC)
+#   median time:      1.632 ms (0.00% GC)
+#   mean time:        1.756 ms (2.25% GC)
+#   maximum time:     52.977 ms (96.78% GC)
 #   --------------
-#   samples:          4007
+#   samples:          2845
 #   evals/sample:     1
 
 scaling = 0.0
