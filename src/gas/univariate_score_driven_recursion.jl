@@ -20,7 +20,7 @@ function score_driven_recursion(gas::GAS{D, T}, observations::Vector{T};
     biggest_lag = number_of_lags(gas)
 
     # initial_values  
-    for i in 1:biggest_lag
+    @inbounds for i in 1:biggest_lag
         for p in 1:n_params
             param[i, p] = initial_params[i, p]
         end
@@ -30,7 +30,7 @@ function score_driven_recursion(gas::GAS{D, T}, observations::Vector{T};
     
     update_param_tilde!(param_tilde, gas.ω, gas.A, gas.B, scores_tilde, biggest_lag)
 
-    for i in biggest_lag + 1:n
+    @inbounds for i in biggest_lag + 1:n
         univariate_score_driven_update!(param, param_tilde, scores_tilde, observations[i], aux, gas, i)
     end
     update_param!(param, param_tilde, D, n + 1)
@@ -59,7 +59,7 @@ function simulate_recursion(gas::GAS{D, T}, n::Int;
     # initial_values  
     for t in 1:biggest_lag
         for p in 1:n_params
-            param[t, p] = initial_params[t, p]
+            @inbounds param[t, p] = initial_params[t, p]
         end
         link!(param_tilde, D, param, t)
         # Sample
@@ -111,16 +111,16 @@ end
 function update_param_tilde!(param_tilde::Matrix{T}, ω::Vector{T}, A::Dict{Int, Matrix{T}}, 
                              B::Dict{Int, Matrix{T}}, scores_tilde::Matrix{T}, i::Int) where T
     for p in eachindex(ω)
-        param_tilde[i + 1, p] = ω[p]
+        @inbounds param_tilde[i + 1, p] = ω[p]
     end
     for (lag, mat) in A
         for p in axes(mat, 1)
-            param_tilde[i + 1, p] += mat[p, p] * scores_tilde[i - lag + 1, p]
+            @inbounds param_tilde[i + 1, p] += mat[p, p] * scores_tilde[i - lag + 1, p]
         end
     end
     for (lag, mat) in B
         for p in axes(mat, 1)
-            param_tilde[i + 1, p] += mat[p, p] * param_tilde[i - lag + 1, p]
+            @inbounds param_tilde[i + 1, p] += mat[p, p] * param_tilde[i - lag + 1, p]
         end
     end
     return 

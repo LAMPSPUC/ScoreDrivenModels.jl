@@ -79,20 +79,20 @@ function fill_psitilde!(gas::GAS, psitilde::Vector{T}, unknowns::UnknownsGAS) wh
     # fill ω
     for i in unknowns.ω
         offset += 1
-        gas.ω[i] = psitilde[offset]
+        @inbounds gas.ω[i] = psitilde[offset]
     end
     # fill A
     for (k, v) in unknowns.A
         for i in v
             offset += 1
-            gas.A[k][i] = psitilde[offset]
+            @inbounds gas.A[k][i] = psitilde[offset]
         end
     end
     # fill B
     for (k, v) in unknowns.B
         for i in v
             offset += 1
-            gas.B[k][i] = psitilde[offset]
+            @inbounds gas.B[k][i] = psitilde[offset]
         end
     end
     return 
