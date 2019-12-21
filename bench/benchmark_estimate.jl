@@ -7,6 +7,28 @@ scaling = 0.0
 A = [0.2 0; 0 0.2]
 B = [0.2 0; 0 0.2]
 simulation = simulate_GAS_1_1(Beta, scaling, ω, A, B, 1)
+gas = GAS(1, 1, Beta, scaling)
+gas.ω = ω
+gas.A[1] = A
+gas.B[1] = B
+@benchmark score_driven_recursion($gas, $simulation)
+# BenchmarkTools.Trial:
+#   memory estimate:  235.38 KiB
+#   allocs estimate:  18
+#   --------------
+#   minimum time:     999.374 μs (0.00% GC)
+#   median time:      1.006 ms (0.00% GC)
+#   mean time:        1.050 ms (1.74% GC)
+#   maximum time:     55.351 ms (98.06% GC)
+#   --------------
+#   samples:          4756
+#   evals/sample:     1
+
+scaling = 0.0
+ω = [0.1, 0.1]
+A = [0.2 0; 0 0.2]
+B = [0.2 0; 0 0.2]
+simulation = simulate_GAS_1_1(Beta, scaling, ω, A, B, 1)
 verbose = 0
 p = 1
 q = 1
@@ -17,13 +39,13 @@ num_seeds = 3
     fit!(gas, $simulation; verbose = $verbose, opt_method = opt_method)
 end
 # BenchmarkTools.Trial:
-#   memory estimate:  466.69 MiB
-#   allocs estimate:  40237
+#   memory estimate:  516.71 MiB
+#   allocs estimate:  50679
 #   --------------
-#   minimum time:     2.553 s (0.57% GC)
-#   median time:      2.655 s (0.59% GC)
-#   mean time:        2.655 s (0.59% GC)
-#   maximum time:     2.756 s (0.60% GC)
+#   minimum time:     2.857 s (2.91% GC)
+#   median time:      2.927 s (1.71% GC)
+#   mean time:        2.927 s (1.71% GC)
+#   maximum time:     2.997 s (0.57% GC)
 #   --------------
 #   samples:          2
 #   evals/sample:     1
@@ -43,13 +65,13 @@ num_seeds = 3
     fit!(gas, $simulation; verbose = $verbose, opt_method = opt_method)
 end
 # BenchmarkTools.Trial:
-#   memory estimate:  353.02 MiB
-#   allocs estimate:  30598
+#   memory estimate:  386.33 MiB
+#   allocs estimate:  38084
 #   --------------
-#   minimum time:     1.008 s (1.41% GC)
-#   median time:      1.265 s (1.36% GC)
-#   mean time:        1.281 s (1.35% GC)
-#   maximum time:     1.587 s (1.28% GC)
+#   minimum time:     1.014 s (1.15% GC)
+#   median time:      1.358 s (1.13% GC)
+#   mean time:        1.341 s (2.56% GC)
+#   maximum time:     1.632 s (1.12% GC)
 #   --------------
 #   samples:          4
 #   evals/sample:     1
@@ -62,15 +84,15 @@ scaling = 0.5
     fit!(gas, $simulation; verbose = $verbose, opt_method = opt_method)
 end
 # BenchmarkTools.Trial:
-#   memory estimate:  8.26 GiB
-#   allocs estimate:  159942290
+#   memory estimate:  1.94 GiB
+#   allocs estimate:  54273958
 #   --------------
-#   minimum time:     7.361 s (18.19% GC)
-#   median time:      7.361 s (18.19% GC)
-#   mean time:        7.361 s (18.19% GC)
-#   maximum time:     7.361 s (18.19% GC)
+#   minimum time:     4.936 s (3.77% GC)
+#   median time:      6.007 s (4.06% GC)
+#   mean time:        6.007 s (4.06% GC)
+#   maximum time:     7.078 s (4.26% GC)
 #   --------------
-#   samples:          1
+#   samples:          2
 #   evals/sample:     1
 
 scaling = 1.0
@@ -80,13 +102,13 @@ scaling = 1.0
     fit!(gas, $simulation; verbose = $verbose, opt_method = opt_method)
 end
 # BenchmarkTools.Trial:
-#   memory estimate:  666.69 MiB
-#   allocs estimate:  8744603
+#   memory estimate:  750.17 MiB
+#   allocs estimate:  9849254
 #   --------------
-#   minimum time:     2.908 s (2.08% GC)
-#   median time:      3.382 s (2.07% GC)
-#   mean time:        3.382 s (2.07% GC)
-#   maximum time:     3.855 s (2.07% GC)
+#   minimum time:     3.217 s (1.91% GC)
+#   median time:      3.320 s (1.91% GC)
+#   mean time:        3.320 s (1.91% GC)
+#   maximum time:     3.424 s (1.92% GC)
 #   --------------
 #   samples:          2
 #   evals/sample:     1
