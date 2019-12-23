@@ -3,6 +3,7 @@ export fit, fit!, fit_stats
 const DEFAULT_INITIAL_PARAM = NaN.*ones(1, 1)
 const DEFAULT_NUM_SEEDS = 3
 const DEFAULT_VERBOSE = 0
+const VARIANCE_ZERO = 1e-10
 
 struct FittedSDM{T <: AbstractFloat}
     unknowns::UnknownsSDM
@@ -16,6 +17,7 @@ end
 struct CoefsStatsSDM{T <: AbstractFloat}
     unknowns::UnknownsSDM
     coefs::Vector{T}
+    std_errors::Vector{T}
     t_stat::Vector{T}
     p_values::Vector{T}
 end
@@ -38,13 +40,19 @@ function eval_coefs_stats(f::FittedSDM{T}) where T
     np = length(f.unknowns)
     inv_H = inv(f.numerical_hessian)
     vars = diag(inv_H)
-    t_stats = f.coefs ./ sqrt.(vars)
+    for i in eachindex(vars)
+        if vars[i] <= VARIANCE_ZERO 
+            vars[i] = VARIANCE_ZERO
+        end
+    end
+    std_errors = sqrt.(vars)
+    t_stats = f.coefs ./ std_errors
 
     # Calculate p-values of the the t statistics
     t_dist = TDist(np)
-    p_values = cdf.(t_dist, t_stats)
+    p_values = 1 .- 2*abs.(cdf.(t_dist, t_stats) .- 0.5)
 
-    return CoefsStatsSDM{T}(f.unknowns, f.coefs, t_stats, p_values)
+    return CoefsStatsSDM{T}(f.unknowns, f.coefs, std_errors, t_stats, p_values)
 end
 
 mutable struct AuxEstimation{T <: AbstractFloat}
