@@ -1,15 +1,50 @@
-export fit, fit!
+export fit, fit!, fit_stats
 
 const DEFAULT_INITIAL_PARAM = NaN.*ones(1, 1)
 const DEFAULT_NUM_SEEDS = 3
 const DEFAULT_VERBOSE = 0
 
 struct FittedSDM{T <: AbstractFloat}
+    unknowns::UnknownsSDM
     aic::T
     bic::T
     llk::T
     coefs::Vector{T}
     numerical_hessian::Matrix{T}
+end
+
+struct CoefsStatsSDM{T <: AbstractFloat}
+    unknowns::UnknownsSDM
+    coefs::Vector{T}
+    t_stat::Vector{T}
+    p_values::Vector{T}
+end
+
+struct EstimationStatsSDM{T <: AbstractFloat}
+    loglikelihood::T
+    aic::T
+    bic::T
+    np::T
+    coefs_stats::CoefsStatsSDM{T}
+end
+
+function fit_stats(f::FittedSDM{T}) where T
+    estim_results = eval_coefs_stats(f)
+    np = length(f.unknowns)
+    return EstimationStatsSDM{T}(f.llk, f.aic, f.bic, np, estim_results)
+end
+
+function eval_coefs_stats(f::FittedSDM{T}) where T
+    np = length(f.unknowns)
+    inv_H = inv(f.numerical_hessian)
+    vars = diag(inv_H)
+    t_stats = f.coefs ./ sqrt.(vars)
+
+    # Calculate p-values of the the t statistics
+    t_dist = TDist(np)
+    p_values = cdf.(t_dist, t_stats)
+
+    return CoefsStatsSDM{T}(f.unknowns, f.coefs, t_stats, p_values)
 end
 
 mutable struct AuxEstimation{T <: AbstractFloat}
@@ -96,7 +131,7 @@ function fit(sdm::SDM{D, T}, y::Vector{T};
     end
 
     println("Finished!")
-    return FittedSDM{T}(aic, bic, best_llk, coefs, num_hessian)
+    return FittedSDM{T}(unknowns, aic, bic, best_llk, coefs, num_hessian)
 end
 
 function fit!(sdm::SDM{D, T}, y::Vector{T};
