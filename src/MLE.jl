@@ -91,7 +91,7 @@ end
 
 function fit(sdm::SDM{D, T}, y::Vector{T};
              initial_params::Matrix{T} = DEFAULT_INITIAL_PARAM,
-             opt_method::AbstractOptimizationMethod = LBFGS(sdm, DEFAULT_NUM_SEEDS),
+             opt_method::AbstractOptimizationMethod = NelderMead(sdm, DEFAULT_NUM_SEEDS),
              verbose::Int = DEFAULT_VERBOSE) where {D, T}
 
     # Number of seed and number of params to estimate
