@@ -5,7 +5,8 @@ const DEFAULT_NUM_SEEDS = 3
 const DEFAULT_VERBOSE = 0
 const VARIANCE_ZERO = 1e-10
 
-struct FittedSDM{T <: AbstractFloat}
+struct FittedSDM{D <: Distribution, T <: AbstractFloat}
+    num_obs::Integer
     unknowns::UnknownsSDM
     aic::T
     bic::T
@@ -22,7 +23,8 @@ struct CoefsStatsSDM{T <: AbstractFloat}
     p_values::Vector{T}
 end
 
-struct EstimationStatsSDM{T <: AbstractFloat}
+struct EstimationStatsSDM{D <: Distribution, T <: AbstractFloat}
+    num_obs::Integer
     loglikelihood::T
     aic::T
     bic::T
@@ -30,13 +32,13 @@ struct EstimationStatsSDM{T <: AbstractFloat}
     coefs_stats::CoefsStatsSDM{T}
 end
 
-function fit_stats(f::FittedSDM{T}) where T
+function fit_stats(f::FittedSDM{D, T}) where {D, T}
     estim_results = eval_coefs_stats(f)
     np = length(f.unknowns)
-    return EstimationStatsSDM{T}(f.llk, f.aic, f.bic, np, estim_results)
+    return EstimationStatsSDM{D, T}(f.num_obs, f.llk, f.aic, f.bic, np, estim_results)
 end
 
-function eval_coefs_stats(f::FittedSDM{T}) where T
+function eval_coefs_stats(f::FittedSDM{D, T}) where {D, T}
     np = length(f.unknowns)
     inv_H = inv(f.numerical_hessian)
     vars = diag(inv_H)
@@ -139,7 +141,7 @@ function fit(sdm::SDM{D, T}, y::Vector{T};
     end
 
     println("Finished!")
-    return FittedSDM{T}(unknowns, aic, bic, best_llk, coefs, num_hessian)
+    return FittedSDM{D, T}(n, unknowns, aic, bic, best_llk, coefs, num_hessian)
 end
 
 function fit!(sdm::SDM{D, T}, y::Vector{T};

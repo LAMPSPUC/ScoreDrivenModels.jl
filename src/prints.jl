@@ -1,14 +1,16 @@
-function Base.show(io::IO, est::EstimationStatsSDM)
+function Base.show(io::IO, est::EstimationStatsSDM{D, T}) where {D, T}
     println("--------------------------------------------------------")
-    println("log-likelihood: ", @sprintf("%.4f", est.loglikelihood))
-    println("            np: ", Int(est.np))
-    println("           AIC: ", @sprintf("%.4f", est.aic))
-    println("           BIC: ", @sprintf("%.4f", est.bic))
+    println("Distribution:                 ", D)
+    println("Number of observations:       ", Int(est.num_obs))
+    println("Number of unknown parameters: ", Int(est.np))
+    println("Log-likelihood:               ", @sprintf("%.4f", est.loglikelihood))
+    println("AIC:                          ", @sprintf("%.4f", est.aic))
+    println("BIC:                          ", @sprintf("%.4f", est.bic))
     print_coefs_stats(est.coefs_stats)
     return nothing
 end
 
-function print_coefs_stats(coefs_stats)
+function print_coefs_stats(coefs_stats::CoefsStatsSDM{T}) where T
     println("--------------------------------------------------------")
     println("Parameter      Estimate   Std.Error     t stat   p-value")
     offset = 1
@@ -18,7 +20,8 @@ function print_coefs_stats(coefs_stats)
         println(p)
         offset += 1
     end
-    for k in sort(collect(keys(coefs_stats.unknowns.A)))
+    sorted_keys_A = sort(collect(keys(coefs_stats.unknowns.A)))
+    for k in sorted_keys_A
         for i in coefs_stats.unknowns.A[k]
             p_c, p_std, p_t_stat, p_p_val = print_coefs_sta(coefs_stats, offset)
             ind = round(Int, sqrt(i))
@@ -27,7 +30,8 @@ function print_coefs_stats(coefs_stats)
             offset += 1
         end
     end
-    for k in sort(collect(keys(coefs_stats.unknowns.B)))
+    sorted_keys_B = sort(collect(keys(coefs_stats.unknowns.B)))
+    for k in sorted_keys_B
         for i in coefs_stats.unknowns.B[k]
             p_c, p_std, p_t_stat, p_p_val = print_coefs_sta(coefs_stats, offset)
             ind = round(Int, sqrt(i))
