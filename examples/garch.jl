@@ -51,10 +51,14 @@ gas = GAS(1, 1, Normal, 1.0, time_varying_params = [2])
 initial_point = [0.0; 0.5; 0.25; 0.75]
 
 # Estimate the model
-f = fit(gas, y; initial_params = initial_params, 
+f_ip_newton = fit(gas, y; initial_params = initial_params, 
                   opt_method = IPNewton(gas, [initial_point]; ub = ub, lb = lb))
+
+estimation_stats_ip_newton = fit_stats(f_ip_newton)
 
 # Another way to estimate the model is to rely on luck and give many random initial_points
 # for a non constrained optimization 
-f = fit(gas, y; initial_params = initial_params, 
+f_nelder_mead = fit(gas, y; initial_params = initial_params, 
                   opt_method = NelderMead(gas, 100))
+
+estimation_stats_nelder_mead = fit_stats(f_nelder_mead)

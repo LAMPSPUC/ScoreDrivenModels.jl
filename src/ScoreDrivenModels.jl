@@ -1,9 +1,9 @@
 module ScoreDrivenModels
 
 using Distributions, Optim, SpecialFunctions
-using LinearAlgebra
+using LinearAlgebra, Printf
 
-import Base.length, Base.deepcopy
+import Base: length, deepcopy, show
 
 const SCALINGS  = [0.0, 1/2, 1.0]
 const BIG_NUM = 1e8
@@ -15,6 +15,7 @@ include("utils.jl")
 include("link_functions.jl")
 include("score.jl")
 include("MLE.jl")
+include("prints.jl")
 
 # Optimization methods
 include("opt_methods/common_methods.jl")
