@@ -1,4 +1,4 @@
-module ScoreDrivenModels
+module GAS
 
 using Distributions, Optim, SpecialFunctions
 using LinearAlgebra, Printf
@@ -14,6 +14,11 @@ include("abstracts.jl")
 include("utils.jl")
 include("link_functions.jl")
 include("score.jl")
+include("gas.jl")
+include("initial_params.jl")
+include("simulate.jl")
+include("diagnostics.jl")
+include("univariate_score_driven_recursion.jl")
 include("MLE.jl")
 include("prints.jl")
 
@@ -22,13 +27,6 @@ include("opt_methods/common_methods.jl")
 include("opt_methods/LBFGS.jl")
 include("opt_methods/IPNewton.jl")
 include("opt_methods/NelderMead.jl")
-
-# GAS
-include("gas/gas.jl")
-include("gas/initial_params.jl")
-include("gas/simulate.jl")
-include("gas/diagnostics.jl")
-include("gas/univariate_score_driven_recursion.jl")
 
 # Distributions
 include("distributions/common_interface.jl")

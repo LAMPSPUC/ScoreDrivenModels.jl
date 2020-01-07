@@ -1,11 +1,11 @@
-using Documenter, ScoreDrivenModels
+using Documenter, GAS
 
 makedocs(
-    modules = [ScoreDrivenModels],
+    modules = [GAS],
     doctest  = false,
     clean    = true,
     format   = Documenter.HTML(mathengine = Documenter.MathJax()),
-    sitename = "ScoreDrivenModels.jl",
+    sitename = "GAS.jl",
     authors  = "Guilherme Bodin and Raphael Saavedra",
     pages   = [
         "Home" => "index.md",
@@ -15,5 +15,5 @@ makedocs(
 )
 
 deploydocs(
-    repo = "github.com/LAMPSPUC/ScoreDrivenModels.jl.git",
+    repo = "github.com/LAMPSPUC/GAS.jl.git",
 )

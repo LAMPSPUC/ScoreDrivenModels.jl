@@ -5,9 +5,9 @@ const DEFAULT_NUM_SEEDS = 3
 const DEFAULT_VERBOSE = 0
 const VARIANCE_ZERO = 1e-10
 
-struct FittedSDM{D <: Distribution, T <: AbstractFloat}
+struct Fitted{D <: Distribution, T <: AbstractFloat}
     num_obs::Integer
-    unknowns::UnknownsSDM
+    unknowns::Unknowns
     aic::T
     bic::T
     llk::T
@@ -15,30 +15,30 @@ struct FittedSDM{D <: Distribution, T <: AbstractFloat}
     numerical_hessian::Matrix{T}
 end
 
-struct CoefsStatsSDM{T <: AbstractFloat}
-    unknowns::UnknownsSDM
+struct CoefsStats{T <: AbstractFloat}
+    unknowns::Unknowns
     coefs::Vector{T}
     std_errors::Vector{T}
     t_stat::Vector{T}
     p_values::Vector{T}
 end
 
-struct EstimationStatsSDM{D <: Distribution, T <: AbstractFloat}
+struct EstimationStats{D <: Distribution, T <: AbstractFloat}
     num_obs::Integer
     loglikelihood::T
     aic::T
     bic::T
     np::T
-    coefs_stats::CoefsStatsSDM{T}
+    coefs_stats::CoefsStats{T}
 end
 
-function fit_stats(f::FittedSDM{D, T}) where {D, T}
+function fit_stats(f::Fitted{D, T}) where {D, T}
     estim_results = eval_coefs_stats(f)
     np = length(f.unknowns)
-    return EstimationStatsSDM{D, T}(f.num_obs, f.llk, f.aic, f.bic, np, estim_results)
+    return EstimationStats{D, T}(f.num_obs, f.llk, f.aic, f.bic, np, estim_results)
 end
 
-function eval_coefs_stats(f::FittedSDM{D, T}) where {D, T}
+function eval_coefs_stats(f::Fitted{D, T}) where {D, T}
     np = length(f.unknowns)
     inv_H = inv(f.numerical_hessian)
     vars = diag(inv_H)
@@ -54,7 +54,7 @@ function eval_coefs_stats(f::FittedSDM{D, T}) where {D, T}
     t_dist = TDist(np)
     p_values = 1 .- 2*abs.(cdf.(t_dist, t_stats) .- 0.5)
 
-    return CoefsStatsSDM{T}(f.unknowns, f.coefs, std_errors, t_stats, p_values)
+    return CoefsStats{T}(f.unknowns, f.coefs, std_errors, t_stats, p_values)
 end
 
 mutable struct AuxEstimation{T <: AbstractFloat}
@@ -91,30 +91,30 @@ function update_aux_estimation!(aux_est::AuxEstimation{T}, func::Optim.TwiceDiff
     return
 end
 
-function fit(sdm::SDM{D, T}, y::Vector{T};
+function fit(gas::Model{D, T}, y::Vector{T};
              initial_params::Matrix{T} = DEFAULT_INITIAL_PARAM,
-             opt_method::AbstractOptimizationMethod = NelderMead(sdm, DEFAULT_NUM_SEEDS),
+             opt_method::AbstractOptimizationMethod = NelderMead(gas, DEFAULT_NUM_SEEDS),
              verbose::Int = DEFAULT_VERBOSE) where {D, T}
 
     # Number of seed and number of params to estimate
     n_seeds = length(opt_method.seeds)
     n = length(y)
     
-    unknowns = find_unknowns(sdm)
+    unknowns = find_unknowns(gas)
     n_unknowns = length(unknowns)
     
     # Check if the model has no unknowns
-    check_model_estimated(n_unknowns) && return sdm
+    check_model_estimated(n_unknowns) && return gas
 
     # Create a copy of the model to estimate
-    sdm_fit = deepcopy(sdm)
+    gas_fit = deepcopy(gas)
     
     # optimize for each seed
     aux_est = AuxEstimation{T}()
 
     for i = 1:n_seeds
         try 
-            func = TwiceDifferentiable(psi_tilde -> log_lik(psi_tilde, y, sdm_fit, initial_params, unknowns, n), opt_method.seeds[i])
+            func = TwiceDifferentiable(psi_tilde -> log_lik(psi_tilde, y, gas_fit, initial_params, unknowns, n), opt_method.seeds[i])
             opt_result = optimize(func, opt_method, verbose, i)
             update_aux_estimation!(aux_est, func, opt_result)
             println("seed $i of $n_seeds - $(-opt_result.minimum)")
@@ -141,20 +141,20 @@ function fit(sdm::SDM{D, T}, y::Vector{T};
     end
 
     println("Finished!")
-    return FittedSDM{D, T}(n, unknowns, aic, bic, best_llk, coefs, num_hessian)
+    return Fitted{D, T}(n, unknowns, aic, bic, best_llk, coefs, num_hessian)
 end
 
-function fit!(sdm::SDM{D, T}, y::Vector{T};
+function fit!(gas::Model{D, T}, y::Vector{T};
               initial_params::Matrix{T} = DEFAULT_INITIAL_PARAM,
-              opt_method::AbstractOptimizationMethod = LBFGS(sdm, DEFAULT_NUM_SEEDS),
+              opt_method::AbstractOptimizationMethod = LBFGS(gas, DEFAULT_NUM_SEEDS),
               verbose::Int = DEFAULT_VERBOSE) where {D, T}
 
-    unknowns = find_unknowns(sdm)
+    unknowns = find_unknowns(gas)
     # Check if the model has no unknowns
     n_unknowns = length(unknowns)
-    check_model_estimated(n_unknowns) && return sdm
+    check_model_estimated(n_unknowns) && return gas
     
-    f = fit(sdm, y; initial_params = initial_params, opt_method = opt_method, verbose = verbose)
-    fill_psitilde!(sdm, f.coefs, unknowns)
+    f = fit(gas, y; initial_params = initial_params, opt_method = opt_method, verbose = verbose)
+    fill_psitilde!(gas, f.coefs, unknowns)
     return f
 end

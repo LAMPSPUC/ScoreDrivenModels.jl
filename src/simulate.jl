@@ -1,12 +1,12 @@
 export simulate, forecast
 
 """
-    simulate(serie::Vector{T}, gas::GAS{D, T}, N::Int, S::Int, kwargs...) where {D, T}
+    simulate(serie::Vector{T}, gas::Model{D, T}, N::Int, S::Int, kwargs...) where {D, T}
 
 Generate scenarios for the future of a time series by updating the GAS recursion `N` times and taking 
 a sample of the distribution until generate `S` scenarios.
 """
-function simulate(serie::Vector{T}, gas::GAS{D, T}, N::Int, S::Int;
+function simulate(serie::Vector{T}, gas::Model{D, T}, N::Int, S::Int;
                     initial_params::Matrix{T} = stationary_initial_params(gas)) where {D, T}
     # Filter params estimated on the time series
     params = score_driven_recursion(gas, serie; initial_params = initial_params)
@@ -26,12 +26,12 @@ end
 
 
 """
-    forecast(serie::Vector{T}, gas::GAS{D, T}, N::Int; kwargs...) where {D, T}
+    forecast(serie::Vector{T}, gas::Model{D, T}, N::Int; kwargs...) where {D, T}
 
 Forecast future values of a time series by updating the GAS recursion `N` times and 
 taking the mean of the distribution at each time.
 """
-function forecast(serie::Vector{T}, gas::GAS{D, T}, N::Int;
+function forecast(serie::Vector{T}, gas::Model{D, T}, N::Int;
                     initial_params::Matrix{T} = stationary_initial_params(gas)) where {D, T}
     # Filter params estimated on the time series
     params = score_driven_recursion(gas, serie; initial_params = initial_params)

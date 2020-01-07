@@ -1,23 +1,21 @@
-using ScoreDrivenModels, Statistics, DelimitedFiles
+using GAS, Statistics, DelimitedFiles
 
-const SDM = ScoreDrivenModels
-
-# The GARCH(1, 1) is equivaent to a GAS(1, 1) Normal model with inverse scaling. The models are only equivalent under 
+# The GARCH(1, 1) is equivaent to a GAS.Model(1, 1) Normal model with inverse scaling. The models are only equivalent under 
 # no reparametrizations, here this means that the you should fit the model overwriting the default link!, unlink! and
 # jacobian_link! methods for the Normal distribution to use only the IdentityLink.
 
 # Overwrite link interface to work with Identity links.
-function SDM.link!(param_tilde::Matrix{T}, ::Type{Normal}, param::Matrix{T}, t::Int) where T 
+function GAS.link!(param_tilde::Matrix{T}, ::Type{Normal}, param::Matrix{T}, t::Int) where T 
     param_tilde[t, 1] = link(IdentityLink, param[t, 1])
     param_tilde[t, 2] = link(IdentityLink, param[t, 2])
     return
 end
-function SDM.unlink!(param::Matrix{T}, ::Type{Normal}, param_tilde::Matrix{T}, t::Int) where T 
+function GAS.unlink!(param::Matrix{T}, ::Type{Normal}, param_tilde::Matrix{T}, t::Int) where T 
     param[t, 1] = unlink(IdentityLink, param_tilde[t, 1])
     param[t, 2] = unlink(IdentityLink, param_tilde[t, 2])
     return
 end
-function SDM.jacobian_link!(aux::AuxiliaryLinAlg{T}, ::Type{Normal}, param::Matrix{T}, t::Int) where T 
+function GAS.jacobian_link!(aux::AuxiliaryLinAlg{T}, ::Type{Normal}, param::Matrix{T}, t::Int) where T 
     aux.jac[1] = jacobian_link(IdentityLink, param[t, 1])
     aux.jac[2] = jacobian_link(IdentityLink, param[t, 2])
     return
@@ -45,7 +43,7 @@ ub = [1.0; 1.0; 0.5; 1.0]
 lb = [-1.0; 0.0; 0.0; 0.5]
 
 # Define a GAS model where only \sigma^2 is varying over time
-gas = GAS(1, 1, Normal, 1.0, time_varying_params = [2])
+gas = GAS.Model(1, 1, Normal, 1.0, time_varying_params = [2])
 
 # Give an initial_point in the interior of the bounds.
 initial_point = [0.0; 0.5; 0.25; 0.75]

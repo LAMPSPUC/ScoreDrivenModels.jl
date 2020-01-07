@@ -1,5 +1,5 @@
 @testset "Score" begin
-    for dist in SDM.DISTS
+    for dist in GAS.DISTS
         @testset "$dist" begin
             test_score_mean(dist)
         end
@@ -7,7 +7,7 @@
 end
 
 @testset "Log-likelihood" begin
-    for dist in SDM.DISTS
+    for dist in GAS.DISTS
         @testset "$dist" begin
             test_loglik(dist)
         end

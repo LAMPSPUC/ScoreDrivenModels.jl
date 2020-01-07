@@ -1,4 +1,4 @@
-using ScoreDrivenModels, Plots
+using GAS, Plots
 
 # Some data on monthly inflow from Northeastern Brazil
 inflow = [
@@ -48,13 +48,16 @@ inflow = [
 y = Vector{Float64}(vec(inflow'))
 
 # Specify GAS model: here we use lag 1 for trend characterization and lag 12 for seasonality characterization
-gas = GAS([1, 12], [1, 12], LogNormal, 0.0)
+gas = GAS.Model([1, 12], [1, 12], LogNormal, 0.0)
+
+# Define initial_params with
+initial_params = dynamic_initial_params(y, gas)
 
 # Estimate the model via MLE
-fit!(gas, y)
+fit!(gas, y; initial_params = initial_params)
 
 # Obtain in-sample estimates for the inflow
-y_gas = fitted_mean(gas, y, dynamic_initial_params(y, gas))
+y_gas = fitted_mean(gas, y; initial_params = initial_params)
 
 # Compare observations and in-sample estimates
 plot(y, label = "historical inflow")
