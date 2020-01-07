@@ -1,4 +1,4 @@
-function ensure_seeds_dimensions(model::SDM{D, T}, seeds::Vector{Vector{T}}) where {D, T}
+function ensure_seeds_dimensions(model::Model{D, T}, seeds::Vector{Vector{T}}) where {D, T}
     # Querying number of unknowns
     n_psi = dim_unknowns(model)
 
@@ -12,7 +12,7 @@ function ensure_seeds_dimensions(model::SDM{D, T}, seeds::Vector{Vector{T}}) whe
     return 
 end
 
-function create_seeds(model::SDM{D, T}, n_seeds::Int, LB::T, UB::T) where {D, T}
+function create_seeds(model::Model{D, T}, n_seeds::Int, LB::T, UB::T) where {D, T}
     # Querying number of unknowns
     n_psi = dim_unknowns(model)
 

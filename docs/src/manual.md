@@ -25,16 +25,16 @@ Notice that the change in parametrization changes the dynamics of the model. The
 The abstract type `Link` subsumes any type of link that can be expressed.
 
 ```@docs
-ScoreDrivenModels.IdentityLink
-ScoreDrivenModels.LogLink
-ScoreDrivenModels.LogitLink
+GAS.IdentityLink
+GAS.LogLink
+GAS.LogitLink
 ```
 
 ### Link functions
 
 ```@docs
-ScoreDrivenModels.link
-ScoreDrivenModels.unlink
-ScoreDrivenModels.jacobian_link
+GAS.link
+GAS.unlink
+GAS.jacobian_link
 ```
 

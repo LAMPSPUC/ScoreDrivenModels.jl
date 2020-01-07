@@ -1,4 +1,4 @@
-function Base.show(io::IO, est::EstimationStatsSDM{D, T}) where {D, T}
+function Base.show(io::IO, est::EstimationStats{D, T}) where {D, T}
     println("--------------------------------------------------------")
     println("Distribution:                 ", D)
     println("Number of observations:       ", Int(est.num_obs))
@@ -10,7 +10,7 @@ function Base.show(io::IO, est::EstimationStatsSDM{D, T}) where {D, T}
     return nothing
 end
 
-function print_coefs_stats(coefs_stats::CoefsStatsSDM{T}) where T
+function print_coefs_stats(coefs_stats::CoefsStats{T}) where T
     println("--------------------------------------------------------")
     println("Parameter      Estimate   Std.Error     t stat   p-value")
     offset = 1

@@ -1,14 +1,14 @@
-export GAS
+export Model
 
-mutable struct GAS{D <: Distribution, T <: AbstractFloat} <: SDM{D, T}
+mutable struct Model{D <: Distribution, T <: AbstractFloat}
     ω::Vector{T}
     A::Dict{Int, Matrix{T}}
     B::Dict{Int, Matrix{T}}
     scaling::Real
 end
 
-function deepcopy(gas::GAS{D, T}) where {D, T}
-    return GAS{D, T}(deepcopy(gas.ω), deepcopy(gas.A), deepcopy(gas.B), deepcopy(gas.scaling))
+function deepcopy(gas::Model{D, T}) where {D, T}
+    return Model{D, T}(deepcopy(gas.ω), deepcopy(gas.A), deepcopy(gas.B), deepcopy(gas.scaling))
 end
 
 function create_ω(num_params::Int)
@@ -26,7 +26,7 @@ function create_lagged_matrix(lags::Vector{Int}, time_varying_params::Vector{Int
     return mat
 end
 
-function GAS(p::Int, q::Int, D::Type{<:Distribution}, scaling::Real; 
+function Model(p::Int, q::Int, D::Type{<:Distribution}, scaling::Real; 
              time_varying_params::Vector{Int} = collect(1:num_params(D)))
 
     # Vector of unkowns
@@ -37,10 +37,10 @@ function GAS(p::Int, q::Int, D::Type{<:Distribution}, scaling::Real;
     A = create_lagged_matrix(collect(1:p), time_varying_params, zeros_params)
     B = create_lagged_matrix(collect(1:q), time_varying_params, zeros_params)
 
-    return GAS{D, Float64}(ω, A, B, scaling)
+    return Model{D, Float64}(ω, A, B, scaling)
 end
 
-function GAS(ps::Vector{Int}, qs::Vector{Int}, D::Type{<:Distribution}, scaling::Real; 
+function Model(ps::Vector{Int}, qs::Vector{Int}, D::Type{<:Distribution}, scaling::Real; 
              time_varying_params::Vector{Int} = collect(1:num_params(D)))
 
     # Vector of unkowns
@@ -51,10 +51,10 @@ function GAS(ps::Vector{Int}, qs::Vector{Int}, D::Type{<:Distribution}, scaling:
     A = create_lagged_matrix(ps, time_varying_params, zeros_params)
     B = create_lagged_matrix(qs, time_varying_params, zeros_params)
 
-    return GAS{D, Float64}(ω, A, B, scaling)
+    return Model{D, Float64}(ω, A, B, scaling)
 end
 
-function number_of_lags(gas::GAS)
+function number_of_lags(gas::Model) 
     return max(maximum(keys(gas.A)), maximum(keys(gas.B)))
 end
 
@@ -68,13 +68,13 @@ find_unknowns
 dim_unknowns
 length
 """
-mutable struct UnknownsGAS <: UnknownsSDM
+mutable struct Unknowns
     ω::Vector{Int}
     A::Dict{Int, Vector{Int}}
     B::Dict{Int, Vector{Int}}
 end
 
-function fill_psitilde!(gas::GAS, psitilde::Vector{T}, unknowns::UnknownsGAS) where T
+function fill_psitilde!(gas::Model, psitilde::Vector{T}, unknowns::Unknowns) where T
     offset = 0
     # fill ω
     for i in unknowns.ω
@@ -98,7 +98,7 @@ function fill_psitilde!(gas::GAS, psitilde::Vector{T}, unknowns::UnknownsGAS) wh
     return 
 end
 
-function find_unknowns(gas::GAS)
+function find_unknowns(gas::Model)
     unknowns_A = Dict{Int, Vector{Int}}()
     unknowns_B = Dict{Int, Vector{Int}}()
 
@@ -110,14 +110,14 @@ function find_unknowns(gas::GAS)
     for (k, v) in gas.B
         unknowns_B[k] = find_unknowns(v)
     end
-    return UnknownsGAS(unknowns_ω, unknowns_A, unknowns_B)
+    return Unknowns(unknowns_ω, unknowns_A, unknowns_B)
 end
 
-function dim_unknowns(gas::GAS)
+function dim_unknowns(gas::Model)
     return length(find_unknowns(gas))
 end
 
-function length(unknowns::UnknownsGAS)
+function length(unknowns::Unknowns)
     len = length(values(unknowns.ω))
     for (k, v) in unknowns.A
         len += length(v)
@@ -128,8 +128,8 @@ function length(unknowns::UnknownsGAS)
     return len
 end
 
-function log_lik(psitilde::Vector{T}, y::Vector{T}, gas::GAS{D, T}, 
-                 initial_params::Matrix{T}, unknowns::UnknownsGAS, n::Int) where {D, T}
+function log_lik(psitilde::Vector{T}, y::Vector{T}, gas::Model{D, T}, 
+                 initial_params::Matrix{T}, unknowns::Unknowns, n::Int) where {D, T}
     
     # Use the unkowns vectors to fill the right positions
     fill_psitilde!(gas, psitilde, unknowns)

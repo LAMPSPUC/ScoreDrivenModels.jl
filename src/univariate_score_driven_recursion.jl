@@ -5,7 +5,7 @@ score_driven_recursion(sd_model::SDM, observations::Vector{T}) where T
 
 start with the stationary params for a 
 """
-function score_driven_recursion(gas::GAS{D, T}, observations::Vector{T};
+function score_driven_recursion(gas::Model{D, T}, observations::Vector{T};
                                  initial_params::Matrix{T} = stationary_initial_params(gas)) where {D, T}
     @assert gas.scaling in SCALINGS
     # Allocations
@@ -39,7 +39,7 @@ function score_driven_recursion(gas::GAS{D, T}, observations::Vector{T};
 end
 
 
-function simulate_recursion(gas::GAS{D, T}, n::Int; 
+function simulate_recursion(gas::Model{D, T}, n::Int; 
                             initial_params::Matrix{T} = stationary_initial_params(gas), 
                             update::Function = sample_observation) where {D, T}
     # Allocations
@@ -89,7 +89,7 @@ end
 function univariate_score_driven_update!(param::Matrix{T}, param_tilde::Matrix{T},
                                          scores_tilde::Matrix{T},
                                          observation::T, aux::AuxiliaryLinAlg{T},
-                                         gas::GAS{D, T}, i::Int) where {D <: Distribution, T <: AbstractFloat}
+                                         gas::Model{D, T}, i::Int) where {D <: Distribution, T <: AbstractFloat}
     # update param 
     update_param!(param, param_tilde, D, i)
     # evaluate score
@@ -127,11 +127,11 @@ function update_param_tilde!(param_tilde::Matrix{T}, ω::Vector{T}, A::Dict{Int,
 end
 
 """
-    fitted_mean(gas::GAS{D, T}, observations::Vector{T}, initial_params::Vector{T}) where {D, T}
+    fitted_mean(gas::Model{D, T}, observations::Vector{T}, initial_params::Vector{T}) where {D, T}
 
 return the fitted mean.. #TODO
 """
-function fitted_mean(gas::GAS{D, T}, observations::Vector{T}; 
+function fitted_mean(gas::Model{D, T}, observations::Vector{T}; 
                      initial_params::Matrix{T} = stationary_initial_params(gas)) where {D, T}
     params_fitted = score_driven_recursion(gas, observations; initial_params = initial_params)
     n = size(params_fitted, 1)

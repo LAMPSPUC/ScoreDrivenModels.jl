@@ -10,12 +10,12 @@ mutable struct IPNewton{T <: Real} <: AbstractOptimizationMethod{T}
 end
 
 """
-    IPNewton(model::SDM, args...; kwargs...)
+    IPNewton(model::Model, args...; kwargs...)
 
 If an `Int` is provided the method will sample random seeds and use them as initial points for Optim IPNewton method.
 If a `Vector{Vector{T}}` is provided it will use them as initial points for Optim IPNewton method.
 """
-function IPNewton(model::SDM{D, T}, n_seeds::Int; f_tol::T = T(1e-6), g_tol::T = T(1e-6), 
+function IPNewton(model::Model{D, T}, n_seeds::Int; f_tol::T = T(1e-6), g_tol::T = T(1e-6), 
                                                 ub::Vector{T} = Inf*ones(T, dim_unknowns(model)),
                                                 lb::Vector{T} = -Inf*ones(T, dim_unknowns(model)),
                                                 iterations::Int = 10^5, LB::T = 0.0, UB::T = 0.6) where {D, T}
@@ -25,7 +25,7 @@ function IPNewton(model::SDM{D, T}, n_seeds::Int; f_tol::T = T(1e-6), g_tol::T =
     return IPNewton{T}(f_tol, g_tol, ub, lb, iterations, seeds)
 end
 
-function IPNewton(model::SDM{D, T}, seeds::Vector{Vector{T}}; f_tol::T = T(1e-6), g_tol::T = T(1e-6), 
+function IPNewton(model::Model{D, T}, seeds::Vector{Vector{T}}; f_tol::T = T(1e-6), g_tol::T = T(1e-6), 
                                                             ub::Vector{T} = Inf*ones(T, length(seeds[1])),
                                                             lb::Vector{T} = -Inf*ones(T, length(seeds[1])),
                                                             iterations::Int = 10^5) where {D, T}

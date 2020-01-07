@@ -1,8 +1,6 @@
-using ScoreDrivenModels, Distributions, LinearAlgebra
+using GAS, Distributions, LinearAlgebra
 
 using Test, Random, HypothesisTests, DelimitedFiles
-
-const SDM = ScoreDrivenModels
 
 include("utils.jl")
 include("test_links.jl")
