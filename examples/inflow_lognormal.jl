@@ -1,4 +1,3 @@
-push!(LOAD_PATH, "/home/guilhermebodin/Documents/Github/GAS.jl/src")
 using GAS, Plots
 
 # Some data on monthly inflow from Northeastern Brazil
