@@ -67,7 +67,7 @@ plot(y_train, label = "In-sample inflow")
 plot!(y_fitted, label = "in-sample estimates")
 
 # Forecasts with 95% confidence interval
-forec = GAS.forecast(y_train, gas, 80; initial_params = initial_params, ci = [0.90])
+forec = GAS.forecast(y_train, gas, 80; initial_params = initial_params, ci = [0.95])
 
 plot(y_test, label = "Out-of-sample inflow")
 plot!(forec, label = "Forecast", color = "Steel Blue")
