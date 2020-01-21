@@ -134,6 +134,10 @@ return the fitted mean.. #TODO
 function fitted_mean(gas::Model{D, T}, observations::Vector{T}; 
                      initial_params::Matrix{T} = stationary_initial_params(gas)) where {D, T}
     params_fitted = score_driven_recursion(gas, observations; initial_params = initial_params)
+
+    # Discard last step of the update
+    params_fitted = params_fitted[1:end-1, :]
+
     n = size(params_fitted, 1)
     fitted_mean = Vector{T}(undef, n)
 
