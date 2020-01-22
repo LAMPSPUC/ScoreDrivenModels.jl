@@ -12,6 +12,10 @@ os:
 after_success:
   - julia --project -e 'import Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
 
+branches:
+  only:
+    - master
+
 jobs:
   include:
     - stage: "Documentation"
