@@ -1,4 +1,4 @@
-using GAS, Distributions, BenchmarkTools, Random, Test
+using ScoreDrivenModels, Distributions, BenchmarkTools, Random, Test
 
 include("test/utils.jl")
 
@@ -7,7 +7,7 @@ scaling = 0.0
 A = [0.2 0; 0 0.2]
 B = [0.2 0; 0 0.2]
 simulation = simulate_GAS_1_1(Beta, scaling, ω, A, B, 1)
-gas = GAS.Model(1, 1, Beta, scaling)
+gas = ScoreDrivenModels.Model(1, 1, Beta, scaling)
 gas.ω = ω
 gas.A[1] = A
 gas.B[1] = B
@@ -34,8 +34,8 @@ p = 1
 q = 1
 num_seeds = 3
 @benchmark begin
-    gas = GAS.Model($p, $q, $Beta, $scaling)
-    opt_method = GAS.LBFGS(gas, $num_seeds)
+    gas = ScoreDrivenModels.Model($p, $q, $Beta, $scaling)
+    opt_method = ScoreDrivenModels.LBFGS(gas, $num_seeds)
     fit!(gas, $simulation; verbose = $verbose, opt_method = opt_method)
 end
 # BenchmarkTools.Trial:
@@ -60,8 +60,8 @@ p = 1
 q = 1
 num_seeds = 3
 @benchmark begin
-    gas = GAS.Model($p, $q, $LogNormal, $scaling)
-    opt_method = GAS.LBFGS(gas, $num_seeds)
+    gas = ScoreDrivenModels.Model($p, $q, $LogNormal, $scaling)
+    opt_method = ScoreDrivenModels.LBFGS(gas, $num_seeds)
     fit!(gas, $simulation; verbose = $verbose, opt_method = opt_method)
 end
 # BenchmarkTools.Trial:
@@ -79,8 +79,8 @@ end
 
 scaling = 0.5
 @benchmark begin
-    gas = GAS.Model($p, $q, $LogNormal, $scaling)
-    opt_method = GAS.LBFGS(gas, $num_seeds)
+    gas = ScoreDrivenModels.Model($p, $q, $LogNormal, $scaling)
+    opt_method = ScoreDrivenModels.LBFGS(gas, $num_seeds)
     fit!(gas, $simulation; verbose = $verbose, opt_method = opt_method)
 end
 # BenchmarkTools.Trial:
@@ -97,8 +97,8 @@ end
 
 scaling = 1.0
 @benchmark begin
-    gas = GAS.Model($p, $q, $LogNormal, $scaling)
-    opt_method = GAS.LBFGS(gas, $num_seeds)
+    gas = ScoreDrivenModels.Model($p, $q, $LogNormal, $scaling)
+    opt_method = ScoreDrivenModels.LBFGS(gas, $num_seeds)
     fit!(gas, $simulation; verbose = $verbose, opt_method = opt_method)
 end
 # BenchmarkTools.Trial:

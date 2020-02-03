@@ -59,7 +59,7 @@ function number_of_lags(gas::Model)
 end
 
 """
-The unknows parameters of a GAS model
+The unknows parameters of a ScoreDrivenModels model
 Only for internal use
     
 Every unknonws must define
