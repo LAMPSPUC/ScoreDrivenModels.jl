@@ -1,4 +1,4 @@
-module GAS
+module ScoreDrivenModels
 
 using Distributions, Optim, SpecialFunctions
 using LinearAlgebra, Printf

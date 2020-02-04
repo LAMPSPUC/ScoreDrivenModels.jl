@@ -2,15 +2,15 @@
 
 ## Water inflow
 
-Let's model some monthly water inflow data from the Northeast of Brazil using a Lognormal GAS model. Since inflow is a highly seasonal phenomenon, we will utilize lags 1 and 12. The former aims to characterize the short-term evolution of the series, while the latter characterizes the seasonality. The full code is in the examples folder.
+Let's model some monthly water inflow data from the Northeast of Brazil using a Lognormal ScoreDrivenModels model. Since inflow is a highly seasonal phenomenon, we will utilize lags 1 and 12. The former aims to characterize the short-term evolution of the series, while the latter characterizes the seasonality. The full code is in the examples folder.
 
 ```julia
 # Convert data to vector
 y = Vector{Float64}(vec(inflow'))
 
-# Specify GAS model: here we use lag 1 for trend characterization and 
+# Specify ScoreDrivenModels model: here we use lag 1 for trend characterization and 
 # lag 12 for seasonality characterization
-gas = GAS.Model([1, 12], [1, 12], LogNormal, 0.0)
+gas = ScoreDrivenModels.Model([1, 12], [1, 12], LogNormal, 0.0)
 
 # Estimate the model via MLE
 fit!(gas, y)

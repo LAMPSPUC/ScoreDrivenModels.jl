@@ -54,9 +54,9 @@ function dynamic_initial_params(obs::Vector{T}, gas::Model{D, T}) where {D, T}
         idx = collect(i:biggest_lag:len)
         # Fit MLE in the observations
         dist = fit_mle(D, obs[idx])
-        # Adequate to the GAS standard
+        # Adequate to the ScoreDrivenModels standard
         # In Distributions Normal is \mu and \sigma
-        # In GAS Normal is \mu and \sigma^2
+        # In ScoreDrivenModels Normal is \mu and \sigma^2
         sdm_dist = update_dist(D, permutedims([params(dist)...]), 1)
 
         initial_params[i, :] = [params(sdm_dist)...]

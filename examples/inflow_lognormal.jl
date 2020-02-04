@@ -1,4 +1,4 @@
-using GAS, Plots
+using ScoreDrivenModels, Plots
 
 # Some data on monthly inflow from Northeastern Brazil
 inflow = [
@@ -49,8 +49,8 @@ y = Vector{Float64}(vec(inflow'))
 y_train = y[1:400]
 y_test = y[401:end]
 
-# Specify GAS model: here we use lag 1 for trend characterization and lag 12 for seasonality characterization
-gas = GAS.Model([1, 2, 11, 12], [1, 2, 11, 12], LogNormal, 0.0; time_varying_params = [1])
+# Specify ScoreDrivenModels model: here we use lag 1 for trend characterization and lag 12 for seasonality characterization
+gas = ScoreDrivenModels.Model([1, 2, 11, 12], [1, 2, 11, 12], LogNormal, 0.0; time_varying_params = [1])
 
 # Define initial_params with
 initial_params = dynamic_initial_params(y_train, gas)
@@ -66,7 +66,7 @@ plot(y_train, label = "In-sample inflow")
 plot!(y_fitted, label = "in-sample estimates")
 
 # Forecasts with 95% confidence interval
-forec = GAS.forecast(y_train, gas, 80; initial_params = initial_params, ci = [0.95])
+forec = ScoreDrivenModels.forecast(y_train, gas, 80; initial_params = initial_params, ci = [0.95])
 
 plot(y_test, label = "Out-of-sample inflow")
 plot!(forec, label = "Forecast", color = "Steel Blue")

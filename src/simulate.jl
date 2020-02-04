@@ -3,7 +3,7 @@ export simulate, forecast
 """
     simulate(serie::Vector{T}, gas::Model{D, T}, N::Int, S::Int, kwargs...) where {D, T}
 
-Generate scenarios for the future of a time series by updating the GAS recursion `N` times and taking 
+Generate scenarios for the future of a time series by updating the ScoreDrivenModels recursion `N` times and taking 
 a sample of the distribution until generate `S` scenarios.
 """
 function simulate(serie::Vector{T}, gas::Model{D, T}, N::Int, S::Int;
@@ -28,7 +28,7 @@ end
 """
     forecast(serie::Vector{T}, gas::Model{D, T}, N::Int; kwargs...) where {D, T}
 
-Forecast future values of a time series by updating the GAS recursion `N` times and 
+Forecast future values of a time series by updating the ScoreDrivenModels recursion `N` times and 
 taking the mean of the distribution at each time. You can pass the desired confidence interval 
 as a `Vector{T}`. The forecast will be the first column and the confidence intervals are the remaining
 columns.
