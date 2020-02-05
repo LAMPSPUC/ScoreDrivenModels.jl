@@ -26,13 +26,13 @@ function create_lagged_matrix(lags::Vector{Int}, time_varying_params::Vector{Int
     return mat
 end
 
-function Model(p::Int, q::Int, D::Type{<:Distribution}, scaling::Real; 
+function Model(p::Int, q::Int, D::Type{<:Distribution}, scaling::Real;
              time_varying_params::Vector{Int} = collect(1:num_params(D)))
 
     # Vector of unkowns
     zeros_params = fill(0.0, num_params(D))
     ω = create_ω(num_params(D))
-    
+
     # Create A and B
     A = create_lagged_matrix(collect(1:p), time_varying_params, zeros_params)
     B = create_lagged_matrix(collect(1:q), time_varying_params, zeros_params)
@@ -40,13 +40,13 @@ function Model(p::Int, q::Int, D::Type{<:Distribution}, scaling::Real;
     return Model{D, Float64}(ω, A, B, scaling)
 end
 
-function Model(ps::Vector{Int}, qs::Vector{Int}, D::Type{<:Distribution}, scaling::Real; 
+function Model(ps::Vector{Int}, qs::Vector{Int}, D::Type{<:Distribution}, scaling::Real;
              time_varying_params::Vector{Int} = collect(1:num_params(D)))
 
     # Vector of unkowns
     zeros_params = fill(0.0, num_params(D))
     ω = create_ω(num_params(D))
-    
+
     # Create A and B
     A = create_lagged_matrix(ps, time_varying_params, zeros_params)
     B = create_lagged_matrix(qs, time_varying_params, zeros_params)
@@ -54,15 +54,15 @@ function Model(ps::Vector{Int}, qs::Vector{Int}, D::Type{<:Distribution}, scalin
     return Model{D, Float64}(ω, A, B, scaling)
 end
 
-function number_of_lags(gas::Model) 
+function number_of_lags(gas::Model)
     return max(maximum(keys(gas.A)), maximum(keys(gas.B)))
 end
 
 """
-The unknows parameters of a ScoreDrivenModels model
+The unknows parameters of a model
 Only for internal use
-    
-Every unknonws must define
+
+Every Unknowns must define
 fill_psitilde
 find_unknowns
 dim_unknowns
@@ -95,7 +95,7 @@ function fill_psitilde!(gas::Model, psitilde::Vector{T}, unknowns::Unknowns) whe
             @inbounds gas.B[k][i] = psitilde[offset]
         end
     end
-    return 
+    return
 end
 
 function find_unknowns(gas::Model)
@@ -128,9 +128,9 @@ function length(unknowns::Unknowns)
     return len
 end
 
-function log_lik(psitilde::Vector{T}, y::Vector{T}, gas::Model{D, T}, 
+function log_lik(psitilde::Vector{T}, y::Vector{T}, gas::Model{D, T},
                  initial_params::Matrix{T}, unknowns::Unknowns, n::Int) where {D, T}
-    
+
     # Use the unkowns vectors to fill the right positions
     fill_psitilde!(gas, psitilde, unknowns)
 
