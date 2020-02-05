@@ -10,4 +10,4 @@
 [codecov-img]: https://codecov.io/gh/LAMPSPUC/ScoreDrivenModels.jl/coverage.svg?branch=master
 [codecov-url]: https://codecov.io/gh/LAMPSPUC/ScoreDrivenModels.jl?branch=master
 
-ScoreDrivenModels.jl is a Julia package for modeling, forecasting, and simulating time series with generalized autoregressive score models (ScoreDrivenModels), also known as score-driven models. Implementations are based on the paper [Generalized Autoregressive Models with Applications](http://dx.doi.org/10.1002/jae.1279) by D. Creal, S. J. Koopman, and A. Lucas.
+ScoreDrivenModels.jl is a Julia package for modeling, forecasting, and simulating time series with score-driven models, also known as generalized autoregressive score models (GAS). Implementations are based on the paper [Generalized Autoregressive Models with Applications](http://dx.doi.org/10.1002/jae.1279) by D. Creal, S. J. Koopman, and A. Lucas.
