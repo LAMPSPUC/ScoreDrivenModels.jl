@@ -20,7 +20,7 @@ function IPNewton(model::Model{D, T}, n_initial_points::Int; f_tol::T = T(1e-6),
                                                 lb::Vector{T} = -Inf*ones(T, dim_unknowns(model)),
                                                 iterations::Int = 10^5, LB::T = 0.0, UB::T = 0.6) where {D, T}
 
-    initial_points = create_seeds(model, n_initial_points, LB, UB)
+    initial_points = create_initial_points(model, n_initial_points, LB, UB)
 
     return IPNewton{T}(f_tol, g_tol, ub, lb, iterations, initial_points)
 end

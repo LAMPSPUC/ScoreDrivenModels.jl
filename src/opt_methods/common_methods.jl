@@ -12,7 +12,7 @@ function ensure_seeds_dimensions(model::Model{D, T}, initial_points::Vector{Vect
     return 
 end
 
-function create_seeds(model::Model{D, T}, n_initial_points::Int, LB::T, UB::T) where {D, T}
+function create_initial_points(model::Model{D, T}, n_initial_points::Int, LB::T, UB::T) where {D, T}
     # Querying number of unknowns
     n_psi = dim_unknowns(model)
 
