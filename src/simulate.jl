@@ -45,29 +45,12 @@ function forecast(serie::Vector{T}, gas::Model{D, T}, N::Int;
 
     scenarios = simulate(serie, gas, N, S; initial_params = initial_params)
 
-    quantiles = get_quantiles(ci)
-
-    forec = Matrix{T}(undef, N, length(quantiles) + 1)
-
-    forec[:, 1] = mean(scenarios, dims = 2)
-    for t in 1:N
-        for (i, q) in enumerate(quantiles)
-            forec[t, i + 1] = quantile(scenarios[t, :], q)
-        end
-    end
-
-    return forec
+    return get_quantiles(ci, scenarios)
 end
 
-function get_quantiles(ci::Vector{T}) where T
+function get_quantiles(ci::Vector{T}, scenarios::Matrix{T}) where T
     @assert all((ci .< 1.0) .& (ci .> 0.0))
-    quantiles = zeros(2 * length(ci))
-    i = 1
-    for v in ci
-        quantiles[i] = 0.5 + v/2
-        i += 1
-        quantiles[i] = 0.5 - v/2
-        i += 1
-    end
+    cis = unique(sort([ci; 1 .- ci; 0.5]))
+    quantiles = mapslices(x -> quantile(x, cis), scenarios; dims = 2)
     return quantiles
 end

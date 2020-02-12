@@ -96,8 +96,8 @@ function fit(gas::Model{D, T}, y::Vector{T};
              opt_method::AbstractOptimizationMethod = NelderMead(gas, DEFAULT_NUM_SEEDS),
              verbose::Int = DEFAULT_VERBOSE) where {D, T}
 
-    # Number of seed and number of params to estimate
-    n_seeds = length(opt_method.seeds)
+    # Number of initial_points and number of params to estimate
+    n_initial_points = length(opt_method.initial_points)
     n = length(y)
     
     unknowns = find_unknowns(gas)
@@ -109,23 +109,23 @@ function fit(gas::Model{D, T}, y::Vector{T};
     # Create a copy of the model to estimate
     gas_fit = deepcopy(gas)
     
-    # optimize for each seed
+    # optimize for each initial_point
     aux_est = AuxEstimation{T}()
 
-    for i = 1:n_seeds
+    for i = 1:n_initial_points
         try 
-            func = TwiceDifferentiable(psi_tilde -> log_lik(psi_tilde, y, gas_fit, initial_params, unknowns, n), opt_method.seeds[i])
+            func = TwiceDifferentiable(psi_tilde -> log_lik(psi_tilde, y, gas_fit, initial_params, unknowns, n), opt_method.initial_points[i])
             opt_result = optimize(func, opt_method, verbose, i)
             update_aux_estimation!(aux_est, func, opt_result)
-            println("seed $i of $n_seeds - $(-opt_result.minimum)")
+            println("initial_point $i of $n_initial_points - $(-opt_result.minimum)")
         catch err
             println(err)
-            println("seed $i diverged")
+            println("initial_point $i diverged")
         end
     end
 
     if isempty(aux_est.loglikelihood) 
-        println("No seed converged.")
+        println("No initial_point converged.")
         return
     end
 
@@ -136,7 +136,7 @@ function fit(gas::Model{D, T}, y::Vector{T};
     bic = BIC(n, n_unknowns, best_llk)
 
     if verbose >= 1
-        println("\nBest seed optimization result:")
+        println("\nBest initial_point optimization result:")
         println(aux_est.opt_result[best_seed])
     end
 
