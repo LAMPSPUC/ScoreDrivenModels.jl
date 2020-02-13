@@ -1,16 +1,25 @@
 """
-Proof somewhere 
+    LogNormal
+
+* Parametrization
 parametrized in \\mu and \\sigma^2
+
+* Score
+
+* Fisher Information
+
+* `time_varying_params` map.
+
+* Default link
 """
+function LogNormal end
+
 function score!(score_til::Matrix{T}, y::T, ::Type{LogNormal}, param::Matrix{T}, t::Int) where T
     score_til[t, 1] = (log(y) - param[t, 1])/param[t, 2]
     score_til[t, 2] = -(0.5/param[t, 2]) * (1 - ((log(y) - param[t, 1])^2)/param[t, 2])
     return
 end
 
-"""
-Proof somewhere
-"""
 function fisher_information!(aux::AuxiliaryLinAlg{T}, ::Type{LogNormal}, param::Matrix{T}, t::Int) where T
     aux.fisher[1, 1] = 1/(param[t, 2])
     aux.fisher[2, 2] = 1/(2*(param[t, 2]^2))
@@ -19,9 +28,6 @@ function fisher_information!(aux::AuxiliaryLinAlg{T}, ::Type{LogNormal}, param::
     return
 end
 
-"""
-Proof somewhere
-"""
 function log_likelihood(::Type{LogNormal}, y::Vector{T}, param::Matrix{T}, n::Int) where T
     loglik = -0.5*log(2*pi)*n
     for t in 1:n

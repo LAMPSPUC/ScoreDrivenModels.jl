@@ -1,10 +1,10 @@
 # Currently supported distributions
 const DISTS = [
-    Normal;
-    Beta;
-    Poisson;
-    LogNormal;
-    Gamma;
+    Normal,
+    Beta,
+    Poisson,
+    LogNormal,
+    Gamma,
     Weibull
 ]
 

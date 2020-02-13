@@ -1,16 +1,25 @@
 """
-Proof somewhere 
+    Gamma
+
+* Parametrization
 parametrized in \\alpha and \\theta
+
+* Score
+
+* Fisher Information
+
+* `time_varying_params` map.
+
+* Default link
 """
+function Gamma end
+
 function score!(score_til::Matrix{T}, y::T, ::Type{Gamma}, param::Matrix{T}, t::Int) where T
     score_til[t, 1] = log(y) - digamma(param[t, 1]) - log(param[t, 2])
     score_til[t, 2] = y/param[t, 2]^2 - param[t, 1]/param[t, 2]
     return 
 end
 
-"""
-Proof somewhere
-"""
 function fisher_information!(aux::AuxiliaryLinAlg{T}, ::Type{Gamma}, param::Matrix{T}, t::Int) where T
     error("Fisher information not implemented for Gamma distribution.")
     aux.fisher[1, 1] = -trigamma(param[t, 1])
@@ -20,9 +29,6 @@ function fisher_information!(aux::AuxiliaryLinAlg{T}, ::Type{Gamma}, param::Matr
     return
 end
 
-"""
-Proof somewhere
-"""
 function log_likelihood(::Type{Gamma}, y::Vector{T}, param::Matrix{T}, n::Int) where T
     loglik = 0.0
     for t in 1:n

@@ -2,6 +2,10 @@
 
 ## Model Specification
 
+```@docs
+Model
+```
+
 ## Recursion
 
 ## Links
@@ -37,3 +41,41 @@ ScoreDrivenModels.unlink
 ScoreDrivenModels.jacobian_link
 ```
 
+## ScoreDrivenModels distributions
+
+The following section presents how every distribution is parametrized, its score, fisher information
+and the `time_varying_params` map. Every distribution is originally imported to ScoreDrivenModels.jl
+from [Distributions.jl](https://github.com/JuliaStats/Distributions.jl).
+
+```@docs
+ScoreDrivenModels.Poisson
+ScoreDrivenModels.Normal
+ScoreDrivenModels.LogNormal
+ScoreDrivenModels.Beta
+ScoreDrivenModels.Gamma
+ScoreDrivenModels.Weibull
+```
+
+## Implementing a new distribution
+
+If you want to add a new distribution please feel free to make a pull request.
+
+Each distribution must have the following methods:
+* `score`
+* `fisher information`
+* `log likelihood`
+* `link interface`
+    * `link`
+    * `unlink`
+    * `jacobian_link`
+* `update_dist`
+* `num_params`
+
+The details of the new distribution must be documented following the example in
+[`Normal`](@ref) and added to the [ScoreDrivenModels distributions](@ref) section.
+
+# Reference
+
+```@docs
+ScoreDrivenModels.Unknowns
+```
