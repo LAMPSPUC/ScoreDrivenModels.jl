@@ -56,7 +56,7 @@ gas = Model([1, 2, 11, 12], [1, 2, 11, 12], LogNormal, 0.0; time_varying_params 
 initial_params = dynamic_initial_params(y_train, gas)
 
 # Estimate the model via MLE
-fit!(gas, y_train; initial_params = initial_params, opt_method = NelderMead(gas, 100))
+f = fit!(gas, y_train; initial_params = initial_params, opt_method = NelderMead(gas, 100))
 
 # Obtain in-sample estimates for the inflow
 y_fitted = fitted_mean(gas, y_train; initial_params = initial_params)
@@ -66,7 +66,9 @@ plot(y_train, label = "In-sample inflow")
 plot!(y_fitted, label = "in-sample estimates")
 
 # Forecasts with 95% confidence interval
-forec = forecast(y_train, gas, 80; initial_params = initial_params, ci = [0.95])
+forecast_quantiles = forecast_ci(y_train, gas, 80; initial_params = initial_params)
+forecast_mean = forecast(y_train, gas, 80; initial_params = initial_params)
 
-plot(y_test, label = "Out-of-sample inflow")
-plot!(forec, label = "Forecast", color = "Steel Blue")
+plot(y_test, label = "Out-of-sample inflow", color = "black")
+plot!(forecast_quantiles, label = ["Quantiles forecast" "" ""], color = "Steel Blue")
+plot!(forecast_mean, label = "Mean forecast", color = "red")

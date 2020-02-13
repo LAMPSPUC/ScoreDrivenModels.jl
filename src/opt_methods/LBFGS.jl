@@ -10,8 +10,9 @@ end
 """
     LBFGS(model::Model, args...; kwargs...)
 
-If an `Int` is provided the method will sample random initial_points and use them as initial points for Optim LBFGS method.
-If a `Vector{Vector{T}}` is provided it will use them as initial points for Optim LBFGS method.
+If an `Int` is provided the method will sample random initial_points and use them as 
+initial points for Optim LBFGS method. If a `Vector{Vector{T}}` is provided it will use them as 
+initial points for Optim LBFGS method.
 """
 function LBFGS(model::Model{D, T}, n_initial_points::Int; f_tol::T = T(1e-6), g_tol::T = T(1e-6), 
                                                iterations::Int = 10^5, LB::T = 0.0, UB::T = 0.6) where {D, T}
