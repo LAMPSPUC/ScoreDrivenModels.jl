@@ -61,15 +61,15 @@ ScoreDrivenModels.Weibull
 If you want to add a new distribution please feel free to make a pull request.
 
 Each distribution must have the following methods:
-* score
-* fisher information
-* log likelihood
-* link interface
-    * link
-    * unlink
-    * jacobian_link
-* update_dist
-* num_params
+* `score`
+* `fisher information`
+* `log likelihood`
+* `link interface`
+    * `link`
+    * `unlink`
+    * `jacobian_link`
+* `update_dist`
+* `num_params`
 
 The details of the new distribution must be documented following the example in
 [`Normal`](@ref) and added to the [ScoreDrivenModels distributions](@ref) section.
