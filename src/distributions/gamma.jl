@@ -1,7 +1,7 @@
 """
     Gamma
 
-* Paramaterization
+* Parametrization
 parametrized in \\alpha and \\theta
 
 * Score

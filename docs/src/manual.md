@@ -3,7 +3,7 @@
 ## Model Specification
 
 ```@docs
-ScoreDrivenModels.Model
+Model
 ```
 
 ## Recursion

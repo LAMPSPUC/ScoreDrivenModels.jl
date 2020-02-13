@@ -1,7 +1,7 @@
 """
     LogNormal
 
-* Paramaterization
+* Parametrization
 parametrized in \\mu and \\sigma^2
 
 * Score

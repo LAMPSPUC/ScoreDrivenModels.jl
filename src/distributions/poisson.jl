@@ -1,7 +1,7 @@
 """
     Poisson
 
-* Paramaterization
+* Parametrization
 parametrized in \\lambda
 
 * Score

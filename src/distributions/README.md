@@ -13,5 +13,5 @@ Each distribution must have the following methods:
 * update_dist
 * num_params
 
-For more details please see the section Implementing a new distribution in the documentation
+For more details, please read section "Implementing a new distribution" in the documentation
 <!-- TODO add link to the section -->

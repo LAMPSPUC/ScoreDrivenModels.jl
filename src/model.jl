@@ -57,18 +57,18 @@ end
 """
     Model
 
-The constructor of a score-driven model, the model receives the lag structure, the 
+The constructor of a score-driven model. The model receives the lag structure, the 
 distribution and the scaling. You can define the lag structure in two different 
-ways, either by passing integers to define all lags. Once you build the model all of
-the unknown parameters that must be estimated are represented as `NaN`
+ways, either by passing integers `p` and `q` to add all lags from `1` to `p and `1` to `q` or by 
+passing vectors of integers `ps` and `qs` containing the desired lags. Once you build 
+the model all of the unknown parameters that must be estimated are represented as `NaN`.
 
 ```jldoctest
+# Passing p and q
 julia> Model(2, 2, LogNormal, 0.5)
 Model{LogNormal,Float64}([NaN, NaN], Dict(2=>[NaN 0.0; 0.0 NaN],1=>[NaN 0.0; 0.0 NaN]), Dict(2=>[NaN 0.0; 0.0 NaN],1=>[NaN 0.0; 0.0 NaN]), 0.5)
-```
-or by passing a vector with the lags of interest.
 
-```jldoctest
+# Passing ps and qs
 julia> Model([1, 12], [1, 12], Gamma, 0.0)
 Model{Gamma,Float64}([NaN, NaN], Dict(12=>[NaN 0.0; 0.0 NaN],1=>[NaN 0.0; 0.0 NaN]), Dict(12=>[NaN 0.0; 0.0 NaN],1=>[NaN 0.0; 0.0 NaN]), 0.0)
 ```

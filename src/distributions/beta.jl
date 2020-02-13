@@ -1,7 +1,7 @@
 """
     Beta
 
-* Paramaterization
+* Parametrization
 
 * Score
 
