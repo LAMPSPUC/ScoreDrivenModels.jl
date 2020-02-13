@@ -1,21 +1,28 @@
 """
-Proof somewhere
+    Poisson
+
+* Paramaterization
+parametrized in \\lambda
+
+* Score
+
+* Fisher Information
+
+* `time_varying_params` map.
+
+* Default link
 """
+function Poisson end
+
 function score!(score_til::Matrix{T}, y::Int, ::Type{Poisson}, param::Matrix{T}, t::Int) where T
     score_til[t, 1] = y/param[t, 1] - 1
     return
 end
 
-"""
-Proof somewhere
-"""
 function fisher_information!(aux::AuxiliaryLinAlg{T}, ::Type{Poisson}, param::Matrix{T}, t::Int) where T
     aux.fisher[1, 1] = 1/param[1]
 end
 
-"""
-Proof somewhere
-"""
 function log_likelihood(::Type{Poisson}, y::Vector{Int}, param::Matrix{T}, n::Int) where T
     loglik = zero(T)
     for t in 1:n

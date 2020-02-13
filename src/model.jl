@@ -54,19 +54,47 @@ function Model(ps::Vector{Int}, qs::Vector{Int}, D::Type{<:Distribution}, scalin
     return Model{D, Float64}(ω, A, B, scaling)
 end
 
+"""
+    Model
+
+The constructor of a score-driven model, the model receives the lag structure, the 
+distribution and the scaling. You can define the lag structure in two different 
+ways, either by passing integers to define all lags. Once you build the model all of
+the unknown parameters that must be estimated are represented as `NaN`
+
+```jldoctest
+julia> Model(2, 2, LogNormal, 0.5)
+Model{LogNormal,Float64}([NaN, NaN], Dict(2=>[NaN 0.0; 0.0 NaN],1=>[NaN 0.0; 0.0 NaN]), Dict(2=>[NaN 0.0; 0.0 NaN],1=>[NaN 0.0; 0.0 NaN]), 0.5)
+```
+or by passing a vector with the lags of interest.
+
+```jldoctest
+julia> Model([1, 12], [1, 12], Gamma, 0.0)
+Model{Gamma,Float64}([NaN, NaN], Dict(12=>[NaN 0.0; 0.0 NaN],1=>[NaN 0.0; 0.0 NaN]), Dict(12=>[NaN 0.0; 0.0 NaN],1=>[NaN 0.0; 0.0 NaN]), 0.0)
+```
+
+If you don't want all the parameters to be considered time-varying you can express it 
+through the keyword argument `time_varying_params`, there you should pass a vector
+containing a number that represents which parameter should be time-varying. As an example
+in the Normal distribution `time_varying_params = [1]` indicates that only ``\\mu`` is
+time-varying. You can find the table with the dictionary (number => parameter) in the
+section [ScoreDrivenModels distributions](@ref).
+
+```jldoctest
+julia> Model([1, 12], [1, 12], Normal, 1.0; time_varying_params = [1])
+Model{Normal,Float64}([NaN, NaN], Dict(12=>[NaN 0.0; 0.0 0.0],1=>[NaN 0.0; 0.0 0.0]), Dict(12=>[NaN 0.0; 0.0 0.0],1=>[NaN 0.0; 0.0 0.0]), 1.0)
+```
+"""
+function Model end
+
 function number_of_lags(gas::Model)
     return max(maximum(keys(gas.A)), maximum(keys(gas.B)))
 end
 
 """
-The unknows parameters of a model
-Only for internal use
+    Unknowns
 
-Every Unknowns must define
-fill_psitilde
-find_unknowns
-dim_unknowns
-length
+Structure that stores the positions of the parameters to be estimated in the [`Model`](@ref).
 """
 mutable struct Unknowns
     ω::Vector{Int}

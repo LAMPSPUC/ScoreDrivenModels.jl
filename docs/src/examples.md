@@ -1,5 +1,7 @@
 # Examples
 
+## GARCH(1, 1)
+
 ## Water inflow
 
 Let's model some monthly water inflow data from the Northeast of Brazil using a Lognormal GAS model. Since inflow is a highly seasonal phenomenon, we will utilize lags 1 and 12. The former aims to characterize the short-term evolution of the series, while the latter characterizes the seasonality. The full code is in the examples folder.
