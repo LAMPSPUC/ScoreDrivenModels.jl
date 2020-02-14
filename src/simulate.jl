@@ -32,7 +32,7 @@ end
 """
     forecast_ci(serie::Vector{T}, gas::Model{D, T}, N::Int; kwargs...) where {D, T}
 
-Forecast confidence intervals future values of a time series by updating the GAS recursion `N` times and 
+Forecast confidence intervals for future values of a time series by updating the GAS recursion `N` times and 
 using Monte Carlo method as in Blasques, Francisco, Siem Jan Koopman,
 Katarzyna Lasak and Andre Lucas (2016): "In-Sample Confidence Bounds and Out-of-Sample Forecast
 Bands for Time-Varying Parameters in Observation Driven Models", 
