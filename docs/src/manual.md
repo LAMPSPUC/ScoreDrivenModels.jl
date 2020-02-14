@@ -8,7 +8,7 @@ Model
 
 ## Optimization Algorithms
 
-ScoreDrivenModels.jl allows users to tests different optimization methods, in particular
+ScoreDrivenModels.jl allows users to use different optimization methods, in particular
 it has a common interface to easily incorporate algorithms available on [Optim.jl](https://github.com/JuliaNLSolvers/Optim.jl)
 
 All optimization methods can receive the following keyword arguments
