@@ -73,7 +73,7 @@ ScoreDrivenModels.jacobian_link
 
 ## Forecasting
 
-ScoreDrivenModels.jl allows users to generate, a point forecast, confidence interval 
+ScoreDrivenModels.jl allows users to generate point forecasts, confidence intervals 
 forecasts or an ensemble of scenarios. Point forecasts are obtained using the function `forecast` 
 and the ensemble of scenarios are obtained using the function `simulate`
 
