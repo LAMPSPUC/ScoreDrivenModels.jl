@@ -12,12 +12,16 @@ end
 """
     IPNewton(model::Model, args...; kwargs...)
 
-If an `Int` is provided the method will sample random initial_points and use them as initial points for Optim IPNewton method.
-If a `Vector{Vector{T}}` is provided it will use them as initial points for Optim IPNewton method.
+If an `Int` is provided the method will sample that many random initial_points and use them as 
+initial points for Optim IPNewton method. If a `Vector{Vector{T}}` is provided it will use them as 
+initial points for Optim IPNewton method.
+
+This method provides an alternative to create box constraints. constraints can be passed as a Vector
+the default constraints are `ub = Inf * ones(T, dim_unknowns(model))` and `lb = -Inf * ones(T, dim_unknowns(model))`
 """
 function IPNewton(model::Model{D, T}, n_initial_points::Int; f_tol::T = T(1e-6), g_tol::T = T(1e-6), 
-                                                ub::Vector{T} = Inf*ones(T, dim_unknowns(model)),
-                                                lb::Vector{T} = -Inf*ones(T, dim_unknowns(model)),
+                                                ub::Vector{T} = Inf * ones(T, dim_unknowns(model)),
+                                                lb::Vector{T} = -Inf * ones(T, dim_unknowns(model)),
                                                 iterations::Int = 10^5, LB::T = 0.0, UB::T = 0.6) where {D, T}
 
     initial_points = create_initial_points(model, n_initial_points, LB, UB)

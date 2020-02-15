@@ -49,7 +49,7 @@ jacobian_link(::Type{LogLink}, param::T, lower_bound::T) where T = 1/(param - lo
 """
     LogitLink <: Link
 
-Define the map ``\\tilde{f} = \\-ln(\\frac{b - a}{f + a} - 1)`` where ``f \\in [a, b], a, b \\in \\mathbb{R}`` and ``\\tilde{f} \\in \\mathbb{R}``
+Define the map ``\\tilde{f} = -\\ln(\\frac{b - a}{f + a} - 1)`` where ``f \\in [a, b], a, b \\in \\mathbb{R}`` and ``\\tilde{f} \\in \\mathbb{R}``
 """
 struct LogitLink <: Link end
 

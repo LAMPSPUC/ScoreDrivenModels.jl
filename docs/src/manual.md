@@ -6,11 +6,38 @@
 Model
 ```
 
+## Optimization Algorithms
+
+ScoreDrivenModels.jl allows users to use different optimization methods, in particular
+it has a common interface to easily incorporate algorithms available on [Optim.jl](https://github.com/JuliaNLSolvers/Optim.jl)
+
+All optimization methods can receive the following keyword arguments
+    * `f_tol` - Relative tolerance in changes of the objective value. Default is `1e-6`.
+    * `g_tol` - Absolute tolerance in the gradient, in infinity norm. Default is `1e-6`.
+    * `iterations` - Maximum number of iterations. Default is `10^5`.
+    * `LB` - Lower bound of the initial points. Default is `0.0`.
+    * `UB` - Upper bound of the initial points. Default is `0.6`.
+
+The [ScoreDrivenModels.IPNewton](@ref) allows users to perform box-constrained optimization, 
+more details in [ScoreDrivenModels.IPNewton](@ref).
+
+```@docs
+ScoreDrivenModels.NelderMead
+ScoreDrivenModels.LBFGS
+ScoreDrivenModels.IPNewton
+```
+
 ## Recursion
 
 ## Links
 
-Links are reparametrizations utilized to ensure certain parameter is within its original domain. For instance, for a particular distribution, one might want to ensure that the time varying parameter is positive: ``f \in \mathbb{R}^+``. The way to do this is to model ``\tilde{f} = \ln{f}``. More generally, one can establish that ``\tilde{f} = h(f)``. We refer to this procedure as **linking**. When a parameter is linked, the GAS recursion happens in the domain of ``\tilde{f}`` and then one can recover the original parameter by ``f = \left(h\right)^-1(\tilde f)``. We refer to this procedure as **unlinking**. The new recursion becomes:
+Links are reparametrizations utilized to ensure certain parameter is within its original domain. 
+For instance, for a particular distribution, one might want to ensure that the time varying 
+parameter is positive: ``f \in \mathbb{R}^+``. The way to do this is to model ``\tilde{f} = \ln{f}``. 
+More generally, one can establish that ``\tilde{f} = h(f)``. We refer to this procedure as 
+**linking**. When a parameter is linked, the GAS recursion happens in the domain of ``\tilde{f}`` 
+and then one can recover the original parameter by ``f = \left(h\right)^-1(\tilde f)``. 
+We refer to this procedure as **unlinking**. The new recursion becomes:
 
 ```math
 \begin{equation*}\left\{\begin{array}{ccl}
@@ -21,7 +48,10 @@ Links are reparametrizations utilized to ensure certain parameter is within its 
 \end{equation*}
 ```
 
-Notice that a different parametrization alters the dynamics of the model. For example, the GAS(1,1) model with Normal distribution and scaling ``d = 1`` is equivalent to the well-known GARCH(1, 1) model. Conversely, if a different parametrization is utilized, the model will no longer be equivalent.
+Notice that a different parametrization alters the dynamics of the model. For example, 
+the GAS(1,1) model with Normal distribution and scaling ``d = 1`` is equivalent to the well-known 
+GARCH(1, 1) model. Conversely, if a different parametrization is utilized, the model will 
+no longer be equivalent.
 
 ### Types of links
 
@@ -39,6 +69,18 @@ ScoreDrivenModels.LogitLink
 ScoreDrivenModels.link
 ScoreDrivenModels.unlink
 ScoreDrivenModels.jacobian_link
+```
+
+## Forecasting
+
+ScoreDrivenModels.jl allows users to generate point forecasts, confidence intervals 
+forecasts or ensembles of scenarios. Point forecasts are obtained using the function `forecast` 
+and ensembles of scenarios are obtained using the function `simulate`.
+
+```@docs
+forecast
+forecast_ci
+simulate
 ```
 
 ## ScoreDrivenModels distributions

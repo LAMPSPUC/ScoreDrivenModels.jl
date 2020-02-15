@@ -1,10 +1,14 @@
-export simulate, forecast
+export simulate, forecast_ci, forecast
 
 """
     simulate(serie::Vector{T}, gas::Model{D, T}, N::Int, S::Int, kwargs...) where {D, T}
 
 Generate scenarios for the future of a time series by updating the GAS recursion `N` times and taking
-a sample of the distribution until generate `S` scenarios.
+a sample of the distribution until it generates `S` scenarios.
+
+By default this method uses the `stationary_initial_params` method to perform the 
+score driven recursion. If you estimated the model with a different set of `initial_params`
+pass it here to maintain the coherence of your estimation.
 """
 function simulate(serie::Vector{T}, gas::Model{D, T}, N::Int, S::Int;
                     initial_params::Matrix{T} = stationary_initial_params(gas)) where {D, T}
@@ -26,31 +30,59 @@ end
 
 
 """
-    forecast(serie::Vector{T}, gas::Model{D, T}, N::Int; kwargs...) where {D, T}
+    forecast_ci(serie::Vector{T}, gas::Model{D, T}, N::Int; kwargs...) where {D, T}
 
-Forecast future values of a time series by updating the GAS recursion `N` times and
-taking the mean of the distribution at each time. You can pass the desired confidence interval
-as a `Vector{T}`. The forecast will be the first column and the confidence intervals are the remaining
-columns.
-
-The forecast is build using Monte Carlo method as in Blasques, Francisco, Siem Jan Koopman,
+Forecast confidence intervals for future values of a time series by updating the GAS recursion `N` times and 
+using Monte Carlo method as in Blasques, Francisco, Siem Jan Koopman,
 Katarzyna Lasak and Andre Lucas (2016): "In-Sample Confidence Bounds and Out-of-Sample Forecast
-Bands for Time-Varying Parameters in Observation Driven Models", International Journal of Forecasting, 32(3), 875-887.
+Bands for Time-Varying Parameters in Observation Driven Models", 
+International Journal of Forecasting, 32(3), 875-887.
+ 
+You can pass the desired confidence interval as a `Vector{T}`. The default value is to 
+forecast in the median, `0.025` and `0.975` quantiles.
 
 By default 1000 scenarios are used but one can change by switching the `S` keyword argument.
+
+By default this method uses the `stationary_initial_params` method to perform the 
+score driven recursion. If you estimated the model with a different set of `initial_params`
+pass it here to maintain the coherence of your estimation.
 """
-function forecast(serie::Vector{T}, gas::Model{D, T}, N::Int;
-                    initial_params::Matrix{T} = stationary_initial_params(gas),
-                    ci::Vector{T} = T.([0.95]), S::Int = 1000) where {D, T}
+function forecast_ci(serie::Vector{T}, gas::Model{D, T}, N::Int;
+                      initial_params::Matrix{T} = stationary_initial_params(gas),
+                      ci::Vector{T} = T.([0.5, 0.95]), S::Int = 1000) where {D, T}
 
     scenarios = simulate(serie, gas, N, S; initial_params = initial_params)
 
     return get_quantiles(ci, scenarios)
 end
 
+"""
+    forecast(serie::Vector{T}, gas::Model{D, T}, N::Int; kwargs...) where {D, T}
+
+Forecast the expected future values of a time series by updating the GAS recursion `N` times and 
+using Monte Carlo method as in Blasques, Francisco, Siem Jan Koopman,
+Katarzyna Lasak and Andre Lucas (2016): "In-Sample Confidence Bounds and Out-of-Sample Forecast
+Bands for Time-Varying Parameters in Observation Driven Models", 
+International Journal of Forecasting, 32(3), 875-887.
+
+By default 1000 scenarios are used but one can change by switching the `S` keyword argument.
+
+By default this method uses the `stationary_initial_params` method to perform the 
+score driven recursion. If you estimated the model with a different set of `initial_params`
+pass it here to maintain the coherence of your estimation.
+"""
+function forecast(serie::Vector{T}, gas::Model{D, T}, N::Int;
+                    initial_params::Matrix{T} = stationary_initial_params(gas),
+                    S::Int = 1000) where {D, T}
+
+    scenarios = simulate(serie, gas, N, S; initial_params = initial_params)
+
+    return mean(scenarios, dims = 2)
+end
+
 function get_quantiles(ci::Vector{T}, scenarios::Matrix{T}) where T
     @assert all((ci .< 1.0) .& (ci .> 0.0))
-    cis = unique(sort([ci; 1 .- ci; 0.5]))
+    cis = unique(sort([ci; 1 .- ci]))
     quantiles = mapslices(x -> quantile(x, cis), scenarios; dims = 2)
     return quantiles
 end
