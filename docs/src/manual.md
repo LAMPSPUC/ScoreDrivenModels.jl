@@ -96,6 +96,7 @@ ScoreDrivenModels.LogNormal
 ScoreDrivenModels.Beta
 ScoreDrivenModels.Gamma
 ScoreDrivenModels.Weibull
+ScoreDrivenModels.Exponential
 ```
 
 ## Implementing a new distribution
@@ -115,6 +116,8 @@ Each distribution must have the following methods:
 
 The details of the new distribution must be documented following the example in
 [`Normal`](@ref) and added to the [ScoreDrivenModels distributions](@ref) section.
+The new implemented distribution must also be added to the constant `DISTS` and exported in the
+`distributions/common_interface.jl` file.
 
 # Reference
 
