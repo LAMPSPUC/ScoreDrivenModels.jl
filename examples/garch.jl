@@ -1,10 +1,6 @@
 using ScoreDrivenModels, Statistics, DelimitedFiles
 
-# The GARCH(1, 1) is equivalent to a Normal Model(1, 1) with inverse scaling. The models are only equivalent under
-# no reparametrizations; this means you should fit the model overwriting the default link!, unlink! and
-# jacobian_link! methods for the Normal distribution to use only IdentityLink.
-
-# Overwrite link interface to work with Identity links.
+# Overwrite link interface to use IdentityLink for Normal distribution.
 function ScoreDrivenModels.link!(param_tilde::Matrix{T}, ::Type{Normal}, param::Matrix{T}, t::Int) where T
     param_tilde[t, 1] = link(IdentityLink, param[t, 1])
     param_tilde[t, 2] = link(IdentityLink, param[t, 2])
@@ -21,7 +17,7 @@ function ScoreDrivenModels.jacobian_link!(aux::AuxiliaryLinAlg{T}, ::Type{Normal
     return
 end
 
-# Data from [Bollerslev and Ghysels (JBES 1996)](https://doi.org/10.2307/1392425). Took from ARCHModels.jl
+# Data from [Bollerslev and Ghysels (JBES 1996)](https://doi.org/10.2307/1392425). Obtained from [ARCHModels.jl](https://github.com/s-broda/ARCHModels.jl)
 y = readdlm("./test/data/BG96.csv")[:]
 
 # Evaluate some approximate initial params
