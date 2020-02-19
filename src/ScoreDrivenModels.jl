@@ -37,5 +37,6 @@ include("distributions/lognormal.jl")
 include("distributions/gamma.jl")
 include("distributions/weibull.jl")
 include("distributions/exponential.jl")
+include("distributions/logitnormal.jl")
 
 end
