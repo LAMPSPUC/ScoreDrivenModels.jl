@@ -2,7 +2,11 @@
 
 ## GARCH(1, 1)
 
-https://github.com/LAMPSPUC/ScoreDrivenModels.jl/blob/master/examples/garch.jl
+GARCH (acronym for generalized autoregressive conditional heteroskedasticity) is a well-known time series model used to describe the conditional variance of the errors in time-varying fashion. In this example, we show how the GARCH(1, 1) is simply a particular case of GAS; more specifically, it is a Normal GAS(1, 1) model with inverse scaling.
+
+Note that this equivalence is true only under no reparametrization -- it is necessary to modify the default `link!`, `unlink!` and `jacobian_link!` methods to use `IdentityLink` for the Normal distribution.
+
+The code for this example can be accessed [here](https://github.com/LAMPSPUC/ScoreDrivenModels.jl/blob/master/examples/garch.jl).
 
 ## Water inflow
 
