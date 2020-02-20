@@ -1,7 +1,11 @@
 function test_score_mean(D::Type{<:Distribution}; n::Int = 10^7, seed::Int = 10,
                             atol::Float64 = 1e-3, rtol::Float64 = 1e-3)
     Random.seed!(seed)
-    dist = D()
+    if D in [Chisq]
+        dist = D(10)
+    else
+        dist = D()
+    end
     pars = permutedims([params(dist)...])
     n_params = ScoreDrivenModels.num_params(D)
     avg  = zeros(1, n_params)
@@ -17,7 +21,11 @@ end
 function test_loglik(D::Type{<:Distribution}; atol::Float64 = 1e-3, rtol::Float64 = 1e-3,
                      seed::Int = 13, n::Int = 100)
     Random.seed!(seed)
-    dist = D()
+    if D in [Chisq]
+        dist = D(10)
+    else
+        dist = D()
+    end
     y = rand(dist, n)
     pars = Matrix{Float64}(undef, n, ScoreDrivenModels.num_params(D))
     pars_dist = params(dist)

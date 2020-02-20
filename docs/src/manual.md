@@ -90,14 +90,15 @@ and the `time_varying_params` map. Every distribution is originally imported to 
 from [Distributions.jl](https://github.com/JuliaStats/Distributions.jl).
 
 ```@docs
-ScoreDrivenModels.Poisson
-ScoreDrivenModels.Normal
-ScoreDrivenModels.LogNormal
-ScoreDrivenModels.LogitNormal
 ScoreDrivenModels.Beta
-ScoreDrivenModels.Gamma
-ScoreDrivenModels.Weibull
+ScoreDrivenModels.Chisq
 ScoreDrivenModels.Exponential
+ScoreDrivenModels.Gamma
+ScoreDrivenModels.LogitNormal
+ScoreDrivenModels.LogNormal
+ScoreDrivenModels.Normal
+ScoreDrivenModels.Poisson
+ScoreDrivenModels.Weibull
 ```
 
 ## Implementing a new distribution
