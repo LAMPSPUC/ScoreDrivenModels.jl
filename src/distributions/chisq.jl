@@ -15,19 +15,19 @@ parametrized in \\alpha and \\theta
 function Chisq end
 
 function score!(score_til::Matrix{T}, y::T, ::Type{Chisq}, param::Matrix{T}, t::Int) where T
-    score_til[t, 1] = (log(y) - log(2) - digamma(param[t, 1] / 2)) / 2
+    score_til[t, 1] = (log(y) - log(2) - digamma(param[t, 1]/2))/2
     return 
 end
 
 function fisher_information!(aux::AuxiliaryLinAlg{T}, ::Type{Chisq}, param::Matrix{T}, t::Int) where T
-    aux.fisher[1, 1] = trigamma(param[t, 1] / 2) / 4
+    aux.fisher[1, 1] = trigamma(param[t, 1]/2)/4
     return
 end
 
 function log_likelihood(::Type{Chisq}, y::Vector{T}, param::Matrix{T}, n::Int) where T
     loglik = 0.0
     for t in 1:n
-        loglik += (param[t, 1] / 2 - 1) * log(y[t]) - y[t]/2 - (param[t, 1]*log(2)) / 2 - loggamma(param[t, 1]/2)
+        loglik += (param[t, 1]/2 - 1) * log(y[t]) - y[t]/2 - (param[t, 1]*log(2))/2 - loggamma(param[t, 1]/2)
     end
     return -loglik
 end
