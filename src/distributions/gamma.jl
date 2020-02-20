@@ -21,9 +21,8 @@ function score!(score_til::Matrix{T}, y::T, ::Type{Gamma}, param::Matrix{T}, t::
 end
 
 function fisher_information!(aux::AuxiliaryLinAlg{T}, ::Type{Gamma}, param::Matrix{T}, t::Int) where T
-    error("Fisher information not implemented for Gamma distribution.")
     aux.fisher[1, 1] = -trigamma(param[t, 1])
-    aux.fisher[2, 2] = -2 * y / param[t, 2] ^ 3 + param[t, 1] / param[t, 2]^2
+    aux.fisher[2, 2] = param[t, 1] / param[t, 2]^2
     aux.fisher[2, 1] = -1/param[t, 2]
     aux.fisher[1, 2] = -1/param[t, 2]
     return

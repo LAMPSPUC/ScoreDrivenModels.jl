@@ -93,6 +93,7 @@ from [Distributions.jl](https://github.com/JuliaStats/Distributions.jl).
 ScoreDrivenModels.Poisson
 ScoreDrivenModels.Normal
 ScoreDrivenModels.LogNormal
+ScoreDrivenModels.LogitNormal
 ScoreDrivenModels.Beta
 ScoreDrivenModels.Gamma
 ScoreDrivenModels.Weibull
