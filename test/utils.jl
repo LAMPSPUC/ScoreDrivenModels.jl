@@ -18,6 +18,36 @@ function test_score_mean(D::Type{<:Distribution}; n::Int = 10^7, seed::Int = 10,
     @test avg ≈ zeros(1, ScoreDrivenModels.num_params(D)) atol = atol rtol = rtol
 end
 
+function test_fisher_information(D::Type{<:Distribution}; n::Int = 10^6, seed::Int = 10,
+                                 atol::Float64 = 1e-2, rtol::Float64 = 1e-2)
+    Random.seed!(seed)
+    if D in [Chisq]
+        dist = D(10)
+    else
+        dist = D()
+    end
+    pars = permutedims([params(dist)...])
+    n_params = ScoreDrivenModels.num_params(D)
+    var_terms  = zeros(n_params, n_params)
+    for i = 1:n
+        score_aux = ones(1, n_params)
+        dist = D(pars...)
+        ScoreDrivenModels.score!(score_aux, rand(dist), D, pars, 1)
+        var_terms .+= score_aux' * score_aux
+    end
+    var_terms ./= n
+    aux_lin_alg = AuxiliaryLinAlg{Float64}(n_params)
+
+    # Some distributions might not have the fisher information yet available
+    try 
+        @show ScoreDrivenModels.fisher_information!(aux_lin_alg, D, pars, 1)
+    catch 
+        return
+    end
+
+    @test var_terms ≈ aux_lin_alg.fisher atol = atol rtol = rtol
+end
+
 function test_loglik(D::Type{<:Distribution}; atol::Float64 = 1e-3, rtol::Float64 = 1e-3,
                      seed::Int = 13, n::Int = 100)
     Random.seed!(seed)

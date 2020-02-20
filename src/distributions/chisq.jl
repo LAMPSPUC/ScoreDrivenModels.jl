@@ -20,7 +20,7 @@ function score!(score_til::Matrix{T}, y::T, ::Type{Chisq}, param::Matrix{T}, t::
 end
 
 function fisher_information!(aux::AuxiliaryLinAlg{T}, ::Type{Chisq}, param::Matrix{T}, t::Int) where T
-    aux.fisher[1, 1] = -trigamma(param[t, 1] / 2) / 4
+    aux.fisher[1, 1] = trigamma(param[t, 1] / 2) / 4
     return
 end
 
