@@ -1,7 +1,9 @@
+const PARAMETER_REQUIRED_DISTS = [Chisq; Chi]
+
 function test_score_mean(D::Type{<:Distribution}; n::Int = 10^7, seed::Int = 10,
                             atol::Float64 = 1e-3, rtol::Float64 = 1e-3)
     Random.seed!(seed)
-    if D in [Chisq]
+    if D in PARAMETER_REQUIRED_DISTS
         dist = D(10)
     else
         dist = D()
@@ -21,7 +23,7 @@ end
 function test_fisher_information(D::Type{<:Distribution}; n::Int = 10^6, seed::Int = 10,
                                  atol::Float64 = 1e-2, rtol::Float64 = 1e-2)
     Random.seed!(seed)
-    if D in [Chisq]
+    if D in PARAMETER_REQUIRED_DISTS
         dist = D(10)
     else
         dist = D()
@@ -40,7 +42,7 @@ function test_fisher_information(D::Type{<:Distribution}; n::Int = 10^6, seed::I
 
     # Some distributions might not have the fisher information yet available
     try 
-        @show ScoreDrivenModels.fisher_information!(aux_lin_alg, D, pars, 1)
+        ScoreDrivenModels.fisher_information!(aux_lin_alg, D, pars, 1)
     catch 
         return
     end
@@ -51,7 +53,7 @@ end
 function test_loglik(D::Type{<:Distribution}; atol::Float64 = 1e-3, rtol::Float64 = 1e-3,
                      seed::Int = 13, n::Int = 100)
     Random.seed!(seed)
-    if D in [Chisq]
+    if D in PARAMETER_REQUIRED_DISTS
         dist = D(10)
     else
         dist = D()

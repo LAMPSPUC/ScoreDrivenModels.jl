@@ -31,6 +31,7 @@ include("opt_methods/NelderMead.jl")
 # Distributions
 include("distributions/common_interface.jl")
 include("distributions/beta.jl")
+include("distributions/chi.jl")
 include("distributions/chisq.jl")
 include("distributions/exponential.jl")
 include("distributions/gamma.jl")
