@@ -2,7 +2,7 @@
     Chisq
 
 * Parametrization
-parametrized in \\alpha and \\theta
+parametrized in k
 
 * Score
 
