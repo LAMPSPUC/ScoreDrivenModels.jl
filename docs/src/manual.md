@@ -91,6 +91,7 @@ from [Distributions.jl](https://github.com/JuliaStats/Distributions.jl).
 
 ```@docs
 ScoreDrivenModels.Beta
+ScoreDrivenModels.Chi
 ScoreDrivenModels.Chisq
 ScoreDrivenModels.Exponential
 ScoreDrivenModels.Gamma

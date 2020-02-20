@@ -1,6 +1,7 @@
 # Currently supported distributions
 const DISTS = [
     Beta,
+    Chi,
     Chisq,
     Exponential,
     Gamma,
@@ -12,6 +13,7 @@ const DISTS = [
 ]
 
 export Beta,
+    Chi,
     Chisq,
     Exponential,
     Gamma,
