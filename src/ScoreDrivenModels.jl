@@ -30,13 +30,14 @@ include("opt_methods/NelderMead.jl")
 
 # Distributions
 include("distributions/common_interface.jl")
+include("distributions/beta.jl")
+include("distributions/chisq.jl")
+include("distributions/exponential.jl")
+include("distributions/gamma.jl")
+include("distributions/logitnormal.jl")
+include("distributions/lognormal.jl")
 include("distributions/normal.jl")
 include("distributions/poisson.jl")
-include("distributions/beta.jl")
-include("distributions/lognormal.jl")
-include("distributions/gamma.jl")
 include("distributions/weibull.jl")
-include("distributions/exponential.jl")
-include("distributions/logitnormal.jl")
 
 end

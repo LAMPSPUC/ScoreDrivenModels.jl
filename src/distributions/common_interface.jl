@@ -1,16 +1,25 @@
 # Currently supported distributions
 const DISTS = [
-    Normal,
-    LogNormal,
-    LogitNormal,
     Beta,
-    Poisson,
+    Chisq,
+    Exponential,
     Gamma,
-    Weibull,
-    Exponential
+    LogitNormal,
+    LogNormal,
+    Normal,
+    Poisson,
+    Weibull
 ]
 
-export Normal, Beta, Poisson, LogNormal, Gamma, Weibull, Exponential, LogitNormal
+export Beta,
+    Chisq,
+    Exponential,
+    Gamma,
+    LogitNormal,
+    LogNormal,
+    Normal,
+    Poisson,
+    Weibull
 
 function score!(score_til::Matrix{T}, y::T, ::Type{<:Distribution}, param::Matrix{T}, t::Int) where T
     return error("score! not implemented for $D distribution")
