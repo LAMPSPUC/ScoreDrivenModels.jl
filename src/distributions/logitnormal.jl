@@ -42,10 +42,12 @@ end
 function link!(param_tilde::Matrix{T}, ::Type{LogitNormal}, param::Matrix{T}, t::Int) where T 
     param_tilde[t, 1] = link(IdentityLink, param[t, 1])
     param_tilde[t, 2] = link(LogLink, param[t, 2], zero(T))
+    return
 end
 function unlink!(param::Matrix{T}, ::Type{LogitNormal}, param_tilde::Matrix{T}, t::Int) where T 
     param[t, 1] = unlink(IdentityLink, param_tilde[t, 1])
     param[t, 2] = unlink(LogLink, param_tilde[t, 2], zero(T))
+    return
 end
 function jacobian_link!(aux::AuxiliaryLinAlg{T}, ::Type{LogitNormal}, param::Matrix{T}, t::Int) where T 
     aux.jac[1] = jacobian_link(IdentityLink, param[t, 1])

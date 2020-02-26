@@ -1,5 +1,9 @@
 const PARAMETER_REQUIRED_DISTS = [Chisq; Chi]
 
+struct FakeDist{T<:Real} <: Distributions.ContinuousUnivariateDistribution
+    foo::T
+end
+
 function instantiate_dist(D::Type{<:Distribution})
     if D in PARAMETER_REQUIRED_DISTS
         return D(10)
@@ -90,7 +94,26 @@ function test_dist_utils(D::Type{<:Distribution})
     pars = permutedims([params(dist)...])
     updated_dist = ScoreDrivenModels.update_dist(D, pars, t)
     @test typeof(updated_dist) <: D
+end
 
+function test_distribution_common_interface()
+    score_til = ones(1, 1)
+    param = ones(1, 1)
+    param_tilde = ones(1, 1)
+    aux = AuxiliaryLinAlg{Float64}(1)
+    t = 1
+    n = 1
+    y_f64 = 1.0
+    y_i64 = 1
+    @test_throws ErrorException ScoreDrivenModels.score!(score_til, y_f64, FakeDist, param, t)
+    @test_throws ErrorException ScoreDrivenModels.score!(score_til, y_i64, FakeDist, param, t)
+    @test_throws ErrorException ScoreDrivenModels.fisher_information!(aux, FakeDist, param, t)
+    @test_throws ErrorException ScoreDrivenModels.log_likelihood(FakeDist, [y_f64], param, n)
+    @test_throws ErrorException ScoreDrivenModels.link!(param_tilde, FakeDist, param, t)
+    @test_throws ErrorException ScoreDrivenModels.unlink!(param, FakeDist, param_tilde, t)
+    @test_throws ErrorException ScoreDrivenModels.jacobian_link!(aux, FakeDist, param, t)
+    @test_throws ErrorException ScoreDrivenModels.update_dist(FakeDist, param, t)
+    @test_throws ErrorException ScoreDrivenModels.num_params(FakeDist)
 end
 
 function test_dynamic(sigma::Float64, lags::Int; seed::Int = 12, atol::Float64 = 1e-1, rtol::Float64 = 1e-3, n::Int = 100)

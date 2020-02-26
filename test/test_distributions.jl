@@ -37,3 +37,7 @@ end
         end
     end
 end
+
+@testset "Common interface" begin
+    test_distribution_common_interface()
+end
