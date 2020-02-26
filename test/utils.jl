@@ -1,13 +1,17 @@
 const PARAMETER_REQUIRED_DISTS = [Chisq; Chi]
 
+function instantiate_dist(D::Type{<:Distribution})
+    if D in PARAMETER_REQUIRED_DISTS
+        return D(10)
+    else
+        return D()
+    end
+end
+
 function test_score_mean(D::Type{<:Distribution}; n::Int = 10^7, seed::Int = 10,
                             atol::Float64 = 1e-3, rtol::Float64 = 1e-3)
     Random.seed!(seed)
-    if D in PARAMETER_REQUIRED_DISTS
-        dist = D(10)
-    else
-        dist = D()
-    end
+    dist = instantiate_dist(D)
     pars = permutedims([params(dist)...])
     n_params = ScoreDrivenModels.num_params(D)
     avg  = zeros(1, n_params)
@@ -23,11 +27,7 @@ end
 function test_fisher_information(D::Type{<:Distribution}; n::Int = 10^6, seed::Int = 10,
                                  atol::Float64 = 1e-2, rtol::Float64 = 1e-2)
     Random.seed!(seed)
-    if D in PARAMETER_REQUIRED_DISTS
-        dist = D(10)
-    else
-        dist = D()
-    end
+    dist = instantiate_dist(D)
     pars = permutedims([params(dist)...])
     n_params = ScoreDrivenModels.num_params(D)
     var_terms  = zeros(n_params, n_params)
@@ -53,11 +53,7 @@ end
 function test_loglik(D::Type{<:Distribution}; atol::Float64 = 1e-3, rtol::Float64 = 1e-3,
                      seed::Int = 13, n::Int = 100)
     Random.seed!(seed)
-    if D in PARAMETER_REQUIRED_DISTS
-        dist = D(10)
-    else
-        dist = D()
-    end
+    dist = instantiate_dist(D)
     y = rand(dist, n)
     pars = Matrix{Float64}(undef, n, ScoreDrivenModels.num_params(D))
     pars_dist = params(dist)
@@ -67,6 +63,34 @@ function test_loglik(D::Type{<:Distribution}; atol::Float64 = 1e-3, rtol::Float6
     log_lik = ScoreDrivenModels.log_likelihood(D, y, pars, n)
     @test log_lik ≈ -loglikelihood(dist, y) atol = atol rtol = rtol
     return
+end
+
+function test_link_interfaces(D::Type{<:Distribution})
+    n_params = ScoreDrivenModels.num_params(D)
+    t = 1
+    param_tilde = zeros(1, n_params)
+    param = ones(1, n_params)
+    ScoreDrivenModels.link!(param_tilde, D, param, t)
+    ScoreDrivenModels.unlink!(param, D, param_tilde, t)
+    @test param == ones(1, n_params)
+
+    # No tests for jacobian_link! just pass through the function
+    aux = AuxiliaryLinAlg{Float64}(n_params)
+    ScoreDrivenModels.jacobian_link!(aux, D, param, t)
+end
+
+function test_dist_utils(D::Type{<:Distribution})
+    # num_params
+    dist = instantiate_dist(D) 
+    n_pars = ScoreDrivenModels.num_params(D)
+    @test n_pars == length(params(dist))
+     
+    # update_dist
+    t = 1
+    pars = permutedims([params(dist)...])
+    updated_dist = ScoreDrivenModels.update_dist(D, pars, t)
+    @test typeof(updated_dist) <: D
+
 end
 
 function test_dynamic(sigma::Float64, lags::Int; seed::Int = 12, atol::Float64 = 1e-1, rtol::Float64 = 1e-3, n::Int = 100)

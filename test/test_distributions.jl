@@ -21,3 +21,19 @@ end
         end
     end
 end
+
+@testset "Link interface" begin
+    for dist in ScoreDrivenModels.DISTS
+        @testset "$dist" begin
+            test_link_interfaces(dist)
+        end
+    end
+end
+
+@testset "Utils" begin
+    for dist in ScoreDrivenModels.DISTS
+        @testset "$dist" begin
+            test_dist_utils(dist)
+        end
+    end
+end
