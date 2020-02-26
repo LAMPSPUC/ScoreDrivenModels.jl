@@ -25,7 +25,7 @@ end
 @testset "Link interface" begin
     for dist in ScoreDrivenModels.DISTS
         @testset "$dist" begin
-            test_link_unlink(dist)
+            test_link_interfaces(dist)
         end
     end
 end

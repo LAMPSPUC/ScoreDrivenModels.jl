@@ -65,7 +65,7 @@ function test_loglik(D::Type{<:Distribution}; atol::Float64 = 1e-3, rtol::Float6
     return
 end
 
-function test_link_unlink(D::Type{<:Distribution})
+function test_link_interfaces(D::Type{<:Distribution})
     n_params = ScoreDrivenModels.num_params(D)
     t = 1
     param_tilde = zeros(1, n_params)
@@ -73,6 +73,10 @@ function test_link_unlink(D::Type{<:Distribution})
     ScoreDrivenModels.link!(param_tilde, D, param, t)
     ScoreDrivenModels.unlink!(param, D, param_tilde, t)
     @test param == ones(1, n_params)
+
+    # No tests for jacobian_link! just pass through the function
+    aux = AuxiliaryLinAlg{Float64}(n_params)
+    ScoreDrivenModels.jacobian_link!(aux, D, param, t)
 end
 
 function test_dist_utils(D::Type{<:Distribution})
