@@ -21,6 +21,7 @@ end
 
 function fisher_information!(aux::AuxiliaryLinAlg{T}, ::Type{Poisson}, param::Matrix{T}, t::Int) where T
     aux.fisher[1, 1] = 1/param[1]
+    return
 end
 
 function log_likelihood(::Type{Poisson}, y::Vector{Int}, param::Matrix{T}, n::Int) where T

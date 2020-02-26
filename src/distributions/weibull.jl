@@ -17,6 +17,7 @@ function Weibull end
 function score!(score_til::Matrix{T}, y::T, ::Type{Weibull}, param::Matrix{T}, t::Int) where T
     score_til[t, 1] = (1/param[t, 1]) + log(y/param[t, 2]) * (1 - (y/param[t, 2])^param[t, 1]) 
     score_til[t, 2] = (param[t, 1]/param[t, 2]) * (((y/param[t, 2])^param[t, 1]) - 1)
+    return
 end
 
 function fisher_information!(aux::AuxiliaryLinAlg{T}, ::Type{Weibull}, param::Matrix{T}, t::Int) where T
