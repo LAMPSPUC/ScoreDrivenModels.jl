@@ -1,19 +1,19 @@
-export simulate, forecast_ci, forecast
+export simulate, forecast_quantiles
 
 """
-    simulate(serie::Vector{T}, gas::Model{D, T}, N::Int, S::Int, kwargs...) where {D, T}
+    simulate(series::Vector{T}, gas::Model{D, T}, N::Int, S::Int, kwargs...) where {D, T}
 
 Generate scenarios for the future of a time series by updating the GAS recursion `N` times and taking
 a sample of the distribution until it generates `S` scenarios.
 
 By default this method uses the `stationary_initial_params` method to perform the 
 score driven recursion. If you estimated the model with a different set of `initial_params`
-pass it here to maintain the coherence of your estimation.
+use them here to maintain the coherence of your estimation.
 """
-function simulate(serie::Vector{T}, gas::Model{D, T}, N::Int, S::Int;
+function simulate(series::Vector{T}, gas::Model{D, T}, N::Int, S::Int;
                     initial_params::Matrix{T} = stationary_initial_params(gas)) where {D, T}
     # Filter params estimated on the time series
-    params = score_driven_recursion(gas, serie; initial_params = initial_params)
+    params = score_driven_recursion(gas, series; initial_params = initial_params)
 
     biggest_lag = number_of_lags(gas)
 
@@ -30,34 +30,34 @@ end
 
 
 """
-    forecast_ci(serie::Vector{T}, gas::Model{D, T}, N::Int; kwargs...) where {D, T}
+    forecast_quantiles(series::Vector{T}, gas::Model{D, T}, N::Int; kwargs...) where {D, T}
 
-Forecast confidence intervals for future values of a time series by updating the GAS recursion `N` times and 
+Forecast quantiles for future values of a time series by updating the GAS recursion `N` times and 
 using Monte Carlo method as in Blasques, Francisco, Siem Jan Koopman,
 Katarzyna Lasak and Andre Lucas (2016): "In-Sample Confidence Bounds and Out-of-Sample Forecast
 Bands for Time-Varying Parameters in Observation Driven Models", 
 International Journal of Forecasting, 32(3), 875-887.
- 
-You can pass the desired confidence interval as a `Vector{T}`. The default value is to 
-forecast in the median, `0.025` and `0.975` quantiles.
 
-By default 1000 scenarios are used but one can change by switching the `S` keyword argument.
+You can pass the desired quantiles as a `Vector{T}`. The default behavior is to 
+forecast the median and the `0.025` and `0.975` quantiles.
+
+By default 1000 scenarios are used but you can change this by switching the `S` keyword argument.
 
 By default this method uses the `stationary_initial_params` method to perform the 
 score driven recursion. If you estimated the model with a different set of `initial_params`
-pass it here to maintain the coherence of your estimation.
+use them here to maintain the coherence of your estimation.
 """
-function forecast_ci(serie::Vector{T}, gas::Model{D, T}, N::Int;
+function forecast_quantiles(series::Vector{T}, gas::Model{D, T}, N::Int;
                       initial_params::Matrix{T} = stationary_initial_params(gas),
-                      ci::Vector{T} = T.([0.5, 0.95]), S::Int = 1000) where {D, T}
+                      quantiles::Vector{T} = T.([0.025, 0.5, 0.975]), S::Int = 1000) where {D, T}
 
-    scenarios = simulate(serie, gas, N, S; initial_params = initial_params)
+    scenarios = simulate(series, gas, N, S; initial_params = initial_params)
 
-    return get_quantiles(ci, scenarios)
+    return get_quantiles(quantiles, scenarios)
 end
 
 """
-    forecast(serie::Vector{T}, gas::Model{D, T}, N::Int; kwargs...) where {D, T}
+    forecast(series::Vector{T}, gas::Model{D, T}, N::Int; kwargs...) where {D, T}
 
 Forecast the expected future values of a time series by updating the GAS recursion `N` times and 
 using Monte Carlo method as in Blasques, Francisco, Siem Jan Koopman,
@@ -71,18 +71,18 @@ By default this method uses the `stationary_initial_params` method to perform th
 score driven recursion. If you estimated the model with a different set of `initial_params`
 pass it here to maintain the coherence of your estimation.
 """
-function forecast(serie::Vector{T}, gas::Model{D, T}, N::Int;
+function forecast(series::Vector{T}, gas::Model{D, T}, N::Int;
                     initial_params::Matrix{T} = stationary_initial_params(gas),
                     S::Int = 1000) where {D, T}
 
-    scenarios = simulate(serie, gas, N, S; initial_params = initial_params)
+    scenarios = simulate(series, gas, N, S; initial_params = initial_params)
 
     return mean(scenarios, dims = 2)
 end
 
-function get_quantiles(ci::Vector{T}, scenarios::Matrix{T}) where T
-    @assert all((ci .< 1.0) .& (ci .> 0.0))
-    cis = unique(sort([ci; 1 .- ci]))
-    quantiles = mapslices(x -> quantile(x, cis), scenarios; dims = 2)
+function get_quantiles(quantile_probs::Vector{T}, scenarios::Matrix{T}) where T
+    @assert all((quantile_probs .< 1.0) .& (quantile_probs .> 0.0))
+    unique!(sort!(quantile_probs))
+    quantiles = mapslices(x -> quantile(x, quantile_probs), scenarios; dims = 2)
     return quantiles
 end
