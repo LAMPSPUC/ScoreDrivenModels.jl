@@ -23,13 +23,13 @@ end
 end
 
 @testset "Number of parameters" begin
-    @test num_params(Beta) == 2
-    @test num_params(Chi) == 1
-    @test num_params(Chisq) == 1
-    @test num_params(Exponential) == 1
-    @test num_params(Gamma) == 2
-    @test num_params(LogitNormal) == 1
-    @test num_params(LogNormal) == 1
-    @test num_params(Poisson) == 1
-    @test num_params(Weibull) == 2
+    @test ScoreDrivenModels.num_params(Beta) == 2
+    @test ScoreDrivenModels.num_params(Chi) == 1
+    @test ScoreDrivenModels.num_params(Chisq) == 1
+    @test ScoreDrivenModels.num_params(Exponential) == 1
+    @test ScoreDrivenModels.num_params(Gamma) == 2
+    @test ScoreDrivenModels.num_params(LogitNormal) == 1
+    @test ScoreDrivenModels.num_params(LogNormal) == 1
+    @test ScoreDrivenModels.num_params(Poisson) == 1
+    @test ScoreDrivenModels.num_params(Weibull) == 2
 end
