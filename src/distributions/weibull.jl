@@ -1,5 +1,5 @@
 """
-    LogNormal
+    Weibull
 
 * Parametrization
 parametrized in \\alpha and \\theta
