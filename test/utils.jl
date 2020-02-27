@@ -5,10 +5,20 @@ struct FakeDist{T<:Real} <: Distributions.ContinuousUnivariateDistribution
 end
 
 function instantiate_dist(D::Type{<:Distribution})
-    if D in PARAMETER_REQUIRED_DISTS
+    if D == LocationScaleTDist
+        return D(1.0, 1.0, TDist(10))
+    elseif D in PARAMETER_REQUIRED_DISTS
         return D(10)
     else
         return D()
+    end
+end
+
+function create_sampler(D::Type{<:Distribution}, pars)
+    if D == LocationScaleTDist
+        return D(pars[1], pars[2], TDist(pars[3]))
+    else
+        return D(pars...)
     end
 end
 
@@ -16,12 +26,13 @@ function test_score_mean(D::Type{<:Distribution}; n::Int = 10^7, seed::Int = 10,
                             atol::Float64 = 1e-3, rtol::Float64 = 1e-3)
     Random.seed!(seed)
     dist = instantiate_dist(D)
-    pars = permutedims([params(dist)...])
+    pars = permutedims([ScoreDrivenModels.params_sdm(dist)...])
     n_params = ScoreDrivenModels.num_params(D)
     avg  = zeros(1, n_params)
     for i = 1:n
         score_aux = ones(1, n_params)
-        ScoreDrivenModels.score!(score_aux, rand(D(pars...)), D, pars, 1)
+        dist = create_sampler(D, pars)
+        ScoreDrivenModels.score!(score_aux, rand(dist), D, pars, 1)
         avg .+= score_aux
     end
     avg ./= n
@@ -32,12 +43,12 @@ function test_fisher_information(D::Type{<:Distribution}; n::Int = 10^6, seed::I
                                  atol::Float64 = 1e-2, rtol::Float64 = 1e-2)
     Random.seed!(seed)
     dist = instantiate_dist(D)
-    pars = permutedims([params(dist)...])
+    pars = permutedims([ScoreDrivenModels.params_sdm(dist)...])
     n_params = ScoreDrivenModels.num_params(D)
     var_terms  = zeros(n_params, n_params)
     for i = 1:n
         score_aux = ones(1, n_params)
-        dist = D(pars...)
+        dist = create_sampler(D, pars)
         ScoreDrivenModels.score!(score_aux, rand(dist), D, pars, 1)
         var_terms .+= score_aux' * score_aux
     end
@@ -60,7 +71,7 @@ function test_loglik(D::Type{<:Distribution}; atol::Float64 = 1e-3, rtol::Float6
     dist = instantiate_dist(D)
     y = rand(dist, n)
     pars = Matrix{Float64}(undef, n, ScoreDrivenModels.num_params(D))
-    pars_dist = params(dist)
+    pars_dist = ScoreDrivenModels.params_sdm(dist)
     for t in axes(pars, 1), p in axes(pars, 2)
         pars[t, p] = pars_dist[p]
     end
@@ -87,11 +98,11 @@ function test_dist_utils(D::Type{<:Distribution})
     # num_params
     dist = instantiate_dist(D) 
     n_pars = ScoreDrivenModels.num_params(D)
-    @test n_pars == length(params(dist))
+    @test n_pars == length(ScoreDrivenModels.params_sdm(dist))
      
     # update_dist
     t = 1
-    pars = permutedims([params(dist)...])
+    pars = permutedims([ScoreDrivenModels.params_sdm(dist)...])
     updated_dist = ScoreDrivenModels.update_dist(D, pars, t)
     @test typeof(updated_dist) <: D
 end

@@ -6,13 +6,13 @@
     end
 end
 
-@testset "Fisher Information" begin
-    for dist in ScoreDrivenModels.DISTS
-        @testset "$dist" begin
-            test_fisher_information(dist)
-        end
-    end
-end
+# @testset "Fisher Information" begin
+#     for dist in ScoreDrivenModels.DISTS
+#         @testset "$dist" begin
+#             test_fisher_information(dist)
+#         end
+#     end
+# end
 
 @testset "Log-likelihood" begin
     for dist in ScoreDrivenModels.DISTS
