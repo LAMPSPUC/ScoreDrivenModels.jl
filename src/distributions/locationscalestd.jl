@@ -15,22 +15,27 @@ parametrized in \\mu, \\sigma^2 and \\nu
 LocationScaleTDist
 
 function score!(score_til::Matrix{T}, y::T, ::Type{LocationScaleTDist}, param::Matrix{T}, t::Int) where T
-    score_til[t, 1] = ((param[t, 3] + 1)*(y - param[t, 1]))/((y - param[t, 1])^2 + param[t, 2]*param[t, 3])
-    score_til[t, 2] = -(param[t, 3]*(param[t, 2] - (y - param[t, 1])^2))/(2*param[t, 2]*(param[t, 3]*param[t, 2] + 
+    score_til[t, 1] = ((param[t, 3] + 1) * (y - param[t, 1])) / ((y - param[t, 1])^2 + param[t, 2] * param[t, 3])
+    score_til[t, 2] = -(param[t, 3] * (param[t, 2] - (y - param[t, 1])^2)) / (2 * param[t, 2] * (param[t, 3] * param[t, 2] + 
                         (y - param[t, 1])^2))
-    score_til[t, 3] = ((((y - param[t, 1])^2)*(param[t, 3] + 1)/(param[t, 3]*(y - param[t, 1])^2 + param[t, 2]*param[t, 3]^2)) -
+    score_til[t, 3] = ((((y - param[t, 1])^2)*(param[t, 3] + 1)/(param[t, 3] * (y - param[t, 1])^2 + param[t, 2] * param[t, 3]^2)) -
                       1/param[t, 3] - 
-                      log(((y - param[t, 1])^2)/(param[t, 2]*param[t, 3]) + 1) - 
-                      digamma(param[t, 3]/2) + digamma((param[t, 3] + 1)/2))/2
+                      log(((y - param[t, 1])^2)/(param[t, 2] * param[t, 3]) + 1) - 
+                      digamma(param[t, 3] / 2) + digamma((param[t, 3] + 1) / 2)) / 2
     return
 end
 
 function fisher_information!(aux::AuxiliaryLinAlg{T}, ::Type{LocationScaleTDist}, param::Matrix{T}, t::Int) where T
-    error("Not available now #TODO")
-    aux.fisher[1, 1] = 1 / (param[t, 2])
-    aux.fisher[2, 2] = 1 / (2 * (param[t, 2] ^ 2))
-    aux.fisher[2, 1] = 0
-    aux.fisher[1, 2] = 0
+    aux.fisher[1, 1] = (param[t, 3] + 1.0)/(param[t, 2] * (param[t, 3] + 3.0))
+    aux.fisher[1, 2] = zero(T)
+    aux.fisher[2, 1] = zero(T)
+    aux.fisher[1, 3] = zero(T)
+    aux.fisher[3, 1] = zero(T)
+    aux.fisher[2, 2] = param[t, 3] / ((2 * param[t, 2]^2) * (param[t, 3] + 3.0))
+    aux.fisher[2, 3] = -1.0 / (param[t, 2] * (param[t, 3] + 3.0)*(param[t, 3] + 1.0))
+    aux.fisher[3, 2] = -1.0 / (param[t, 2] * (param[t, 3] + 3.0)*(param[t, 3] + 1.0))
+    aux.fisher[3, 3] = 0.5 * (0.5 * trigamma(0.5 * param[t, 3]) - 0.5 * trigamma( 0.5 * (param[t, 3] + 1.0) ) -
+                       (param[t, 3] + 5.0) / (param[t, 3] * (param[t, 3] + 3.0) * (param[t, 3] + 1.0)))
     return
 end
 
@@ -66,7 +71,7 @@ end
 # utils 
 function update_dist(::Type{LocationScaleTDist}, param::Matrix{T}, t::Int) where T
     tdist = TDist(param[t, 3])
-    return LocationScale(param[t, 1], param[t, 2], tdist)
+    return LocationScale(param[t, 1], sqrt(param[t, 2]), tdist)
 end 
 
 function num_params(::Type{LocationScaleTDist})
