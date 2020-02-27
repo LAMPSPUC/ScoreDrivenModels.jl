@@ -25,13 +25,14 @@ function score!(score_til::Matrix{T}, y::T, ::Type{LocationScaleTDist}, param::M
     return
 end
 
-# function fisher_information!(aux::AuxiliaryLinAlg{T}, ::Type{LocationScaleTDist}, param::Matrix{T}, t::Int) where T
-#     aux.fisher[1, 1] = 1 / (param[t, 2])
-#     aux.fisher[2, 2] = 1 / (2 * (param[t, 2] ^ 2))
-#     aux.fisher[2, 1] = 0
-#     aux.fisher[1, 2] = 0
-#     return
-# end
+function fisher_information!(aux::AuxiliaryLinAlg{T}, ::Type{LocationScaleTDist}, param::Matrix{T}, t::Int) where T
+    error("Not available now #TODO")
+    aux.fisher[1, 1] = 1 / (param[t, 2])
+    aux.fisher[2, 2] = 1 / (2 * (param[t, 2] ^ 2))
+    aux.fisher[2, 1] = 0
+    aux.fisher[1, 2] = 0
+    return
+end
 
 function log_likelihood(::Type{LocationScaleTDist}, y::Vector{T}, param::Matrix{T}, n::Int) where T
     loglik = zero(T)
