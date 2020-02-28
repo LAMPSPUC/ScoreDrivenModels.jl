@@ -12,7 +12,7 @@ parametrized in \\mu and \\sigma^2
 
 * Default link
 """
-function LogitNormal end
+LogitNormal
 
 logit(x) = log(x) - log(1-x)
 

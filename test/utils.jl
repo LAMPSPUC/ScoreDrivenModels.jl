@@ -1,11 +1,12 @@
-const PARAMETER_REQUIRED_DISTS = [Chisq; Chi]
+const PARAMETER_REQUIRED_DISTS = [Chisq; Chi; TDist]
+const FI_NOT_IMPLEMENTED = [Weibull]
 
 struct FakeDist{T<:Real} <: Distributions.ContinuousUnivariateDistribution
     foo::T
 end
 
 function instantiate_dist(D::Type{<:Distribution})
-    if D == LocationScaleTDist
+    if D == TDistLocationScale
         return D(1.0, 1.0, TDist(10))
     elseif D in PARAMETER_REQUIRED_DISTS
         return D(10)
@@ -15,7 +16,7 @@ function instantiate_dist(D::Type{<:Distribution})
 end
 
 function create_sampler(D::Type{<:Distribution}, pars)
-    if D == LocationScaleTDist
+    if D == TDistLocationScale
         return D(pars[1], pars[2], TDist(pars[3]))
     else
         return D(pars...)
@@ -56,10 +57,10 @@ function test_fisher_information(D::Type{<:Distribution}; n::Int = 10^6, seed::I
     aux_lin_alg = AuxiliaryLinAlg{Float64}(n_params)
 
     # Some distributions might not have the fisher information yet available
-    try 
+    if D in FI_NOT_IMPLEMENTED
+        return 
+    else
         ScoreDrivenModels.fisher_information!(aux_lin_alg, D, pars, 1)
-    catch 
-        return
     end
 
     @test var_terms ≈ aux_lin_alg.fisher atol = atol rtol = rtol

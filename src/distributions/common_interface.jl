@@ -9,7 +9,8 @@ const DISTS = [
     LogNormal,
     Normal,
     Poisson,
-    LocationScaleTDist,
+    TDist,
+    TDistLocationScale,
     Weibull
 ]
 
@@ -22,7 +23,8 @@ export Beta,
     LogNormal,
     Normal,
     Poisson,
-    LocationScaleTDist,
+    TDist,
+    TDistLocationScale,
     Weibull
 
 # Query params for generic distribution

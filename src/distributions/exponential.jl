@@ -12,7 +12,7 @@ parametrized in \\lambda
 
 * Default link
 """
-function Exponential end
+Exponential
 
 function score!(score_til::Matrix{T}, y::T, ::Type{Exponential}, param::Matrix{T}, t::Int) where T
     score_til[t, 1] = 1/param[t, 1] - y

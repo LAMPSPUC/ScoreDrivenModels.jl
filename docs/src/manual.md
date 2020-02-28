@@ -94,11 +94,12 @@ ScoreDrivenModels.Chi
 ScoreDrivenModels.Chisq
 ScoreDrivenModels.Exponential
 ScoreDrivenModels.Gamma
-ScoreDrivenModels.LocationScaleTDist
 ScoreDrivenModels.LogitNormal
 ScoreDrivenModels.LogNormal
 ScoreDrivenModels.Normal
 ScoreDrivenModels.Poisson
+ScoreDrivenModels.TDist
+ScoreDrivenModels.TDistLocationScale
 ScoreDrivenModels.Weibull
 ```
 

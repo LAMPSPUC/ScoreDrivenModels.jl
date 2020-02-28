@@ -40,7 +40,8 @@ include("distributions/logitnormal.jl")
 include("distributions/lognormal.jl")
 include("distributions/normal.jl")
 include("distributions/poisson.jl")
-include("distributions/locationscalestd.jl")
+include("distributions/tdist.jl")
+include("distributions/tdistlocationscale.jl")
 include("distributions/weibull.jl")
 
 end

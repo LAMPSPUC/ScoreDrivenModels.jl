@@ -12,7 +12,7 @@ parametrized in k
 
 * Default link
 """
-function Chisq end
+Chisq
 
 function score!(score_til::Matrix{T}, y::T, ::Type{Chisq}, param::Matrix{T}, t::Int) where T
     score_til[t, 1] = (log(y) - log(2) - digamma(param[t, 1]/2))/2

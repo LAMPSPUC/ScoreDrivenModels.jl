@@ -11,7 +11,7 @@
 
 * Default link
 """
-function Beta end
+Beta
 
 function score!(score_til::Matrix{T}, y::T, ::Type{Beta}, param::Matrix{T}, t::Int) where T
     score_til[t, 1] = log(y) + digamma(param[t, 1] + param[t, 2]) - digamma(param[t, 1])
