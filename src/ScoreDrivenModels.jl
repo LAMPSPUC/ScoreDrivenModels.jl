@@ -29,6 +29,7 @@ include("opt_methods/IPNewton.jl")
 include("opt_methods/NelderMead.jl")
 
 # Distributions
+include("distributions/non_native_dists.jl")
 include("distributions/common_interface.jl")
 include("distributions/beta.jl")
 include("distributions/chi.jl")
@@ -39,6 +40,7 @@ include("distributions/logitnormal.jl")
 include("distributions/lognormal.jl")
 include("distributions/normal.jl")
 include("distributions/poisson.jl")
+include("distributions/locationscalestd.jl")
 include("distributions/weibull.jl")
 
 end

@@ -56,30 +56,6 @@ function forecast_quantiles(series::Vector{T}, gas::Model{D, T}, N::Int;
     return get_quantiles(quantiles, scenarios)
 end
 
-"""
-    forecast(series::Vector{T}, gas::Model{D, T}, N::Int; kwargs...) where {D, T}
-
-Forecast the expected future values of a time series by updating the GAS recursion `N` times and 
-using Monte Carlo method as in Blasques, Francisco, Siem Jan Koopman,
-Katarzyna Lasak and Andre Lucas (2016): "In-Sample Confidence Bounds and Out-of-Sample Forecast
-Bands for Time-Varying Parameters in Observation Driven Models", 
-International Journal of Forecasting, 32(3), 875-887.
-
-By default 1000 scenarios are used but one can change by switching the `S` keyword argument.
-
-By default this method uses the `stationary_initial_params` method to perform the 
-score driven recursion. If you estimated the model with a different set of `initial_params`
-pass it here to maintain the coherence of your estimation.
-"""
-function forecast(series::Vector{T}, gas::Model{D, T}, N::Int;
-                    initial_params::Matrix{T} = stationary_initial_params(gas),
-                    S::Int = 1000) where {D, T}
-
-    scenarios = simulate(series, gas, N, S; initial_params = initial_params)
-
-    return mean(scenarios, dims = 2)
-end
-
 function get_quantiles(quantile_probs::Vector{T}, scenarios::Matrix{T}) where T
     @assert all((quantile_probs .< 1.0) .& (quantile_probs .> 0.0))
     unique!(sort!(quantile_probs))

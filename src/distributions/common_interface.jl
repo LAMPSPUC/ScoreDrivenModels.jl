@@ -9,6 +9,7 @@ const DISTS = [
     LogNormal,
     Normal,
     Poisson,
+    LocationScaleTDist,
     Weibull
 ]
 
@@ -21,7 +22,13 @@ export Beta,
     LogNormal,
     Normal,
     Poisson,
+    LocationScaleTDist,
     Weibull
+
+# Query params for generic distribution
+params_sdm(d::Distribution) = Distributions.params(d)
+# Query params for all LocationScale distributions
+params_sdm(d::LocationScale) = (d.μ, d.σ, Distributions.params(d.ρ)...)
 
 function score!(score_til::Matrix{T}, y::T, D::Type{<:Distribution}, param::Matrix{T}, t::Int) where T
     return error("score! not implemented for $D distribution")

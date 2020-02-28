@@ -12,14 +12,13 @@ ScoreDrivenModels.jl allows users to use different optimization methods, in part
 it has a common interface to easily incorporate algorithms available on [Optim.jl](https://github.com/JuliaNLSolvers/Optim.jl)
 
 All optimization methods can receive the following keyword arguments
-    * `f_tol` - Relative tolerance in changes of the objective value. Default is `1e-6`.
-    * `g_tol` - Absolute tolerance in the gradient, in infinity norm. Default is `1e-6`.
-    * `iterations` - Maximum number of iterations. Default is `10^5`.
-    * `LB` - Lower bound of the initial points. Default is `0.0`.
-    * `UB` - Upper bound of the initial points. Default is `0.6`.
+* `f_tol` - Relative tolerance in changes of the objective value. Default is `1e-6`.
+* `g_tol` - Absolute tolerance in the gradient, in infinity norm. Default is `1e-6`.
+* `iterations` - Maximum number of iterations. Default is `10^5`.
+* `LB` - Lower bound of the initial points. Default is `0.0`.
+* `UB` - Upper bound of the initial points. Default is `0.6`.
 
-The [ScoreDrivenModels.IPNewton](@ref) allows users to perform box-constrained optimization, 
-more details in [ScoreDrivenModels.IPNewton](@ref).
+The [ScoreDrivenModels.IPNewton](@ref) allows users to perform box-constrained optimization.
 
 ```@docs
 ScoreDrivenModels.NelderMead
@@ -79,7 +78,7 @@ and ensembles of scenarios are obtained using the function `simulate`.
 
 ```@docs
 forecast
-forecast_ci
+forecast_quantiles
 simulate
 ```
 
@@ -95,6 +94,7 @@ ScoreDrivenModels.Chi
 ScoreDrivenModels.Chisq
 ScoreDrivenModels.Exponential
 ScoreDrivenModels.Gamma
+ScoreDrivenModels.LocationScaleTDist
 ScoreDrivenModels.LogitNormal
 ScoreDrivenModels.LogNormal
 ScoreDrivenModels.Normal
