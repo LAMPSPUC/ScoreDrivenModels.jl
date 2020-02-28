@@ -12,7 +12,7 @@ parametrized in \\alpha and \\theta
 
 * Default link
 """
-function Gamma end
+Gamma
 
 function score!(score_til::Matrix{T}, y::T, ::Type{Gamma}, param::Matrix{T}, t::Int) where T
     score_til[t, 1] = log(y) - digamma(param[t, 1]) - log(param[t, 2])

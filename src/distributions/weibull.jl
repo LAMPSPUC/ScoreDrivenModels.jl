@@ -12,7 +12,7 @@ parametrized in \\alpha and \\theta
 
 * Default link
 """
-function Weibull end
+Weibull
 
 function score!(score_til::Matrix{T}, y::T, ::Type{Weibull}, param::Matrix{T}, t::Int) where T
     score_til[t, 1] = (1/param[t, 1]) + log(y/param[t, 2]) * (1 - (y/param[t, 2])^param[t, 1]) 

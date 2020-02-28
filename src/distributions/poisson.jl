@@ -12,7 +12,7 @@ parametrized in \\lambda
 
 * Default link
 """
-function Poisson end
+Poisson
 
 function score!(score_til::Matrix{T}, y::Int, ::Type{Poisson}, param::Matrix{T}, t::Int) where T
     score_til[t, 1] = y/param[t, 1] - 1

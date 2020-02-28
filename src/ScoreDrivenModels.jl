@@ -36,11 +36,12 @@ include("distributions/chi.jl")
 include("distributions/chisq.jl")
 include("distributions/exponential.jl")
 include("distributions/gamma.jl")
+include("distributions/locationscalestd.jl")
 include("distributions/logitnormal.jl")
 include("distributions/lognormal.jl")
 include("distributions/normal.jl")
 include("distributions/poisson.jl")
-include("distributions/locationscalestd.jl")
+include("distributions/std.jl")
 include("distributions/weibull.jl")
 
 end

@@ -1,4 +1,5 @@
-const PARAMETER_REQUIRED_DISTS = [Chisq; Chi]
+const PARAMETER_REQUIRED_DISTS = [Chisq; Chi; TDist]
+const FI_NOT_IMPLEMENTED = [Weibull]
 
 struct FakeDist{T<:Real} <: Distributions.ContinuousUnivariateDistribution
     foo::T
@@ -56,10 +57,10 @@ function test_fisher_information(D::Type{<:Distribution}; n::Int = 10^6, seed::I
     aux_lin_alg = AuxiliaryLinAlg{Float64}(n_params)
 
     # Some distributions might not have the fisher information yet available
-    try 
+    if D in FI_NOT_IMPLEMENTED
+        return 
+    else
         ScoreDrivenModels.fisher_information!(aux_lin_alg, D, pars, 1)
-    catch 
-        return
     end
 
     @test var_terms ≈ aux_lin_alg.fisher atol = atol rtol = rtol

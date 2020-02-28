@@ -12,7 +12,7 @@ parametrized in \\mu and \\sigma^2
 
 * Default link
 """
-function Normal end
+Normal
 
 function score!(score_til::Matrix{T}, y::T, ::Type{Normal}, param::Matrix{T}, t::Int) where T
     score_til[t, 1] = (y - param[t, 1])/param[t, 2]

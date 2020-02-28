@@ -12,7 +12,7 @@ parametrized in \\mu and \\sigma^2
 
 * Default link
 """
-function LogNormal end
+LogNormal
 
 function score!(score_til::Matrix{T}, y::T, ::Type{LogNormal}, param::Matrix{T}, t::Int) where T
     score_til[t, 1] = (log(y) - param[t, 1])/param[t, 2]
