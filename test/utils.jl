@@ -6,7 +6,7 @@ struct FakeDist{T<:Real} <: Distributions.ContinuousUnivariateDistribution
 end
 
 function instantiate_dist(D::Type{<:Distribution})
-    if D == LocationScaleTDist
+    if D == TDistLocationScale
         return D(1.0, 1.0, TDist(10))
     elseif D in PARAMETER_REQUIRED_DISTS
         return D(10)
@@ -16,7 +16,7 @@ function instantiate_dist(D::Type{<:Distribution})
 end
 
 function create_sampler(D::Type{<:Distribution}, pars)
-    if D == LocationScaleTDist
+    if D == TDistLocationScale
         return D(pars[1], pars[2], TDist(pars[3]))
     else
         return D(pars...)

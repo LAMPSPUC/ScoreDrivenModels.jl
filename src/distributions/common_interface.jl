@@ -5,12 +5,12 @@ const DISTS = [
     Chisq,
     Exponential,
     Gamma,
-    LocationScaleTDist,
     LogitNormal,
     LogNormal,
     Normal,
     Poisson,
     TDist,
+    TDistLocationScale,
     Weibull
 ]
 
@@ -19,12 +19,12 @@ export Beta,
     Chisq,
     Exponential,
     Gamma,
-    LocationScaleTDist,
     LogitNormal,
     LogNormal,
     Normal,
     Poisson,
     TDist,
+    TDistLocationScale,
     Weibull
 
 # Query params for generic distribution
