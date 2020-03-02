@@ -49,7 +49,7 @@ use them here to maintain the coherence of your estimation.
 """
 function forecast_quantiles(series::Vector{T}, gas::Model{D, T}, N::Int;
                       initial_params::Matrix{T} = stationary_initial_params(gas),
-                      quantiles::Vector{T} = T.([0.025, 0.5, 0.975]), S::Int = 1000) where {D, T}
+                      quantiles::Vector{T} = T.([0.025, 0.5, 0.975]), S::Int = 10_000) where {D, T}
 
     scenarios = simulate(series, gas, N, S; initial_params = initial_params)
 

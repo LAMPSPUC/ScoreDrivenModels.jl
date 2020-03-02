@@ -18,7 +18,7 @@ All optimization methods can receive the following keyword arguments
 * `LB` - Lower bound of the initial points. Default is `0.0`.
 * `UB` - Upper bound of the initial points. Default is `0.6`.
 
-The [`ScoreDrivenModels.IPNewton`](@ref) allows users to perform box-constrained optimization.
+[`ScoreDrivenModels.IPNewton`](@ref) allows users to perform box-constrained optimization.
 
 ```@docs
 ScoreDrivenModels.NelderMead
@@ -83,11 +83,11 @@ simulate
 
 ## ScoreDrivenModels distributions
 
-The following section presents how every distribution is parametrized, its score, fisher information
+The following section presents how every distribution is parametrized, its score, Fisher information
 and the `time_varying_params` map. Every distribution is originally imported to ScoreDrivenModels.jl
-from [Distributions.jl](https://github.com/JuliaStats/Distributions.jl), some distributions may have different
+from [Distributions.jl](https://github.com/JuliaStats/Distributions.jl). Some distributions may have different
 parametrizations from [Distributions.jl](https://github.com/JuliaStats/Distributions.jl),
-this is handled internally .
+this is handled internally.
 
 | Distribution | Identity scaling | Inverse and inverse square root scalings |
 | :------- |:---------------:|:--------------------:|
