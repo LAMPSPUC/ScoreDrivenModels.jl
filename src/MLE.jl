@@ -117,15 +117,15 @@ function fit(gas::Model{D, T}, y::Vector{T};
             func = TwiceDifferentiable(psi_tilde -> log_lik(psi_tilde, y, gas_fit, initial_params, unknowns, n), opt_method.initial_points[i])
             opt_result = optimize(func, opt_method, verbose, i)
             update_aux_estimation!(aux_est, func, opt_result)
-            println("initial_point $i of $n_initial_points - $(-opt_result.minimum)")
+            println("initial point $i of $n_initial_points - Log-likelihood: $(-opt_result.minimum)")
         catch err
             println(err)
-            println("initial_point $i diverged")
+            println("initial point $i diverged")
         end
     end
 
     if isempty(aux_est.loglikelihood) 
-        println("No initial_point converged.")
+        println("No initial point converged.")
         return
     end
 
@@ -146,7 +146,7 @@ end
 
 function fit!(gas::Model{D, T}, y::Vector{T};
               initial_params::Matrix{T} = DEFAULT_INITIAL_PARAM,
-              opt_method::AbstractOptimizationMethod = LBFGS(gas, DEFAULT_NUM_SEEDS),
+              opt_method::AbstractOptimizationMethod = NelderMead(gas, DEFAULT_NUM_SEEDS),
               verbose::Int = DEFAULT_VERBOSE) where {D, T}
 
     unknowns = find_unknowns(gas)

@@ -59,6 +59,11 @@ function update_dist(::Type{Normal}, param::Matrix{T}, t::Int) where T
     return Normal(param[t, 1], sqrt(param[t, 2]))
 end 
 
+function params_sdm(d::Normal)
+    pars = Distributions.params(d)
+    return (pars[1], pars[2]^2)
+end
+
 function num_params(::Type{Normal})
     return 2
 end

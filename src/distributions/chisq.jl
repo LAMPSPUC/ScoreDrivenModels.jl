@@ -52,6 +52,10 @@ function update_dist(::Type{Chisq}, param::Matrix{T}, t::Int) where T
     return Chisq(param[t, 1])
 end 
 
+function params_sdm(d::Chisq)
+    return Distributions.params(d)
+end
+
 function num_params(::Type{Chisq})
     return 1
 end

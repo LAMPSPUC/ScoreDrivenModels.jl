@@ -59,6 +59,10 @@ function update_dist(::Type{Beta}, param::Matrix{T}, t::Int) where T
     return Beta(param[t, 1], param[t, 2])
 end 
 
+function params_sdm(d::Beta)
+    return Distributions.params(d)
+end
+
 function num_params(::Type{Beta})
     return 2
 end

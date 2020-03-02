@@ -55,6 +55,10 @@ function update_dist(::Type{Weibull}, param::Matrix{T}, t::Int) where T
     return Weibull(param[t, 1], param[t, 2])
 end 
 
+function params_sdm(d::Weibull)
+    return Distributions.params(d)
+end
+
 function num_params(::Type{Weibull})
     return 2
 end

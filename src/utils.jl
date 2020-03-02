@@ -15,7 +15,7 @@ function NaN2zero!(m::Matrix{T}, i::Integer) where T
     return 
 end
 
-function big_threshold!(m::Matrix{T}, threshold::T, i::Integer) where T
+function big_threshold!(m::Matrix{T}, threshold::F, i::Integer) where {T, F}
     for j in axes(m, 2)
         if m[i, j] >= threshold
             m[i, j] = threshold 
@@ -27,7 +27,7 @@ function big_threshold!(m::Matrix{T}, threshold::T, i::Integer) where T
     return 
 end
 
-function small_threshold!(m::Matrix{T}, threshold::T, i::Integer) where T
+function small_threshold!(m::Matrix{T}, threshold::F, i::Integer) where {T, F}
     for j in axes(m, 2)
         if m[i, j] <= threshold && m[i, j] >= 0
             m[i, j] = threshold 

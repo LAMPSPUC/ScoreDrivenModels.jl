@@ -51,6 +51,10 @@ function update_dist(::Type{Poisson}, param::Matrix{T}, t::Int) where T
     return Poisson(param[t, 1])
 end 
 
+function params_sdm(d::Poisson)
+    return Distributions.params(d)
+end
+
 function num_params(::Type{Poisson})
     return 1
 end

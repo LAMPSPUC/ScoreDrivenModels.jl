@@ -59,6 +59,10 @@ function update_dist(::Type{Gamma}, param::Matrix{T}, t::Int) where T
     return Gamma(param[t, 1], param[t, 2])
 end 
 
+function params_sdm(d::Gamma)
+    return Distributions.params(d)
+end
+
 function num_params(::Type{Gamma})
     return 2
 end

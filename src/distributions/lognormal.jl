@@ -59,6 +59,11 @@ function update_dist(::Type{LogNormal}, param::Matrix{T}, t::Int) where T
     return LogNormal(param[t, 1], sqrt(param[t, 2]))
 end 
 
+function params_sdm(d::LogNormal)
+    pars = Distributions.params(d)
+    return (pars[1], pars[2]^2)
+end
+
 function num_params(::Type{LogNormal})
     return 2
 end

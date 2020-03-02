@@ -52,6 +52,10 @@ function update_dist(::Type{Chi}, param::Matrix{T}, t::Int) where T
     return Chi(param[t, 1])
 end 
 
+function params_sdm(d::Chi)
+    return Distributions.params(d)
+end
+
 function num_params(::Type{Chi})
     return 1
 end

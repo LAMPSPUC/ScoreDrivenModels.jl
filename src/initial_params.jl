@@ -41,10 +41,10 @@ end
 """
 function dynamic_initial_params(obs::Vector{T}, gas::Model{D, T}) where {D, T}
     # Take the biggest lag
-    biggest_lag = number_of_lags(gas)
+    biggest_lag = ScoreDrivenModels.number_of_lags(gas)
 
     # Allocate memory 
-    initial_params = Matrix{T}(undef, biggest_lag, num_params(D))
+    initial_params = Matrix{T}(undef, biggest_lag, ScoreDrivenModels.num_params(D))
     obs_separated = Vector{Vector{T}}(undef, biggest_lag)
 
     # Loop to fit mle in every component of seasonality
@@ -57,9 +57,7 @@ function dynamic_initial_params(obs::Vector{T}, gas::Model{D, T}) where {D, T}
         # Adequate to the ScoreDrivenModels standard
         # In Distributions Normal is \mu and \sigma
         # In ScoreDrivenModels Normal is \mu and \sigma^2
-        sdm_dist = update_dist(D, permutedims([params_sdm(dist)...]), 1)
-
-        initial_params[i, :] = [params_sdm(sdm_dist)...]
+        initial_params[i, :] = permutedims([ScoreDrivenModels.params_sdm(dist)...])
     end
 
     return initial_params
