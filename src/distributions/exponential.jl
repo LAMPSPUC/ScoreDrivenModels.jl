@@ -52,6 +52,11 @@ function update_dist(::Type{Exponential}, param::Matrix{T}, t::Int) where T
     return Exponential(1/param[t, 1])
 end 
 
+function params_sdm(d::Exponential)
+    pars = Distributions.params(d)
+    return 1/pars[1]
+end
+
 function num_params(::Type{Exponential})
     return 1
 end

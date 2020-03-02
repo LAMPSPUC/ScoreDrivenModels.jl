@@ -1,5 +1,5 @@
 const PARAMETER_REQUIRED_DISTS = [Chisq; Chi; TDist]
-const FI_NOT_IMPLEMENTED = [Weibull]
+const FI_NOT_IMPLEMENTED = [Weibull; BetaLocationScale]
 
 struct FakeDist{T<:Real} <: Distributions.ContinuousUnivariateDistribution
     foo::T
@@ -7,19 +7,17 @@ end
 
 function instantiate_dist(D::Type{<:Distribution})
     if D == TDistLocationScale
-        return D(1.0, 1.0, TDist(10))
+        params = [1.0 2.0 10]
+        return ScoreDrivenModels.update_dist(D, params, 1)
+    elseif D == BetaLocationScale
+        params = [-2.0 5.0 1.5 3.4]
+        return ScoreDrivenModels.update_dist(D, params, 1)
     elseif D in PARAMETER_REQUIRED_DISTS
-        return D(10)
+        params = [10][:, :]
+        return ScoreDrivenModels.update_dist(D, params, 1)
     else
-        return D()
-    end
-end
-
-function create_sampler(D::Type{<:Distribution}, pars)
-    if D == TDistLocationScale
-        return D(pars[1], pars[2], TDist(pars[3]))
-    else
-        return D(pars...)
+        params = 0.5 * ones(1, ScoreDrivenModels.num_params(D))
+        return ScoreDrivenModels.update_dist(D, params, 1)
     end
 end
 
@@ -30,10 +28,10 @@ function test_score_mean(D::Type{<:Distribution}; n::Int = 10^7, seed::Int = 10,
     pars = permutedims([ScoreDrivenModels.params_sdm(dist)...])
     n_params = ScoreDrivenModels.num_params(D)
     avg  = zeros(1, n_params)
+    obs = rand(dist, n)
     for i = 1:n
         score_aux = ones(1, n_params)
-        dist = create_sampler(D, pars)
-        ScoreDrivenModels.score!(score_aux, rand(dist), D, pars, 1)
+        ScoreDrivenModels.score!(score_aux, obs[i], D, pars, 1)
         avg .+= score_aux
     end
     avg ./= n
@@ -47,10 +45,10 @@ function test_fisher_information(D::Type{<:Distribution}; n::Int = 10^6, seed::I
     pars = permutedims([ScoreDrivenModels.params_sdm(dist)...])
     n_params = ScoreDrivenModels.num_params(D)
     var_terms  = zeros(n_params, n_params)
+    obs = rand(dist, n)
     for i = 1:n
         score_aux = ones(1, n_params)
-        dist = create_sampler(D, pars)
-        ScoreDrivenModels.score!(score_aux, rand(dist), D, pars, 1)
+        ScoreDrivenModels.score!(score_aux, obs[i], D, pars, 1)
         var_terms .+= score_aux' * score_aux
     end
     var_terms ./= n
@@ -136,7 +134,7 @@ function test_dynamic(sigma::Float64, lags::Int; seed::Int = 12, atol::Float64 =
     initial_params = dynamic_initial_params(obs_dynamic, gas_lag_lag)
     for i in axes(initial_params, 1)
         @test initial_params[i, 1] ≈ i atol = atol rtol = rtol
-        @test initial_params[i, 2] ≈ sigma atol = atol rtol = rtol
+        @test initial_params[i, 2] ≈ sigma^2 atol = atol rtol = rtol
     end
 end
 

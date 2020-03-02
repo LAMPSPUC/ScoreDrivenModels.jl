@@ -74,6 +74,10 @@ function update_dist(::Type{TDistLocationScale}, param::Matrix{T}, t::Int) where
     return LocationScale(param[t, 1], sqrt(param[t, 2]), tdist)
 end 
 
+function params_sdm(d::TDistLocationScale)
+    return (d.μ, d.σ^2, Distributions.params(d.ρ)...)
+end
+
 function num_params(::Type{TDistLocationScale})
     return 3
 end

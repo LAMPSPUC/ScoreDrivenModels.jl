@@ -56,6 +56,10 @@ function update_dist(::Type{TDist}, param::Matrix{T}, t::Int) where T
     return TDist(param[t, 1])
 end 
 
+function params_sdm(d::TDist)
+    return Distributions.params(d)
+end
+
 function num_params(::Type{TDist})
     return 1
 end
