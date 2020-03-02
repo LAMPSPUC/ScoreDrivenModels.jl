@@ -18,7 +18,7 @@ All optimization methods can receive the following keyword arguments
 * `LB` - Lower bound of the initial points. Default is `0.0`.
 * `UB` - Upper bound of the initial points. Default is `0.6`.
 
-The [ScoreDrivenModels.IPNewton](@ref) allows users to perform box-constrained optimization.
+[`ScoreDrivenModels.IPNewton`](@ref) allows users to perform box-constrained optimization.
 
 ```@docs
 ScoreDrivenModels.NelderMead
@@ -77,19 +77,38 @@ forecasts or ensembles of scenarios. Point forecasts are obtained using the func
 and ensembles of scenarios are obtained using the function `simulate`.
 
 ```@docs
-forecast
 forecast_quantiles
 simulate
 ```
 
 ## ScoreDrivenModels distributions
 
-The following section presents how every distribution is parametrized, its score, fisher information
+The following section presents how every distribution is parametrized, its score, Fisher information
 and the `time_varying_params` map. Every distribution is originally imported to ScoreDrivenModels.jl
-from [Distributions.jl](https://github.com/JuliaStats/Distributions.jl).
+from [Distributions.jl](https://github.com/JuliaStats/Distributions.jl). Some distributions may have different
+parametrizations from [Distributions.jl](https://github.com/JuliaStats/Distributions.jl),
+this is handled internally.
+
+| Distribution | Identity scaling | Inverse and inverse square root scalings |
+| :------- |:---------------:|:--------------------:|
+|[`Beta`](@ref)| ✓ | ✓  |
+|[`BetaLocationScale`](@ref)| ✓ |  x  |
+|[`Chi`](@ref)| ✓ | ✓  |
+|[`Chisq`](@ref)| ✓ | ✓  |
+|[`Exponential`](@ref)| ✓ | ✓  |
+|[`Gamma`](@ref)| ✓ | ✓  |
+|[`LogitNormal`](@ref)| ✓ | ✓  |
+|[`LogNormal`](@ref)| ✓ | ✓  |
+|[`Normal`](@ref)| ✓ | ✓  |
+|[`Poisson`](@ref)| ✓ | ✓  |
+|[`TDist`](@ref)| ✓ | ✓  |
+|[`TDistLocationScale`](@ref)| ✓ | ✓  |
+|[`Weibull`](@ref)| ✓ |  x  |
+
 
 ```@docs
 ScoreDrivenModels.Beta
+ScoreDrivenModels.BetaLocationScale
 ScoreDrivenModels.Chi
 ScoreDrivenModels.Chisq
 ScoreDrivenModels.Exponential
@@ -108,20 +127,33 @@ ScoreDrivenModels.Weibull
 If you want to add a new distribution please feel free to make a pull request.
 
 Each distribution must have the following methods:
-* `score`
-* `fisher information`
-* `log likelihood`
-* `link interface`
-    * `link`
-    * `unlink`
-    * `jacobian_link`
-* `update_dist`
-* `num_params`
+* [`ScoreDrivenModels.score!`](@ref)
+* [`ScoreDrivenModels.fisher_information!`](@ref)
+* [`ScoreDrivenModels.log_likelihood`](@ref)
+* link interface
+    * [`ScoreDrivenModels.link!`](@ref)
+    * [`ScoreDrivenModels.unlink!`](@ref)
+    * [`ScoreDrivenModels.jacobian_link!`](@ref)
+* [`ScoreDrivenModels.update_dist`](@ref)
+* [`ScoreDrivenModels.params_sdm`](@ref)
+* [`ScoreDrivenModels.num_params`](@ref)
 
 The details of the new distribution must be documented following the example in
 [`Normal`](@ref) and added to the [ScoreDrivenModels distributions](@ref) section.
 The new implemented distribution must also be added to the constant `DISTS` and exported in the
 `distributions/common_interface.jl` file.
+
+```@docs
+ScoreDrivenModels.score!
+ScoreDrivenModels.fisher_information!
+ScoreDrivenModels.log_likelihood
+ScoreDrivenModels.link!
+ScoreDrivenModels.unlink!
+ScoreDrivenModels.jacobian_link!
+ScoreDrivenModels.update_dist
+ScoreDrivenModels.params_sdm
+ScoreDrivenModels.num_params
+```
 
 # Reference
 
