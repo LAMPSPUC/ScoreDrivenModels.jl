@@ -29,6 +29,12 @@ export Beta,
     TDistLocationScale,
     Weibull
 
+"""
+    score!(score_til::Matrix{T}, y::T, D::Type{<:Distribution}, param::Matrix{T}, t::Int) where T
+
+Fill `score_til` with the score of distribution `D` with parameters `param[:, t]` considering
+the observation `y`.
+"""
 function score!(score_til::Matrix{T}, y::T, D::Type{<:Distribution}, param::Matrix{T}, t::Int) where T
     return error("score! not implemented for $D distribution")
 end
@@ -37,22 +43,48 @@ function score!(score_til::Matrix{T}, y::Int, D::Type{<:Distribution}, param::Ma
     return error("score! not implemented for $D distribution")
 end
 
+"""
+    fisher_information!(aux::AuxiliaryLinAlg{T}, D::Type{<:Distribution}, param::Matrix{T}, t::Int) where T
+
+Fill `aux` with the fisher information of distribution `D` with parameters `param[:, t]`.
+"""
 function fisher_information!(aux::AuxiliaryLinAlg{T}, D::Type{<:Distribution}, param::Matrix{T}, t::Int) where T
     return error("fisher_information! not implemented for $D distribution")
 end
 
+"""
+    log_likelihood(D::Type{<:Distribution}, y::Vector{T}, param::Matrix{T}, n::Int) where T
+
+Evaluate the log-likelihood of the distribution `D` considering the time-varying parameters
+`param` and the observations `y`.
+"""
 function log_likelihood(D::Type{<:Distribution}, y::Vector{T}, param::Matrix{T}, n::Int) where T
     return error("log_likelihood not implemented for $D distribution")
 end
 
+"""
+    link!(param_tilde::Matrix{T}, D::Type{<:Distribution}, param::Matrix{T}, t::Int) where T 
+
+Fill `param_tilde` after the unlinking procedure of `param`.
+"""
 function link!(param_tilde::Matrix{T}, D::Type{<:Distribution}, param::Matrix{T}, t::Int) where T 
     return error("link! not implemented for $D distribution")
 end
 
+"""
+    unlink!(param::Matrix{T}, D::Type{<:Distribution}, param_tilde::Matrix{T}, t::Int) where T 
+
+Fill `param` after the unlinking procedure of `param_tilde`.
+"""
 function unlink!(param::Matrix{T}, D::Type{<:Distribution}, param_tilde::Matrix{T}, t::Int) where T 
     return error("unlink! not implemented for $D distribution")
 end
 
+"""
+    jacobian_link!(aux::AuxiliaryLinAlg{T}, D::Type{<:Distribution}, param::Matrix{T}, t::Int) where T 
+
+Write the jacobian of the link map in `aux`.
+"""
 function jacobian_link!(aux::AuxiliaryLinAlg{T}, D::Type{<:Distribution}, param::Matrix{T}, t::Int) where T 
     return error("jacobian_link! not implemented for $D distribution")
 end
