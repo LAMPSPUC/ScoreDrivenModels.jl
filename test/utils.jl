@@ -123,6 +123,7 @@ function test_distribution_common_interface()
     @test_throws ErrorException ScoreDrivenModels.unlink!(param, FakeDist, param_tilde, t)
     @test_throws ErrorException ScoreDrivenModels.jacobian_link!(aux, FakeDist, param, t)
     @test_throws ErrorException ScoreDrivenModels.update_dist(FakeDist, param, t)
+    @test_throws ErrorException ScoreDrivenModels.params_sdm(FakeDist(1))
     @test_throws ErrorException ScoreDrivenModels.num_params(FakeDist)
 end
 
