@@ -16,7 +16,7 @@ function print_coefs_stats(coefs_stats::CoefsStats{T}) where T
     offset = 1
     for i in coefs_stats.unknowns.ω
         p_c, p_std, p_t_stat, p_p_val = print_coefs_sta(coefs_stats, offset)
-        p = build_print(p_c, p_std, p_t_stat, p_p_val, "ω_$i")
+        p = build_print(p_c, p_std, p_t_stat, p_p_val, "omega_$i")
         println(p)
         offset += 1
     end
