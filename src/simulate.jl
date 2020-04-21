@@ -1,5 +1,10 @@
 export simulate, forecast_quantiles
 
+mutable struct SDMForecast{T <: AbstractFloat}
+    quantiles::Matrix{T}
+    scenarios::Matrix{T}
+end
+
 """
     simulate(series::Vector{T}, gas::Model{D, T}, H::Int, S::Int, kwargs...) where {D, T}
 
@@ -14,9 +19,7 @@ function simulate(series::Vector{T}, gas::Model{D, T}, H::Int, S::Int;
                     initial_params::Matrix{T} = stationary_initial_params(gas)) where {D, T}
     # Filter params estimated on the time series
     params = score_driven_recursion(gas, series; initial_params = initial_params)
-
     biggest_lag = number_of_lags(gas)
-
     params_simulation = params[(end - biggest_lag):(end - 1), :]
     # Create scenarios matrix
     scenarios = Matrix{T}(undef, H, S)
@@ -24,7 +27,6 @@ function simulate(series::Vector{T}, gas::Model{D, T}, H::Int, S::Int;
         sim, param = simulate_recursion(gas, H + biggest_lag + 1; initial_params = params_simulation)
         scenarios[:, scenario] = sim[biggest_lag + 2:end]
     end
-
     return scenarios
 end
 
@@ -52,8 +54,7 @@ function forecast_quantiles(series::Vector{T}, gas::Model{D, T}, H::Int;
                       quantiles::Vector{T} = T.([0.025, 0.5, 0.975]), S::Int = 10_000) where {D, T}
 
     scenarios = simulate(series, gas, H, S; initial_params = initial_params)
-
-    return get_quantiles(quantiles, scenarios)
+    return SDMForecast(get_quantiles(quantiles, scenarios), scenarios)
 end
 
 function get_quantiles(quantile_probs::Vector{T}, scenarios::Matrix{T}) where T

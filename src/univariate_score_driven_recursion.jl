@@ -1,4 +1,4 @@
-export score_driven_recursion, fitted_mean, simulate_recursion
+export score_driven_recursion, fitted_mean, simulate_recursion, fitted_quantiles
 
 """
 score_driven_recursion(sd_model::SDM, observations::Vector{T}) where T
@@ -147,4 +147,27 @@ function fitted_mean(gas::Model{D, T}, observations::Vector{T};
     end
     
     return fitted_mean
+end
+
+function fitted_quantiles(gas::Model{D, T}, observations::Vector{T}; 
+                     quantiles::Vector{T} = T.([0.025, 0.5, 0.975]),
+                     initial_params::Matrix{T} = stationary_initial_params(gas)) where {D, T}
+
+    # Perform score driven recursion
+    params_fitted = score_driven_recursion(gas, observations; initial_params = initial_params)
+
+    # Discard last step of the update
+    params_fitted = params_fitted[1:end-1, :]
+
+    n = size(params_fitted, 1)
+    qs = unique!(sort!(quantiles))
+    fitted_quantiles = Matrix{T}(undef, n, length(qs))
+
+    for t in axes(params_fitted, 1)
+        sdm_dist = ScoreDrivenModels.update_dist(D, params_fitted, t)
+        for (i, q) in enumerate(qs)
+            fitted_quantiles[t, i] = quantile(sdm_dist, q)
+        end
+    end
+    return fitted_quantiles
 end

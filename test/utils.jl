@@ -223,7 +223,7 @@ function test_GARCH_1_1(y, seed::Int, optimizer; atol = 1e-4, rtol = 1e-4)
     ub = [1.0; 1.0; 1.0; 1.0]
     lb = [-1.0; 0.0; 0.0; 0.0]
     gas = Model(1, 1, Normal, 1.0, time_varying_params = [2])
-    f = fit!(gas, y; initial_params = ini, verbose = 1, opt_method = optimizer(gas, 10; ub = ub, lb = lb))
+    f = fit!(gas, y; initial_params = ini, verbose = 2, opt_method = optimizer(gas, 10; ub = ub, lb = lb))
     show(stdout, fit_stats(f))
 
     @test gas.ω[1] - -0.00616637237701241 ≈ 0 atol = atol rtol = rtol
