@@ -1,6 +1,6 @@
 export simulate, forecast_quantiles
 
-mutable struct SDMForecast{T <: AbstractFloat}
+mutable struct Forecast{T <: AbstractFloat}
     quantiles::Matrix{T}
     scenarios::Matrix{T}
 end
@@ -54,7 +54,7 @@ function forecast_quantiles(series::Vector{T}, gas::Model{D, T}, H::Int;
                       quantiles::Vector{T} = T.([0.025, 0.5, 0.975]), S::Int = 10_000) where {D, T}
 
     scenarios = simulate(series, gas, H, S; initial_params = initial_params)
-    return SDMForecast(get_quantiles(quantiles, scenarios), scenarios)
+    return Forecast(get_quantiles(quantiles, scenarios), scenarios)
 end
 
 function get_quantiles(quantile_probs::Vector{T}, scenarios::Matrix{T}) where T
