@@ -1,7 +1,7 @@
 export score_driven_recursion, fitted_mean, simulate_recursion
 
 """
-score_driven_recursion(sd_model::SDM, observations::Vector{T}) where T
+    score_driven_recursion(sd_model::SDM, observations::Vector{T}) where T
 
 start with the stationary params for a 
 """

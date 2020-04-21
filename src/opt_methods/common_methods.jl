@@ -47,4 +47,4 @@ function optimize(func::Optim.TwiceDifferentiable, opt_method::AbstractOptimizat
                                                                    show_trace = show_trace(verbose) ))
 end
 
-show_trace(verbose::Int) =  (verbose == 2 ? true : false)
+show_trace(verbose::Int) =  (verbose == 3 ? true : false)

@@ -15,9 +15,9 @@
         @test maximum(scenarios) < 1e5
         @test minimum(scenarios) > 0
 
-        quants = forecast_quantiles(y, gas, 50)
-        @test all([quants[i, 1] .< quants[i, 2] .< quants[i, 3] for i in 1:50])
-        @test maximum(quants) < 1e3
-        @test minimum(quants) > 1e-4
+        forecast = forecast_quantiles(y, gas, 50)
+        @test all([forecast.quantiles[i, 1] .< forecast.quantiles[i, 2] .< forecast.quantiles[i, 3] for i in 1:50])
+        @test maximum(forecast.quantiles) < 1e3
+        @test minimum(forecast.quantiles) > 1e-4
     end
 end

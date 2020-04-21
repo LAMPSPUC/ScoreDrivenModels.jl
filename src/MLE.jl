@@ -2,7 +2,7 @@ export fit, fit!, fit_stats
 
 const DEFAULT_INITIAL_PARAM = NaN.*ones(1, 1)
 const DEFAULT_NUM_SEEDS = 3
-const DEFAULT_VERBOSE = 0
+const DEFAULT_VERBOSE = 1
 const VARIANCE_ZERO = 1e-10
 
 struct Fitted{D <: Distribution, T <: AbstractFloat}
@@ -96,6 +96,7 @@ function fit(gas::Model{D, T}, y::Vector{T};
              opt_method::AbstractOptimizationMethod = NelderMead(gas, DEFAULT_NUM_SEEDS),
              verbose::Int = DEFAULT_VERBOSE) where {D, T}
 
+    verbose in [0, 1, 2, 3] || throw(ErrorException, "verbose argument must be in [0, 1, 2, 3]")
     # Number of initial_points and number of params to estimate
     n_initial_points = length(opt_method.initial_points)
     n = length(y)
@@ -114,18 +115,20 @@ function fit(gas::Model{D, T}, y::Vector{T};
 
     for i = 1:n_initial_points
         try 
-            func = TwiceDifferentiable(psi_tilde -> log_lik(psi_tilde, y, gas_fit, initial_params, unknowns, n), opt_method.initial_points[i])
+            func = TwiceDifferentiable(psi_tilde -> log_lik(psi_tilde, y, gas_fit, 
+                                                        initial_params, unknowns, n), 
+                                                        opt_method.initial_points[i])
             opt_result = optimize(func, opt_method, verbose, i)
             update_aux_estimation!(aux_est, func, opt_result)
-            println("Round $i of $n_initial_points - Log-likelihood: $(-opt_result.minimum)")
+            verbose >= 1 && println("Round $i of $n_initial_points - Log-likelihood: $(-opt_result.minimum)")
         catch err
             println(err)
-            println("Round $i diverged")
+            verbose >= 1 && println("Round $i diverged")
         end
     end
 
     if isempty(aux_est.loglikelihood) 
-        println("No initial point converged.")
+        verbose >= 1 && println("No initial point converged.")
         return
     end
 
@@ -135,12 +138,11 @@ function fit(gas::Model{D, T}, y::Vector{T};
     aic = AIC(n_unknowns, best_llk)
     bic = BIC(n, n_unknowns, best_llk)
 
-    if verbose >= 1
+    if verbose >= 2
         println("\nBest optimization result:")
         println(aux_est.opt_result[best_seed])
     end
 
-    println("Finished!")
     return Fitted{D, T}(n, unknowns, aic, bic, best_llk, coefs, num_hessian)
 end
 
