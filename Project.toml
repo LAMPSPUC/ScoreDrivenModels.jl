@@ -14,7 +14,7 @@ SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 julia = "1"
 Distributions = "0.23"
 Optim = "0.20"
-SpecialFunctions = "0.10"
+SpecialFunctions = "0.8"
 
 [extras]
 DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
