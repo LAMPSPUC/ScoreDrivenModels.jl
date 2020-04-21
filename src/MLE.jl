@@ -2,7 +2,7 @@ export fit, fit!, fit_stats
 
 const DEFAULT_INITIAL_PARAM = NaN.*ones(1, 1)
 const DEFAULT_NUM_SEEDS = 3
-const DEFAULT_VERBOSE = 0
+const DEFAULT_VERBOSE = 1
 const VARIANCE_ZERO = 1e-10
 
 struct Fitted{D <: Distribution, T <: AbstractFloat}
