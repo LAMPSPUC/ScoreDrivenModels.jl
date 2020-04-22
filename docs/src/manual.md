@@ -99,6 +99,7 @@ this is handled internally.
 |[`Gamma`](@ref)| ✓ | ✓  |
 |[`LogitNormal`](@ref)| ✓ | ✓  |
 |[`LogNormal`](@ref)| ✓ | ✓  |
+|[`NegativeBinomial`](@ref)| ✓ |  x  |
 |[`Normal`](@ref)| ✓ | ✓  |
 |[`Poisson`](@ref)| ✓ | ✓  |
 |[`TDist`](@ref)| ✓ | ✓  |
@@ -115,6 +116,7 @@ ScoreDrivenModels.Exponential
 ScoreDrivenModels.Gamma
 ScoreDrivenModels.LogitNormal
 ScoreDrivenModels.LogNormal
+ScoreDrivenModels.NegativeBinomial
 ScoreDrivenModels.Normal
 ScoreDrivenModels.Poisson
 ScoreDrivenModels.TDist

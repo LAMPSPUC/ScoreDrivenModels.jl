@@ -1,5 +1,5 @@
 const PARAMETER_REQUIRED_DISTS = [Chisq; Chi; TDist]
-const FI_NOT_IMPLEMENTED = [Weibull; BetaLocationScale]
+const FI_NOT_IMPLEMENTED = [Weibull; BetaLocationScale; NegativeBinomial]
 
 struct FakeDist{T<:Real} <: Distributions.ContinuousUnivariateDistribution
     foo::T

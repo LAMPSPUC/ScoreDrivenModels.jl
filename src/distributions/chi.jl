@@ -27,7 +27,7 @@ end
 function log_likelihood(::Type{Chi}, y::Vector{T}, param::Matrix{T}, n::Int) where T
     loglik = 0.0
     for t in 1:n
-        loglik += + (1 - param[t, 1]/2)*log(2) + (param[t, 1] - 1) * log(y[t]) - (y[t]^2)/2 - loggamma(param[t, 1]/2)
+        loglik += (1 - param[t, 1] / 2) * log(2) + (param[t, 1] - 1) * log(y[t]) - (y[t]^2)/2 - loggamma(param[t, 1]/2)
     end
     return -loglik
 end
