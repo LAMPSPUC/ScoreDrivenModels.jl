@@ -1,8 +1,10 @@
 export simulate, forecast_quantiles
 
 mutable struct Forecast{T <: AbstractFloat}
-    quantiles::Matrix{T}
-    scenarios::Matrix{T}
+    observation_quantiles::Matrix{T}
+    observation_scenarios::Matrix{T}
+    parameter_quantiles::Array{T, 3}
+    parameter_scenarios::Array{T, 3}
 end
 
 """
@@ -19,15 +21,25 @@ function simulate(series::Vector{T}, gas::Model{D, T}, H::Int, S::Int;
                     initial_params::Matrix{T} = stationary_initial_params(gas)) where {D, T}
     # Filter params estimated on the time series
     params = score_driven_recursion(gas, series; initial_params = initial_params)
-    biggest_lag = number_of_lags(gas)
-    params_simulation = params[(end - biggest_lag):(end - 1), :]
+    biggest_lag = ScoreDrivenModels.number_of_lags(gas)
+    n_params = ScoreDrivenModels.num_params(D)
+    params_simulation = params[(end - biggest_lag + 1):end, :]
     # Create scenarios matrix
-    scenarios = Matrix{T}(undef, H, S)
+    observation_scenarios = Matrix{T}(undef, H, S)
+    parameter_scenarios = Array{T, 3}(undef, H, n_params, S)
     for scenario in 1:S
-        sim, param = simulate_recursion(gas, H + biggest_lag + 1; initial_params = params_simulation)
-        scenarios[:, scenario] = sim[biggest_lag + 2:end]
+        # Notice that we know the parameter time_varying parameters for T + 1 
+        # So the last initial_params is already a part of the future simulation
+        # And we must take the 
+        sim, param = simulate_recursion(gas, H + biggest_lag; initial_params = params_simulation)
+        observation_scenarios[:, scenario] = sim[biggest_lag+1:end]
+        # The first param is known
+        parameter_scenarios[1, :, scenario] = params_simulation[end, :]
+        # The last param (param[end, :]) is actually in a time step bigger 
+        # than H
+        parameter_scenarios[2:end, :, scenario] = param[biggest_lag+1:end-1, :]
     end
-    return scenarios
+    return observation_scenarios, parameter_scenarios
 end
 
 
@@ -53,13 +65,34 @@ function forecast_quantiles(series::Vector{T}, gas::Model{D, T}, H::Int;
                       initial_params::Matrix{T} = stationary_initial_params(gas),
                       quantiles::Vector{T} = T.([0.025, 0.5, 0.975]), S::Int = 10_000) where {D, T}
 
-    scenarios = simulate(series, gas, H, S; initial_params = initial_params)
-    return Forecast(get_quantiles(quantiles, scenarios), scenarios)
+    observation_scenarios, parameter_scenarios = simulate(series, gas, H, S; 
+                                                    initial_params = initial_params)
+    return Forecast(
+        get_quantiles(quantiles, observation_scenarios), 
+        observation_scenarios,
+        get_quantiles(quantiles, parameter_scenarios), 
+        parameter_scenarios
+        )
 end
 
-function get_quantiles(quantile_probs::Vector{T}, scenarios::Matrix{T}) where T
-    @assert all((quantile_probs .< 1.0) .& (quantile_probs .> 0.0))
-    unique!(sort!(quantile_probs))
-    quantiles = mapslices(x -> quantile(x, quantile_probs), scenarios; dims = 2)
+function get_quantiles(quantiles_probs::Vector{T}, scenarios::Matrix{T}) where T
+    @assert all((quantiles_probs .< 1.0) .& (quantiles_probs .> 0.0))
+    unique!(sort!(quantiles_probs))
+    quantiles = mapslices(x -> quantile(x, quantiles_probs), scenarios; dims = 2)
     return quantiles
+end
+
+function get_quantiles(quantiles_probs::Vector{T}, scenarios::Array{T, 3}) where T
+    @assert all((quantiles_probs .< 1.0) .& (quantiles_probs .> 0.0))
+    unique!(sort!(quantiles_probs))
+    quantiles_per_parameter = Array{T, 3}(undef, 
+                                size(scenarios, 1),
+                                size(scenarios, 2),
+                                length(quantiles_probs)
+                                )
+    for j in 1:size(scenarios, 2)
+        quantiles_per_parameter[:, j, :] = mapslices(x -> quantile(x, quantiles_probs), 
+                                                        scenarios[:, j, :]; dims = 2)
+    end
+    return quantiles_per_parameter
 end
