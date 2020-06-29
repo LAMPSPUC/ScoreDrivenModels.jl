@@ -11,13 +11,15 @@
         gas.B[1]  = convert(Matrix{Float64}, Diagonal(3*v))
         gas.B[12] = convert(Matrix{Float64}, Diagonal(-3*v))
 
-        scenarios = simulate(y, gas, 50, 1000)
-        @test maximum(scenarios) < 1e5
-        @test minimum(scenarios) > 0
+        scenarios_observations, scenarios_params = simulate(y, gas, 50, 1000)
+        @test maximum(scenarios_observations) < 1e5
+        @test minimum(scenarios_observations) > 0
 
-        forecast = forecast_quantiles(y, gas, 50)
-        @test all([forecast.quantiles[i, 1] .< forecast.quantiles[i, 2] .< forecast.quantiles[i, 3] for i in 1:50])
-        @test maximum(forecast.quantiles) < 1e3
-        @test minimum(forecast.quantiles) > 1e-4
+        forec = forecast(y, gas, 50)
+        @test all([forec.observation_quantiles[i, 1] .< 
+                   forec.observation_quantiles[i, 2] .< 
+                   forec.observation_quantiles[i, 3] for i in 1:50])
+        @test maximum(forec.observation_quantiles) < 1e3
+        @test minimum(forec.observation_quantiles) > 1e-4
     end
 end

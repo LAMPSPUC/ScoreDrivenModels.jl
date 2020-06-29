@@ -2,8 +2,6 @@
 const DISTS = [
     Beta,
     BetaLocationScale,
-    Chi,
-    Chisq,
     Exponential,
     Gamma,
     LogitNormal,
