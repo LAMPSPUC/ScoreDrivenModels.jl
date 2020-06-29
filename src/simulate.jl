@@ -1,9 +1,11 @@
-export simulate, forecast_quantiles
+export simulate, forecast
 
 mutable struct Forecast{T <: AbstractFloat}
     observation_quantiles::Matrix{T}
+    observation_forecast::Vector{T}
     observation_scenarios::Matrix{T}
     parameter_quantiles::Array{T, 3}
+    parameter_forecast::Matrix{T}
     parameter_scenarios::Array{T, 3}
 end
 
@@ -44,7 +46,7 @@ end
 
 
 """
-    forecast_quantiles(series::Vector{T}, gas::Model{D, T}, H::Int; kwargs...) where {D, T}
+    forecast(series::Vector{T}, gas::Model{D, T}, H::Int; kwargs...) where {D, T}
 
 Forecast quantiles for future values of a time series by updating the GAS recursion `H` times and 
 using Monte Carlo method as in Blasques, Francisco, Siem Jan Koopman,
@@ -61,16 +63,18 @@ By default this method uses the `stationary_initial_params` method to perform th
 score driven recursion. If you estimated the model with a different set of `initial_params`
 use them here to maintain the coherence of your estimation.
 """
-function forecast_quantiles(series::Vector{T}, gas::Model{D, T}, H::Int;
-                      initial_params::Matrix{T} = stationary_initial_params(gas),
-                      quantiles::Vector{T} = T.([0.025, 0.5, 0.975]), S::Int = 10_000) where {D, T}
+function forecast(series::Vector{T}, gas::Model{D, T}, H::Int;
+                    initial_params::Matrix{T} = stationary_initial_params(gas),
+                    quantiles::Vector{T} = T.([0.025, 0.5, 0.975]), S::Int = 10_000) where {D, T}
 
     observation_scenarios, parameter_scenarios = simulate(series, gas, H, S; 
                                                     initial_params = initial_params)
     return Forecast(
         get_quantiles(quantiles, observation_scenarios), 
+        mean(observation_scenarios, dims = 2)[:],
         observation_scenarios,
         get_quantiles(quantiles, parameter_scenarios), 
+        mean(parameter_scenarios, dims = 3)[:, :, 1],
         parameter_scenarios
         )
 end
