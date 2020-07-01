@@ -23,8 +23,8 @@ function simulate(series::Vector{T}, gas::Model{D, T}, H::Int, S::Int;
                     initial_params::Matrix{T} = stationary_initial_params(gas)) where {D, T}
     # Filter params estimated on the time series
     params = score_driven_recursion(gas, series; initial_params = initial_params)
-    biggest_lag = ScoreDrivenModels.number_of_lags(gas)
-    n_params = ScoreDrivenModels.num_params(D)
+    biggest_lag = number_of_lags(gas)
+    n_params = num_params(D)
     params_simulation = params[(end - biggest_lag + 1):end, :]
     # Create scenarios matrix
     observation_scenarios = Matrix{T}(undef, H, S)

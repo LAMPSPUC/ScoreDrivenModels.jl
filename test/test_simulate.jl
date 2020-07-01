@@ -19,7 +19,15 @@
         @test all([forec.observation_quantiles[i, 1] .< 
                    forec.observation_quantiles[i, 2] .< 
                    forec.observation_quantiles[i, 3] for i in 1:50])
+        @test all([forec.parameter_quantiles[i, 1, 1] <=
+                   forec.parameter_quantiles[i, 1, 2] <= 
+                   forec.parameter_quantiles[i, 1, 3] for i in 1:50])
+        @test all([forec.parameter_quantiles[i, 2, 1] <=
+                   forec.parameter_quantiles[i, 2, 2] <= 
+                   forec.parameter_quantiles[i, 2, 3] for i in 1:50])
         @test maximum(forec.observation_quantiles) < 1e3
         @test minimum(forec.observation_quantiles) > 1e-4
+
+        @test minimum(forec.parameter_scenarios[:, 2, :]) > 0.0
     end
 end
