@@ -93,8 +93,6 @@ this is handled internally.
 | :------- |:---------------:|:--------------------:|
 |[`Beta`](@ref)| ✓ | ✓  |
 |[`BetaLocationScale`](@ref)| ✓ |  x  |
-|[`Chi`](@ref)| ✓ | ✓  |
-|[`Chisq`](@ref)| ✓ | ✓  |
 |[`Exponential`](@ref)| ✓ | ✓  |
 |[`Gamma`](@ref)| ✓ | ✓  |
 |[`LogitNormal`](@ref)| ✓ | ✓  |
@@ -110,8 +108,6 @@ this is handled internally.
 ```@docs
 ScoreDrivenModels.Beta
 ScoreDrivenModels.BetaLocationScale
-ScoreDrivenModels.Chi
-ScoreDrivenModels.Chisq
 ScoreDrivenModels.Exponential
 ScoreDrivenModels.Gamma
 ScoreDrivenModels.LogitNormal
