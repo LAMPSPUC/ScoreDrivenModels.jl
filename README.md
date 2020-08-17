@@ -16,7 +16,7 @@ ScoreDrivenModels.jl is a Julia package for modeling, forecasting, and simulatin
 
 This package is registered so you can simply `add` it using Julia's `Pkg` manager:
 ```julia
-pkg> add StateSpaceModels
+pkg> add ScoreDrivenModels
 ```
 
 ## Citing the package
