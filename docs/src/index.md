@@ -32,4 +32,4 @@ for the documentation please post it on the
 [github issue tracker](https://github.com/LAMPSPUC/ScoreDrivenModels.jl/issues).
 
 When contributing please note that the package follows the 
-[JuMP style guide](https://www.juliaopt.org/JuMP.jl/stable/style/).
+[JuMP style guide](https://jump.dev/JuMP.jl/stable/style/index.html).
