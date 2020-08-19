@@ -59,7 +59,7 @@ end
 
 The constructor of a score-driven model. The model receives the lag structure, the 
 distribution and the scaling. You can define the lag structure in two different 
-ways, either by passing integers `p` and `q` to add all lags from `1` to `p and `1` to `q` or by 
+ways, either by passing integers `p` and `q` to add all lags from `1` to `p` and `1` to `q` or by 
 passing vectors of integers `ps` and `qs` containing the desired lags. Once you build 
 the model all of the unknown parameters that must be estimated are represented as `NaN`.
 
