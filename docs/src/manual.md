@@ -1,5 +1,8 @@
 # Manual
 
+For a concise overview of the package, please read the [package paper](https://arxiv.org/abs/2008.05506). 
+It provides a high-level presentation of the theory behind score-driven models and showcases the features of the package as well as examples.
+
 ## Model Specification
 
 ```@docs
