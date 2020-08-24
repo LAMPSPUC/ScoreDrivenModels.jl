@@ -17,7 +17,7 @@ function ScoreDrivenModels.jacobian_link!(aux::AuxiliaryLinAlg{T}, ::Type{Normal
     return
 end
 
-y = vec(readdlm("./test/data/BG96.csv"));
+y = vec(readdlm("../test/data/BG96.csv"));
 initial_params = [mean(y) var(y)];
 ub = [1.0; 1.0; 0.5; 1.0];
 lb = [-1.0; 0.0; 0.0; 0.5];
