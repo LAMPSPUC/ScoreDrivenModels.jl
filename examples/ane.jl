@@ -2,7 +2,7 @@ using ScoreDrivenModels, Plots, DelimitedFiles, Dates, Random
 
 dates = collect(Date(1961):Month(1):Date(2000, 12))
 Random.seed!(123);
-y = vec(readdlm("./test/data/ane_northeastern.csv"));
+y = vec(readdlm("../test/data/ane_northeastern.csv"));
 y_train = y[1:400];
 gas = Model([1, 2, 11, 12], [1, 2, 11, 12], LogNormal, 0.0; time_varying_params=[1]);
 initial_params = dynamic_initial_params(y_train, gas);
