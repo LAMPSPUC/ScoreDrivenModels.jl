@@ -22,7 +22,7 @@ initial_params = [mean(y) var(y)];
 ub = [1.0, 1.0, 0.5, 1.0];
 lb = [-1.0; 0.0; 0.0; 0.5];
 gas = Model(1, 1, Normal, 1.0, time_varying_params = [2]);
-initial_point = [0.0; 0.5; 0.25; 0.75];
+initial_point = [0.0, 0.5, 0.25, 0.75];
 f = fit!(gas, y; initial_params = initial_params,
                 opt_method = IPNewton(gas, [initial_point]; ub = ub, lb = lb));
 estimation_stats = fit_stats(f)
