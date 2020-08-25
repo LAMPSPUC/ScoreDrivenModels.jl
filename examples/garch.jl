@@ -19,7 +19,7 @@ function ScoreDrivenModels.jacobian_link!(aux::AuxiliaryLinAlg{T}, ::Type{Normal
     return
 end
 
-# Load (TODO: what is this data?) data
+# Load daily German mark/British pound exchange rates data
 y = vec(readdlm("../test/data/BG96.csv"))
 
 # Set initial parameters as observed mean and variance of the series
