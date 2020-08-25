@@ -42,5 +42,5 @@ f = fit!(
     opt_method = IPNewton(gas, [initial_point]; ub=ub, lb=lb)
 )
 
-# Get estimation statistics
-estimation_stats = fit_stats(f)
+# Print estimation statistics
+fit_stats(f)
