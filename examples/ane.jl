@@ -18,8 +18,8 @@ initial_params = dynamic_initial_params(y_train, gas)
 # Fit specified model to historical data using initial parameters
 f = ScoreDrivenModels.fit!(gas, y_train; initial_params=initial_params)
 
-# Get estimation statistics
-estimation_stats = fit_stats(f)
+# Print estimation statistics
+fit_stats(f)
 
 # Simulate 1000 future scenarios and obtain the 5% and 95% quantiles in each time period
 forec = forecast(y_train, gas, 60; S=1000, initial_params=initial_params)

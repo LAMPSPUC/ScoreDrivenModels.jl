@@ -26,8 +26,8 @@ gas = Model(1, 1, TDistLocationScale, 0.0, time_varying_params=[1, 2])
 # In this example, we set the optimization method to LBFGS with 5 initial points
 f = fit!(gas, y; opt_method=LBFGS(gas, 5))
 
-# Get estimation statistics
-estimation_stats = fit_stats(f)
+# Print estimation statistics
+fit_stats(f)
 
 # Perform forecast via simulations for 12 time periods ahead
 forec = forecast(y, gas, 12)
