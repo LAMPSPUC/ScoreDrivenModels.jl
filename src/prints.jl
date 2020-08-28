@@ -1,11 +1,11 @@
 function Base.show(io::IO, est::EstimationStats{D, T}) where {D, T}
-    println("--------------------------------------------------------")
-    println("Distribution:                 ", D)
-    println("Number of observations:       ", Int(est.num_obs))
-    println("Number of unknown parameters: ", Int(est.np))
-    println("Log-likelihood:               ", @sprintf("%.4f", est.loglikelihood))
-    println("AIC:                          ", @sprintf("%.4f", est.aic))
-    println("BIC:                          ", @sprintf("%.4f", est.bic))
+    println(io, "--------------------------------------------------------")
+    println(io, "Distribution:                 ", D)
+    println(io, "Number of observations:       ", Int(est.num_obs))
+    println(io, "Number of unknown parameters: ", Int(est.np))
+    println(io, "Log-likelihood:               ", @sprintf("%.4f", est.loglikelihood))
+    println(io, "AIC:                          ", @sprintf("%.4f", est.aic))
+    println(io, "BIC:                          ", @sprintf("%.4f", est.bic))
     print_coefs_stats(est.coefs_stats)
     return nothing
 end
