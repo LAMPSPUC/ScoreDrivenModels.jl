@@ -17,11 +17,11 @@ pkg> add ScoreDrivenModels
 
 If you use ScoreDrivenModels.jl in your work, we kindly ask you to cite the package [paper](https://arxiv.org/abs/2008.05506):
 
-    @misc{bodin2020scoredrivenmodelsjl,
-    title={ScoreDrivenModels.jl: a Julia Package for Generalized Autoregressive Score Models},
-    author={Guilherme Bodin and Raphael Saavedra and Cristiano Fernandes and Alexandre Street},
-    year={2020},
-    eprint={2008.05506}
+    @article{bodin2020scoredrivenmodels,
+        title={ScoreDrivenModels. jl: a Julia Package for Generalized Autoregressive Score Models},
+        author={Bodin, Guilherme and Saavedra, Raphael and Fernandes, Cristiano and Street, Alexandre},
+        journal={arXiv preprint arXiv:2008.05506},
+        year={2020}
     }
 
 
