@@ -21,8 +21,17 @@ f = ScoreDrivenModels.fit!(gas, y_train; initial_params=initial_params)
 # Print estimation statistics
 fit_stats(f)
 
+# Caalculate pearson residuals
+residuals = pearson_residuals(y_train, gas; initial_params=initial_params)
+histogram(residuals)
+acf = autocor(residuals)
+bar(acf[2:end], label = "")
+hline!([1.96/sqrt(400), -1.96/sqrt(400)], label = "", color="black")
+
 # Simulate 1000 future scenarios and obtain the 5% and 95% quantiles in each time period
 forec = forecast(y_train, gas, 60; S=1000, initial_params=initial_params)
+
+plot(dates[1:400], y[1:400], label="ANE", color="black", xlabel="Months", ylabel="GWmed", legend=:topright)
 
 # Plot results
 plot(dates[401:460], forec.observation_scenarios, color="grey", width=0.05, label="", ylims=(0, 70))
