@@ -120,7 +120,7 @@ function fit(gas::Model{D, T}, y::Vector{T};
                                                         opt_method.initial_points[i])
             opt_result = optimize(func, opt_method, verbose, i)
             update_aux_estimation!(aux_est, func, opt_result)
-            verbose >= 1 && println("Round $i of $n_initial_points - Log-likelihood: $(-opt_result.minimum)")
+            verbose >= 1 && println("Round $i of $n_initial_points - Log-likelihood: $(-opt_result.minimum * length(y))")
         catch err
             println(err)
             verbose >= 1 && println("Round $i diverged")
@@ -133,6 +133,8 @@ function fit(gas::Model{D, T}, y::Vector{T};
     end
 
     best_llk, best_seed = findmax(aux_est.loglikelihood)
+    # We optimize the average loglikelihood inside log_lik
+    best_llk = best_llk * length(y)
     num_hessian = aux_est.numerical_hessian[best_seed]
     coefs = aux_est.psi[best_seed]
     aic = AIC(n_unknowns, best_llk)
