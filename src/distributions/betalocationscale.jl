@@ -27,10 +27,6 @@ function score!(score_til::Matrix{T}, y::T, ::Type{BetaLocationScale}, param::Ma
     return
 end
 
-function fisher_information!(aux::AuxiliaryLinAlg{T}, ::Type{BetaLocationScale}, param::Matrix{T}, t::Int) where T
-    return error("Fisher information not implemented for BetaLocationScale distribution.")
-end
-
 function log_likelihood(::Type{BetaLocationScale}, y::Vector{T}, param::Matrix{T}, n::Int) where T
     loglik = 0.0
     for t in 1:n
