@@ -168,5 +168,5 @@ function log_lik(psitilde::Vector{T}, y::Vector{T}, gas::Model{D, T},
         params = score_driven_recursion(gas, y; initial_params = initial_params)
     end
 
-    return log_likelihood(D, y, params, n)
+    return log_likelihood(D, y, params, n) / length(y)
 end

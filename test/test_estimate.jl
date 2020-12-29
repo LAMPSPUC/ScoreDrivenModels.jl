@@ -1,36 +1,36 @@
 @testset "Estimate" begin
-    @testset "Beta" begin
+    @testset "Normal" begin
         ω = [0.1, 0.1]
         A = [0.5 0; 0 0.5]
         B = [0.5 0; 0 0.5]
-        simulation = simulate_GAS_1_1(Beta, 0.0, ω, A, B, 1)
+        simulation = simulate_GAS_1_1(Normal, 0.0, ω, A, B, 1)
         @testset "Estimation by passing number of initial_points" begin
             # LBFGS
-            gas = Model(1, 1, Beta, 0.0)
+            gas = Model(1, 1, Normal, 0.0)
             fit!(gas, simulation; verbose = 2, opt_method = ScoreDrivenModels.LBFGS(gas, 3))
             test_coefficients_GAS_1_1(gas, ω, A, B)
             # NelderMead
-            gas = Model(1, 1, Beta, 0.0)
+            gas = Model(1, 1, Normal, 0.0)
             fit!(gas, simulation; verbose = 2, opt_method = ScoreDrivenModels.NelderMead(gas, 3))
             test_coefficients_GAS_1_1(gas, ω, A, B)
             # IPNewton
-            gas = Model(1, 1, Beta, 0.0)
+            gas = Model(1, 1, Normal, 0.0)
             fit!(gas, simulation; verbose = 2, opt_method = ScoreDrivenModels.IPNewton(gas, 3))
             test_coefficients_GAS_1_1(gas, ω, A, B)
         end
         @testset "Estimation by passing initial_points" begin
             # LBFGS
-            gas = Model(1, 1, Beta, 0.0)
+            gas = Model(1, 1, Normal, 0.0)
             initial_points = [[0.1, 0.1, 0.5, 0.5, 0.5, 0.5]]
             fit!(gas, simulation; verbose = 1, opt_method = ScoreDrivenModels.LBFGS(gas, initial_points))
             test_coefficients_GAS_1_1(gas, ω, A, B)
             # NelderMead
-            gas = Model(1, 1, Beta, 0.0)
+            gas = Model(1, 1, Normal, 0.0)
             initial_points = [[0.1, 0.1, 0.5, 0.5, 0.5, 0.5]]
             fit!(gas, simulation; verbose = 1, opt_method = ScoreDrivenModels.NelderMead(gas, initial_points))
             test_coefficients_GAS_1_1(gas, ω, A, B)
             # IPNewton
-            gas = Model(1, 1, Beta, 0.0)
+            gas = Model(1, 1, Normal, 0.0)
             initial_points = [[0.1, 0.1, 0.5, 0.5, 0.5, 0.5]]
             fit!(gas, simulation; verbose = 1, opt_method = ScoreDrivenModels.IPNewton(gas, initial_points))
             test_coefficients_GAS_1_1(gas, ω, A, B)
