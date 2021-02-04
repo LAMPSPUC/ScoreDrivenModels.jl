@@ -1,6 +1,6 @@
 # Currently supported distributions
 const DISTS = [
-    BetaLocationScale,
+    Beta,
     Exponential,
     Gamma,
     LogitNormal,
@@ -13,7 +13,7 @@ const DISTS = [
     Weibull
 ]
 
-export BetaLocationScale,
+export Beta,
     Exponential,
     Gamma,
     LogitNormal,
