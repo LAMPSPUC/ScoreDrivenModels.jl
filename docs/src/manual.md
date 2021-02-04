@@ -95,7 +95,6 @@ this is handled internally.
 | Distribution | Identity scaling | Inverse and inverse square root scalings |
 | :------- |:---------------:|:--------------------:|
 |[`Beta`](@ref)| ✓ | ✓  |
-|[`BetaLocationScale`](@ref)| ✓ |  x  |
 |[`Exponential`](@ref)| ✓ | ✓  |
 |[`Gamma`](@ref)| ✓ | ✓  |
 |[`LogitNormal`](@ref)| ✓ | ✓  |
@@ -110,7 +109,6 @@ this is handled internally.
 
 ```@docs
 ScoreDrivenModels.Beta
-ScoreDrivenModels.BetaLocationScale
 ScoreDrivenModels.Exponential
 ScoreDrivenModels.Gamma
 ScoreDrivenModels.LogitNormal

@@ -1,5 +1,5 @@
 const PARAMETER_REQUIRED_DISTS = [Chisq; Chi; TDist]
-const FI_NOT_IMPLEMENTED = [Weibull; BetaLocationScale; NegativeBinomial]
+const FI_NOT_IMPLEMENTED = [Weibull; NegativeBinomial]
 
 struct FakeDist{T<:Real} <: Distributions.ContinuousUnivariateDistribution
     foo::T
@@ -8,9 +8,6 @@ end
 function instantiate_dist(D::Type{<:Distribution})
     if D == TDistLocationScale
         params = [1.0 2.0 10]
-        return ScoreDrivenModels.update_dist(D, params, 1)
-    elseif D == BetaLocationScale
-        params = [-2.0 5.0 1.5 3.4]
         return ScoreDrivenModels.update_dist(D, params, 1)
     elseif D in PARAMETER_REQUIRED_DISTS
         params = [10][:, :]
