@@ -84,9 +84,9 @@ end
 function update_aux_estimation!(aux_est::AuxEstimation{T}, func::Optim.TwiceDifferentiable,
                                 opt_result::Optim.OptimizationResults) where T
                                 
-    push!(aux_est.loglikelihood, -opt_result.minimum)
-    push!(aux_est.psi, opt_result.minimizer)
     push!(aux_est.numerical_hessian, Optim.hessian!(func, opt_result.minimizer))
+    push!(aux_est.psi, opt_result.minimizer)
+    push!(aux_est.loglikelihood, -opt_result.minimum)
     push!(aux_est.opt_result, opt_result)
     return
 end
