@@ -155,14 +155,15 @@ end
 function fit!(gas::Model{D, T}, y::Vector{T};
               initial_params::Matrix{T} = DEFAULT_INITIAL_PARAM,
               opt_method::AbstractOptimizationMethod = NelderMead(gas, DEFAULT_NUM_SEEDS),
-              verbose::Int = DEFAULT_VERBOSE) where {D, T}
+              verbose::Int = DEFAULT_VERBOSE,
+              throw_errors::Bool = false) where {D, T}
 
     unknowns = find_unknowns(gas)
     # Check if the model has no unknowns
     n_unknowns = length(unknowns)
     check_model_estimated(n_unknowns) && return gas
     
-    f = fit(gas, y; initial_params = initial_params, opt_method = opt_method, verbose = verbose)
+    f = fit(gas, y; initial_params = initial_params, opt_method = opt_method, verbose = verbose, throw_errors = throw_errors)
     fill_psitilde!(gas, f.coefs, unknowns)
     return f
 end

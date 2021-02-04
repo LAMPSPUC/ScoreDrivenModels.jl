@@ -1,16 +1,18 @@
-const PARAMETER_REQUIRED_DISTS = [Chisq; Chi; TDist]
-const FI_NOT_IMPLEMENTED = [Weibull; NegativeBinomial]
+const FI_NOT_IMPLEMENTED = [Weibull; BetaFourParameters; NegativeBinomial]
 
 struct FakeDist{T<:Real} <: Distributions.ContinuousUnivariateDistribution
     foo::T
 end
 
 function instantiate_dist(D::Type{<:Distribution})
-    if D == TDistLocationScale
+    if D == ScoreDrivenModels.TDistLocationScale
         params = [1.0 2.0 10]
         return ScoreDrivenModels.update_dist(D, params, 1)
-    elseif D in PARAMETER_REQUIRED_DISTS
+    elseif D == ScoreDrivenModels.TDist
         params = [10][:, :]
+        return ScoreDrivenModels.update_dist(D, params, 1)
+    elseif D == ScoreDrivenModels.BetaFourParameters
+        params = [0.0 10.0 2.0 3]
         return ScoreDrivenModels.update_dist(D, params, 1)
     else
         params = 0.5 * ones(1, ScoreDrivenModels.num_params(D))
@@ -26,8 +28,8 @@ function test_score_mean(D::Type{<:Distribution}; n::Int = 10^7, seed::Int = 10,
     n_params = ScoreDrivenModels.num_params(D)
     avg  = zeros(1, n_params)
     obs = rand(dist, n)
+    score_aux = ones(1, n_params)
     for i = 1:n
-        score_aux = ones(1, n_params)
         ScoreDrivenModels.score!(score_aux, obs[i], D, pars, 1)
         avg .+= score_aux
     end
@@ -43,8 +45,8 @@ function test_fisher_information(D::Type{<:Distribution}; n::Int = 10^6, seed::I
     n_params = ScoreDrivenModels.num_params(D)
     var_terms  = zeros(n_params, n_params)
     obs = rand(dist, n)
+    score_aux = ones(1, n_params)
     for i = 1:n
-        score_aux = ones(1, n_params)
         ScoreDrivenModels.score!(score_aux, obs[i], D, pars, 1)
         var_terms .+= score_aux' * score_aux
     end
