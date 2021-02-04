@@ -1,6 +1,7 @@
 # Currently supported distributions
 const DISTS = [
     Beta,
+    BetaFourParameters,
     Exponential,
     Gamma,
     LogitNormal,
@@ -14,6 +15,7 @@ const DISTS = [
 ]
 
 export Beta,
+    BetaFourParameters,
     Exponential,
     Gamma,
     LogitNormal,
