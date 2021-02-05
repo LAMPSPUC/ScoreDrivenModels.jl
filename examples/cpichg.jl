@@ -27,7 +27,7 @@ gas = Model(1, 1, TDistLocationScale, 0.0, time_varying_params=[1, 2])
 f = fit!(gas, y; opt_method=LBFGS(gas, 5))
 
 # Print estimation statistics
-fit_stats(f)
+results(f)
 
 # Perform forecast via simulations for 12 time periods ahead
 forec = forecast(y, gas, 12)

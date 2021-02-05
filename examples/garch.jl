@@ -43,4 +43,4 @@ f = fit!(
 )
 
 # Print estimation statistics
-fit_stats(f)
+results(f)

@@ -1,4 +1,4 @@
-export fit, fit!, fit_stats
+export fit, fit!, results
 
 const DEFAULT_INITIAL_PARAM = NaN.*ones(1, 1)
 const DEFAULT_NUM_SEEDS = 3
@@ -32,7 +32,7 @@ struct EstimationStats{D <: Distribution, T <: AbstractFloat}
     coefs_stats::CoefsStats{T}
 end
 
-function fit_stats(f::Fitted{D, T}) where {D, T}
+function results(f::Fitted{D, T}) where {D, T}
     estim_results = eval_coefs_stats(f)
     np = length(f.unknowns)
     return EstimationStats{D, T}(f.num_obs, f.llk, f.aic, f.bic, np, estim_results)
