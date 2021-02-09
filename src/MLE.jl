@@ -95,7 +95,8 @@ function fit(gas::Model{D, T}, y::Vector{T};
              initial_params::Matrix{T} = DEFAULT_INITIAL_PARAM,
              opt_method::AbstractOptimizationMethod = NelderMead(gas, DEFAULT_NUM_SEEDS),
              verbose::Int = DEFAULT_VERBOSE,
-             throw_errors::Bool = false) where {D, T}
+             throw_errors::Bool = false,
+             time_limit_sec::Int = 10^8) where {D, T}
 
     verbose in [0, 1, 2, 3] || throw(ErrorException, "verbose argument must be in [0, 1, 2, 3]")
     # Number of initial_points and number of params to estimate
