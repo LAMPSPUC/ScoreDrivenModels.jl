@@ -1,4 +1,4 @@
-using ScoreDrivenModels, Distributions, LinearAlgebra
+using ScoreDrivenModels, Distributions, LinearAlgebra, RecipesBase
 
 using Test, Random, HypothesisTests, DelimitedFiles
 
@@ -12,3 +12,4 @@ include("test_diagnostics.jl")
 include("test_estimate.jl")
 include("test_simulate.jl")
 include("test_backtest.jl")
+include("test_visualization.jl")

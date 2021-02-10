@@ -35,11 +35,11 @@ end
 TODO
 """
 function backtest(gas::Model{<:Distribution, T}, y::Vector{T}, steps_ahead::Int, start_idx::Int;
-                  S::Int = 1000,
-                  initial_params::Matrix{T} = stationary_initial_params(gas),
-                  opt_method = NelderMead(gas, DEFAULT_NUM_SEEDS)) where T
+                  S::Int = 10_000,
+                  initial_params = stationary_initial_params(gas),
+                  opt_method = NelderMead(gas, 3)) where T
     num_mle = length(y) - start_idx - steps_ahead
-    backtest = Backtest(num_mle, steps_ahead)
+    b = Backtest(num_mle, steps_ahead)
     for i in 1:num_mle
         println("Backtest: step $i of $num_mle")
         gas_to_fit = deepcopy(gas)
@@ -49,8 +49,8 @@ function backtest(gas::Model{<:Distribution, T}, y::Vector{T}, steps_ahead::Int,
         forec = forecast(y_to_fit, gas_to_fit, steps_ahead; S=S, initial_params=initial_params)
         abs_errors = evaluate_abs_error(y_to_verify, forec.observation_forecast)
         crps_scores = evaluate_crps(y_to_verify, forec.observation_scenarios)
-        backtest.abs_errors[i, :] = abs_errors
-        backtest.crps_scores[i, :] = crps_scores
+        b.abs_errors[i, :] = abs_errors
+        b.crps_scores[i, :] = crps_scores
     end
-    return backtest
+    return b
 end

@@ -36,10 +36,7 @@ function simulate(series::Vector{T}, gas::Model{D, T}, H::Int, S::Int;
         sim, param = simulate_recursion(gas, H + biggest_lag; initial_params = params_simulation)
         observation_scenarios[:, scenario] = sim[biggest_lag+1:end]
         # The first param is known
-        parameter_scenarios[1, :, scenario] = params_simulation[end, :]
-        # The last param (param[end, :]) is actually in a time step bigger 
-        # than H
-        parameter_scenarios[2:end, :, scenario] = param[biggest_lag+1:end-1, :]
+        parameter_scenarios[:, :, scenario] = param[biggest_lag+1:end, :]
     end
     return observation_scenarios, parameter_scenarios
 end
@@ -69,12 +66,18 @@ function forecast(series::Vector{T}, gas::Model{D, T}, H::Int;
 
     observation_scenarios, parameter_scenarios = simulate(series, gas, H, S; 
                                                     initial_params = initial_params)
+    parameters_forecast = mean(parameter_scenarios, dims = 3)[:, :, 1]
+    observations_forecast = Vector{T}(undef, H)
+    for i in 1:H
+        dist = update_dist(D, parameters_forecast, i)
+        observations_forecast[i] = mean(dist)
+    end
     return Forecast(
         get_quantiles(quantiles, observation_scenarios), 
-        mean(observation_scenarios, dims = 2)[:],
+        observations_forecast,
         observation_scenarios,
         get_quantiles(quantiles, parameter_scenarios), 
-        mean(parameter_scenarios, dims = 3)[:, :, 1],
+        parameters_forecast,
         parameter_scenarios
         )
 end
