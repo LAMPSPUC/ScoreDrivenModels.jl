@@ -1,6 +1,6 @@
 module ScoreDrivenModels
 
-using Distributions, Optim, SpecialFunctions
+using Distributions, Optim, SpecialFunctions, HypothesisTests
 using LinearAlgebra, Printf
 
 import Base: length, deepcopy, show
