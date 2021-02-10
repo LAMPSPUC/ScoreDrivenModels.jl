@@ -1,3 +1,5 @@
+export backtest
+
 struct Backtest
     abs_errors::Matrix{Float64}
     crps_scores::Matrix{Float64}
@@ -13,7 +15,6 @@ function crps(val::T, scenarios::Vector{T}) where {T}
     sorted_scenarios = sort(scenarios)
     m = length(scenarios)
     crps_score = zero(T)
-
     for i = 1:m
         crps_score +=
             (sorted_scenarios[i] - val) *
@@ -31,10 +32,11 @@ function evaluate_crps(y::Vector{T}, scenarios::Matrix{T}) where {T}
 end
 
 """
+TODO
 """
-function backtest(gas, y, steps_ahead, start_idx;
+function backtest(gas::Model{<:Distribution, T}, y::Vector{T}, steps_ahead::Int, start_idx::Int;
                   S::Int = 1000,
-                  initial_params::Matrix{T} = ScoreDrivenModels.DEFAULT_INITIAL_PARAM,
+                  initial_params::Matrix{T} = stationary_initial_params(gas),
                   opt_method = NelderMead(gas, DEFAULT_NUM_SEEDS)) where T
     num_mle = length(y) - start_idx - steps_ahead
     backtest = Backtest(num_mle, steps_ahead)

@@ -30,6 +30,6 @@ function LBFGS(model::Model{D, T}, initial_points::Vector{Vector{T}}; f_tol::T =
     return LBFGS{T}(f_tol, g_tol, iterations, initial_points)
 end
 
-function optimize(func::Optim.TwiceDifferentiable, opt_method::LBFGS{T}, verbose::Int, i::Int) where T
-    return optimize(func, opt_method, Optim.LBFGS(), verbose, i)
+function optimize(func::Optim.TwiceDifferentiable, opt_method::LBFGS{T}, verbose::Int, i::Int, time_limit_sec::Int) where T
+    return optimize(func, opt_method, Optim.LBFGS(), verbose, i, time_limit_sec)
 end

@@ -120,7 +120,7 @@ function fit(gas::Model{D, T}, y::Vector{T};
             func = TwiceDifferentiable(psi_tilde -> log_lik(psi_tilde, y, gas_fit, 
                                                         initial_params, unknowns, n), 
                                                         opt_method.initial_points[i])
-            opt_result = optimize(func, opt_method, verbose, i)
+            opt_result = optimize(func, opt_method, verbose, i, time_limit_sec)
             update_aux_estimation!(aux_est, func, opt_result)
             verbose >= 1 && println("Round $i of $n_initial_points - Log-likelihood: $(-opt_result.minimum * length(y))")
         catch err
