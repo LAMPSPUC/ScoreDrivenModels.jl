@@ -1,6 +1,6 @@
 module ScoreDrivenModels
 
-using Distributions, Optim, SpecialFunctions, HypothesisTests
+using Distributions, Optim, SpecialFunctions, HypothesisTests, RecipesBase, StatsBase
 using LinearAlgebra, Printf
 
 import Base: length, deepcopy, show
@@ -44,5 +44,8 @@ include("distributions/poisson.jl")
 include("distributions/tdist.jl")
 include("distributions/tdistlocationscale.jl")
 include("distributions/weibull.jl")
+
+include("visualization/forecast.jl")
+include("visualization/residuals.jl")
 
 end
