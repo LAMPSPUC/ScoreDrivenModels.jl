@@ -26,25 +26,27 @@ function create_initial_points(model::Model{D, T}, n_initial_points::Int, LB::T,
 end
 
 function optimize(func::Optim.TwiceDifferentiable, opt_method::AbstractOptimizationMethod{T},
-                  optimizer::Optim.AbstractOptimizer, verbose::Int, i::Int) where T
+                  optimizer::Optim.AbstractOptimizer, verbose::Int, i::Int, time_limit_sec::Int) where T
                   
     return Optim.optimize(func, opt_method.initial_points[i], optimizer,
                                                      Optim.Options(f_tol = opt_method.f_tol, 
                                                                    g_tol = opt_method.g_tol, 
                                                                    iterations = opt_method.iterations,
-                                                                   show_trace = show_trace(verbose) ))
+                                                                   show_trace = show_trace(verbose),
+                                                                   time_limit = time_limit_sec))
 end
 
 function optimize(func::Optim.TwiceDifferentiable, opt_method::AbstractOptimizationMethod{T},
                   cons::Optim.TwiceDifferentiableConstraints,
                   optimizer::Optim.AbstractOptimizer, 
-                  verbose::Int, i::Int) where T
+                  verbose::Int, i::Int, time_limit_sec::Int) where T
 
     return Optim.optimize(func, cons, opt_method.initial_points[i], optimizer,
                                                      Optim.Options(f_tol = opt_method.f_tol, 
                                                                    g_tol = opt_method.g_tol, 
                                                                    iterations = opt_method.iterations,
-                                                                   show_trace = show_trace(verbose) ))
+                                                                   show_trace = show_trace(verbose), 
+                                                                   time_limit = time_limit_sec))
 end
 
 show_trace(verbose::Int) =  (verbose == 3 ? true : false)

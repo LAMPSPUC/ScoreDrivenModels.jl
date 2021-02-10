@@ -39,7 +39,7 @@ function IPNewton(model::Model{D, T}, initial_points::Vector{Vector{T}}; f_tol::
     return IPNewton{T}(f_tol, g_tol, ub, lb, iterations, initial_points)
 end
 
-function optimize(func::Optim.TwiceDifferentiable, opt_method::IPNewton{T}, verbose::Int, i::Int) where T
+function optimize(func::Optim.TwiceDifferentiable, opt_method::IPNewton{T}, verbose::Int, i::Int, time_limit_sec::Int) where T
     cons = Optim.TwiceDifferentiableConstraints(opt_method.lb, opt_method.ub)
-    return optimize(func, opt_method, cons, Optim.IPNewton(), verbose, i)
+    return optimize(func, opt_method, cons, Optim.IPNewton(), verbose, i, time_limit_sec)
 end

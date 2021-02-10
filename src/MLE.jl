@@ -95,7 +95,8 @@ function fit(gas::Model{D, T}, y::Vector{T};
              initial_params::Matrix{T} = DEFAULT_INITIAL_PARAM,
              opt_method::AbstractOptimizationMethod = NelderMead(gas, DEFAULT_NUM_SEEDS),
              verbose::Int = DEFAULT_VERBOSE,
-             throw_errors::Bool = false) where {D, T}
+             throw_errors::Bool = false,
+             time_limit_sec::Int = 10^8) where {D, T}
 
     verbose in [0, 1, 2, 3] || throw(ErrorException, "verbose argument must be in [0, 1, 2, 3]")
     # Number of initial_points and number of params to estimate
@@ -119,7 +120,7 @@ function fit(gas::Model{D, T}, y::Vector{T};
             func = TwiceDifferentiable(psi_tilde -> log_lik(psi_tilde, y, gas_fit, 
                                                         initial_params, unknowns, n), 
                                                         opt_method.initial_points[i])
-            opt_result = optimize(func, opt_method, verbose, i)
+            opt_result = optimize(func, opt_method, verbose, i, time_limit_sec)
             update_aux_estimation!(aux_est, func, opt_result)
             verbose >= 1 && println("Round $i of $n_initial_points - Log-likelihood: $(-opt_result.minimum * length(y))")
         catch err

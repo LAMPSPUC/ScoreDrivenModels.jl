@@ -20,6 +20,7 @@ include("simulate.jl")
 include("diagnostics.jl")
 include("univariate_score_driven_recursion.jl")
 include("MLE.jl")
+include("backtest.jl")
 include("prints.jl")
 
 # Optimization methods
