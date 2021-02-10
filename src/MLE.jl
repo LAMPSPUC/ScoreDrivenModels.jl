@@ -13,6 +13,7 @@ struct Fitted{D <: Distribution, T <: AbstractFloat}
     llk::T
     coefs::Vector{T}
     numerical_hessian::Matrix{T}
+    pearson_residuals::Vector{T}
 end
 
 struct CoefsStats{T <: AbstractFloat}
@@ -29,13 +30,16 @@ struct EstimationStats{D <: Distribution, T <: AbstractFloat}
     aic::T
     bic::T
     np::T
+    jarquebera_p_value::T
     coefs_stats::CoefsStats{T}
 end
 
 function results(f::Fitted{D, T}) where {D, T}
     estim_results = eval_coefs_stats(f)
     np = length(f.unknowns)
-    return EstimationStats{D, T}(f.num_obs, f.llk, f.aic, f.bic, np, estim_results)
+    jarquebera_p_value = pvalue(JarqueBeraTest(f.pearson_residuals))
+    return EstimationStats{D, T}(f.num_obs, f.llk, f.aic, f.bic, np, 
+                                 jarquebera_p_value, estim_results)
 end
 
 function eval_coefs_stats(f::Fitted{D, T}) where {D, T}
@@ -91,12 +95,17 @@ function update_aux_estimation!(aux_est::AuxEstimation{T}, func::Optim.TwiceDiff
     return
 end
 
-function fit(gas::Model{D, T}, y::Vector{T};
+function fit!(gas::Model{D, T}, y::Vector{T};
              initial_params::Matrix{T} = DEFAULT_INITIAL_PARAM,
              opt_method::AbstractOptimizationMethod = NelderMead(gas, DEFAULT_NUM_SEEDS),
              verbose::Int = DEFAULT_VERBOSE,
              throw_errors::Bool = false,
              time_limit_sec::Int = 10^8) where {D, T}
+
+    unknowns = find_unknowns(gas)
+    # Check if the model has no unknowns
+    n_unknowns = length(unknowns)
+    check_model_estimated(n_unknowns) && return gas
 
     verbose in [0, 1, 2, 3] || throw(ErrorException, "verbose argument must be in [0, 1, 2, 3]")
     # Number of initial_points and number of params to estimate
@@ -150,21 +159,12 @@ function fit(gas::Model{D, T}, y::Vector{T};
         println(aux_est.opt_result[best_seed])
     end
 
-    return Fitted{D, T}(n, unknowns, aic, bic, best_llk, coefs, num_hessian)
-end
+    fill_psitilde!(gas, coefs, unknowns)
 
-function fit!(gas::Model{D, T}, y::Vector{T};
-              initial_params::Matrix{T} = DEFAULT_INITIAL_PARAM,
-              opt_method::AbstractOptimizationMethod = NelderMead(gas, DEFAULT_NUM_SEEDS),
-              verbose::Int = DEFAULT_VERBOSE,
-              throw_errors::Bool = false) where {D, T}
+    # Calculate pearson residuals
+    pearson_res = isnan(initial_params[1]) ? 
+                pearson_residuals(y, gas) :
+                pearson_residuals(y, gas; initial_params = initial_params)
 
-    unknowns = find_unknowns(gas)
-    # Check if the model has no unknowns
-    n_unknowns = length(unknowns)
-    check_model_estimated(n_unknowns) && return gas
-    
-    f = fit(gas, y; initial_params = initial_params, opt_method = opt_method, verbose = verbose, throw_errors = throw_errors)
-    fill_psitilde!(gas, f.coefs, unknowns)
-    return f
+    return Fitted{D, T}(n, unknowns, aic, bic, best_llk, coefs, num_hessian, pearson_res)
 end
