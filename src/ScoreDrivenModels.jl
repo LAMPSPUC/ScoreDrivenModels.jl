@@ -47,5 +47,6 @@ include("distributions/weibull.jl")
 
 include("visualization/forecast.jl")
 include("visualization/residuals.jl")
+include("visualization/backtest.jl")
 
 end

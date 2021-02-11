@@ -2,11 +2,15 @@ export backtest
 
 struct Backtest
     abs_errors::Matrix{Float64}
+    mae::Vector{Float64}
     crps_scores::Matrix{Float64}
+    mean_crps::Vector{Float64}
     function Backtest(n::Int, steps_ahead::Int)
-        abs_errors = Matrix{Float64}(undef, n, steps_ahead)
-        crps_scores = Matrix{Float64}(undef, n, steps_ahead)
-        return new(abs_errors, crps_scores)
+        abs_errors = Matrix{Float64}(undef, steps_ahead, n)
+        crps_scores = Matrix{Float64}(undef, steps_ahead, n)
+        mae = Vector{Float64}(undef, steps_ahead)
+        mean_crps = Vector{Float64}(undef, steps_ahead)
+        return new(abs_errors, mae, crps_scores, mean_crps)
     end
 end
 
@@ -36,8 +40,8 @@ TODO
 """
 function backtest(gas::Model{<:Distribution, T}, y::Vector{T}, steps_ahead::Int, start_idx::Int;
                   S::Int = 10_000,
-                  initial_params = stationary_initial_params(gas),
-                  opt_method = NelderMead(gas, 3)) where T
+                  initial_params::Matrix{T} = stationary_initial_params(gas),
+                  opt_method = NelderMead(gas, DEFAULT_NUM_SEEDS)) where T
     num_mle = length(y) - start_idx - steps_ahead
     b = Backtest(num_mle, steps_ahead)
     for i in 1:num_mle
@@ -49,8 +53,12 @@ function backtest(gas::Model{<:Distribution, T}, y::Vector{T}, steps_ahead::Int,
         forec = forecast(y_to_fit, gas_to_fit, steps_ahead; S=S, initial_params=initial_params)
         abs_errors = evaluate_abs_error(y_to_verify, forec.observation_forecast)
         crps_scores = evaluate_crps(y_to_verify, forec.observation_scenarios)
-        b.abs_errors[i, :] = abs_errors
-        b.crps_scores[i, :] = crps_scores
+        b.abs_errors[:, i] = abs_errors
+        b.crps_scores[:, i] = crps_scores
+    end
+    for i in 1:steps_ahead
+        b.mae[i] = mean(b.abs_errors[i, :])
+        b.mean_crps[i] = mean(b.crps_scores[i, :])
     end
     return b
 end

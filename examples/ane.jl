@@ -9,8 +9,8 @@ y_test = y[401:460]
 # Set RNG seed to guarantee consistent results
 Random.seed!(123)
 
-# Specify GAS model: a lognormal model with time-varying μ, constant σ, and lags 1 and 12
-gas = Model([1, 2, 11, 12], [1, 2, 11, 12], LogNormal, 0.0; time_varying_params=[1])
+# Specify GAS model: a lognormal model with time-varying μ, constant σ, and lags 4 and 12
+gas = Model(4, 12, LogNormal, 1.0; time_varying_params=[1])
 
 # Obtain initial parameters to start the GAS recursion
 initial_params = dynamic_initial_params(y_train, gas)
@@ -20,6 +20,7 @@ f = ScoreDrivenModels.fit!(gas, y_train; initial_params=initial_params)
 
 # Print estimation statistics
 results(f)
+plot(f)
 
 # Simulate 1000 future scenarios and obtain the 5% and 95% quantiles in each time period
 forec = forecast(y_train, gas, 60; S=1000, initial_params=initial_params)

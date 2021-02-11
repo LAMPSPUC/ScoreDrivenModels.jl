@@ -1,4 +1,4 @@
-RecipesBase.@recipe function f(fi::ScoreDrivenModels.Fitted)
+RecipesBase.@recipe function f(fi::Fitted)
     layout := (2, 2)
     acf = autocor(fi.pearson_residuals)[2:end]
     @series begin
@@ -6,6 +6,7 @@ RecipesBase.@recipe function f(fi::ScoreDrivenModels.Fitted)
         label := ""
         seriescolor := "black"
         subplot := 1
+        marker := :circle
         fi.pearson_residuals
     end
     @series begin
