@@ -28,6 +28,7 @@ f = fit!(gas, y; opt_method=LBFGS(gas, 5))
 
 # Print estimation statistics
 results(f)
+plot(f)
 
 # Perform forecast via simulations for 12 time periods ahead
 forec = forecast(y, gas, 12)
@@ -37,3 +38,11 @@ forec.parameter_forecast
 
 # Similarly, we can access the simulated observation scenarios
 forec.observation_scenarios
+
+gas_t = Model(1, 1, TDistLocationScale, 0.0; time_varying_params = [1])
+steps_ahead = 50
+first_idx = 150
+b_t = backtest(gas_t, y, steps_ahead, first_idx)
+plot(b_t, "GAS(1, 1) Student t")
+using Plots
+plot!(b_t, "GAS(1, 1) Student t")

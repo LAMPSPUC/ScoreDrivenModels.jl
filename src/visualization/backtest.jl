@@ -1,5 +1,5 @@
 RecipesBase.@recipe function f(b::ScoreDrivenModels.Backtest, name::String)
-    xguide := "steps ahead"
+    xguide := "lead times"
     @series begin
         seriestype := :path
         label := "MAE " * name
