@@ -6,7 +6,6 @@ function Base.show(io::IO, est::EstimationStats{D, T}) where {D, T}
     println(io, "Log-likelihood:               ", @sprintf("%.4f", est.loglikelihood))
     println(io, "AIC:                          ", @sprintf("%.4f", est.aic))
     println(io, "BIC:                          ", @sprintf("%.4f", est.bic))
-    println(io, "Jarque Bera p value:          ", @sprintf("%.4f", est.jarquebera_p_value))
     print_coefs_stats(est.coefs_stats)
     return nothing
 end
