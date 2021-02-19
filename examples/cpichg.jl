@@ -1,4 +1,4 @@
-using DelimitedFiles, Random, ScoreDrivenModels, Statistics
+using DelimitedFiles, Random, ScoreDrivenModels, Statistics, Plots
 
 # Load historical Consumer Price Index data
 y = vec(readdlm("../test/data/cpichg.csv"))
@@ -39,10 +39,15 @@ forec.parameter_forecast
 # Similarly, we can access the simulated observation scenarios
 forec.observation_scenarios
 
-gas_t = Model(1, 1, TDistLocationScale, 0.0; time_varying_params = [1])
+gas_t = Model(1, 1, TDistLocationScale, 1.0; time_varying_params = [1])
 steps_ahead = 50
 first_idx = 150
 b_t = backtest(gas_t, y, steps_ahead, first_idx)
 plot(b_t, "GAS(1, 1) Student t")
-using Plots
-plot!(b_t, "GAS(1, 1) Student t")
+
+gas_t_1_2 = Model(1, 2, TDistLocationScale, 1.0; time_varying_params = [1])
+steps_ahead = 50
+first_idx = 150
+b_t_1_2 = backtest(gas_t_1_2, y, steps_ahead, first_idx)
+plot(b_t, "GAS(1, 1) Student t");
+plot!(b_t_1_2, "GAS(1, 2) Student t"; legend = :topleft)
