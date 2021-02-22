@@ -10,7 +10,7 @@ y_test = y[401:460]
 Random.seed!(123)
 
 # Specify GAS model: a lognormal model with time-varying μ, constant σ, and lags 4 and 12
-gas = Model(4, 12, LogNormal, 1.0; time_varying_params=[1])
+gas = Model([1, 2, 3, 4], [1, 2, 3, 10, 11, 12], LogNormal, 1.0; time_varying_params=[1])
 
 # Obtain initial parameters to start the GAS recursion
 initial_params = dynamic_initial_params(y_train, gas)
