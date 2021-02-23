@@ -1,13 +1,13 @@
 RecipesBase.@recipe function f(fi::Fitted)
     layout := (2, 2)
-    acf = autocor(fi.pearson_residuals)[2:end]
+    acf = autocor(fi.quantile_residuals)[2:end]
     @series begin
         seriestype := :path
         label := ""
         seriescolor := "black"
         subplot := 1
         marker := :circle
-        fi.pearson_residuals
+        fi.quantile_residuals
     end
     @series begin
         seriestype := :bar
@@ -39,9 +39,9 @@ RecipesBase.@recipe function f(fi::Fitted)
         label := ""
         seriescolor := "black"
         subplot := 3
-        fi.pearson_residuals
+        fi.quantile_residuals
     end
-    qqpair = qqbuild(Normal(), fi.pearson_residuals)
+    qqpair = qqbuild(Normal(), fi.quantile_residuals)
     @series begin
         seriestype := :scatter
         label := ""

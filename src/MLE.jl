@@ -13,7 +13,7 @@ struct Fitted{D <: Distribution, T <: AbstractFloat}
     llk::T
     coefs::Vector{T}
     numerical_hessian::Matrix{T}
-    pearson_residuals::Vector{T}
+    quantile_residuals::Vector{T}
 end
 
 struct CoefsStats{T <: AbstractFloat}
@@ -37,7 +37,7 @@ end
 function results(f::Fitted{D, T}) where {D, T}
     estim_results = eval_coefs_stats(f)
     np = length(f.unknowns)
-    jarquebera_p_value = pvalue(JarqueBeraTest(f.pearson_residuals))
+    jarquebera_p_value = pvalue(JarqueBeraTest(f.quantile_residuals))
     return EstimationStats{D, T}(f.num_obs, f.llk, f.aic, f.bic, np, 
                                  jarquebera_p_value, estim_results)
 end
@@ -163,8 +163,8 @@ function fit!(gas::Model{D, T}, y::Vector{T};
 
     # Calculate pearson residuals
     pearson_res = isnan(initial_params[1]) ? 
-                pearson_residuals(y, gas) :
-                pearson_residuals(y, gas; initial_params = initial_params)
+                quantile_residuals(y, gas) :
+                quantile_residuals(y, gas; initial_params = initial_params)
 
     return Fitted{D, T}(n, unknowns, aic, bic, best_llk, coefs, num_hessian, pearson_res)
 end
