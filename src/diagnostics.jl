@@ -10,8 +10,16 @@ function quantile_residuals(obs::Vector{T}, gas::Model{D, T};
 
     for t in axes(params_fitted[len_ini_par + 1:end - 1, :], 1)
         dist = update_dist(D, params_fitted[len_ini_par + 1:end - 1, :], t)
-        prob = cdf(dist, obs[t + len_ini_par])
-        quant_res[t] = quantile(Normal(0, 1), prob)
+        # Continuous distributions PIT
+        if supertype(D).parameters[2] == Continuous
+            prob = cdf(dist, obs[t + len_ini_par])
+            quant_res[t] = quantile(Normal(0, 1), prob)
+        else # Discrete distributions PIT
+            lb = cdf(dist, obs[t + len_ini_par] - 1)
+            ub = cdf(dist, obs[t + len_ini_par])
+            prob = rand(Uniform(lb, ub))
+            quant_res[t] = quantile(Normal(0, 1), prob)
+        end
 
         # Treat possible infinity values
         if quant_res[t] == Inf
