@@ -16,4 +16,11 @@
     bac = backtest(gas, simulation, 10, 4985)
     rec = RecipesBase.apply_recipe(Dict{Symbol, Any}(), bac, "name")
     @test length(rec) == 2
+
+    simulation = simulate_GAS_1_1(Normal, 0.0, ω, A, B, 1)
+    gas = ScoreDrivenModels.Model(1, 1, Normal, 0.0)
+    fit!(gas, simulation)
+    forec = forecast(simulation, gas, 50)
+    rec = RecipesBase.apply_recipe(Dict{Symbol, Any}(), simulation, forec)
+    @test length(rec) == 4
 end

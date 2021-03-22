@@ -40,7 +40,7 @@ TODO
 """
 function backtest(gas::Model{<:Distribution, T}, y::Vector{T}, steps_ahead::Int, start_idx::Int;
                   S::Int = 10_000,
-                  initial_params::Matrix{T} = stationary_initial_params(gas),
+                  initial_params::Matrix{T} = DEFAULT_INITIAL_PARAM,
                   opt_method = NelderMead(gas, DEFAULT_NUM_SEEDS)) where T
     num_mle = length(y) - start_idx - steps_ahead
     b = Backtest(num_mle, steps_ahead)
@@ -49,8 +49,10 @@ function backtest(gas::Model{<:Distribution, T}, y::Vector{T}, steps_ahead::Int,
         gas_to_fit = deepcopy(gas)
         y_to_fit = y[1:start_idx - 1 + i]
         y_to_verify = y[start_idx + i:start_idx - 1 + i + steps_ahead]
-        ScoreDrivenModels.fit!(gas_to_fit, y_to_fit; initial_params=initial_params, opt_method=opt_method)
-        forec = forecast(y_to_fit, gas_to_fit, steps_ahead; S=S, initial_params=initial_params)
+        fit!(gas_to_fit, y_to_fit; initial_params=initial_params, opt_method=opt_method)
+        forec = initial_params !== DEFAULT_INITIAL_PARAM ? 
+                    forecast(y_to_fit, gas_to_fit, steps_ahead; S=S, initial_params=initial_params) :
+                    forecast(y_to_fit, gas_to_fit, steps_ahead; S=S)
         abs_errors = evaluate_abs_error(y_to_verify, forec.observation_forecast)
         crps_scores = evaluate_crps(y_to_verify, forec.observation_scenarios)
         b.abs_errors[:, i] = abs_errors
