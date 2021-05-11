@@ -20,7 +20,7 @@ include("simulate.jl")
 include("diagnostics.jl")
 include("univariate_score_driven_recursion.jl")
 include("MLE.jl")
-include("backtest.jl")
+include("cross_validation.jl")
 include("prints.jl")
 
 # Optimization methods
@@ -47,6 +47,6 @@ include("distributions/weibull.jl")
 
 include("visualization/forecast.jl")
 include("visualization/residuals.jl")
-include("visualization/backtest.jl")
+include("visualization/cross_validation.jl")
 
 end

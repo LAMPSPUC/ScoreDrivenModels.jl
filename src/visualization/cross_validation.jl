@@ -1,4 +1,4 @@
-RecipesBase.@recipe function f(b::ScoreDrivenModels.Backtest, name::String)
+RecipesBase.@recipe function f(b::ScoreDrivenModels.CrossValidation, name::String)
     xguide := "lead times"
     @series begin
         seriestype := :path
