@@ -1,11 +1,11 @@
-export backtest
+export cross_validation
 
-struct Backtest
+struct CrossValidation
     abs_errors::Matrix{Float64}
     mae::Vector{Float64}
     crps_scores::Matrix{Float64}
     mean_crps::Vector{Float64}
-    function Backtest(n::Int, steps_ahead::Int)
+    function CrossValidation(n::Int, steps_ahead::Int)
         abs_errors = Matrix{Float64}(undef, steps_ahead, n)
         crps_scores = Matrix{Float64}(undef, steps_ahead, n)
         mae = Vector{Float64}(undef, steps_ahead)
@@ -38,14 +38,14 @@ end
 """
 TODO
 """
-function backtest(gas::Model{<:Distribution, T}, y::Vector{T}, steps_ahead::Int, start_idx::Int;
+function cross_validation(gas::Model{<:Distribution, T}, y::Vector{T}, steps_ahead::Int, start_idx::Int;
                   S::Int = 10_000,
                   initial_params::Matrix{T} = DEFAULT_INITIAL_PARAM,
                   opt_method = NelderMead(gas, DEFAULT_NUM_SEEDS)) where T
     num_mle = length(y) - start_idx - steps_ahead
-    b = Backtest(num_mle, steps_ahead)
+    b = CrossValidation(num_mle, steps_ahead)
     for i in 1:num_mle
-        println("Backtest: step $i of $num_mle")
+        println("CrossValidation: step $i of $num_mle")
         gas_to_fit = deepcopy(gas)
         y_to_fit = y[1:start_idx - 1 + i]
         y_to_verify = y[start_idx + i:start_idx - 1 + i + steps_ahead]
