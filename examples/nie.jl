@@ -2,7 +2,7 @@ using Dates, DelimitedFiles, Plots, Random, ScoreDrivenModels
 
 # Define dates and load historical Affluent Natural Energy data
 dates = collect(Date(1961):Month(1):Date(2000, 12))
-y = vec(readdlm("./test/data/nie_northeastern.csv"))
+y = vec(readdlm("../test/data/nie_northeastern.csv"))
 y_train = y[1:400]
 y_test = y[401:460]
 
