@@ -1,10 +1,10 @@
 using DelimitedFiles, Random, ScoreDrivenModels, Statistics, Plots
 
-# Load historical Consumer Price Index data
-y = vec(readdlm("../test/data/cpichg.csv"))
-
 # Set RNG seed to guarantee consistent results
 Random.seed!(123)
+
+# Load historical Consumer Price Index data
+y = vec(readdlm("../test/data/cpichg.csv"))
 
 # Specify GAS model: a student's t model with location scale transformation
 # (see /src/distributions/non_native_dists.jl in the repository)
