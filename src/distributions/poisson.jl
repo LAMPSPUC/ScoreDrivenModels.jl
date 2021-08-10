@@ -20,7 +20,7 @@ function score!(score_til::Matrix{T}, y::Int, ::Type{Poisson}, param::Matrix{T},
 end
 
 function fisher_information!(aux::AuxiliaryLinAlg{T}, ::Type{Poisson}, param::Matrix{T}, t::Int) where T
-    aux.fisher[1, 1] = 1/param[1]
+    aux.fisher[1, 1] = 1/param[t, 1]
     return
 end
 
