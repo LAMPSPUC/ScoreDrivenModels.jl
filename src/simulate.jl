@@ -31,12 +31,12 @@ function simulate(series::Vector{T}, gas::Model{D, T}, H::Int, S::Int;
     parameter_scenarios = Array{T, 3}(undef, H, n_params, S)
     for scenario in 1:S
         # Notice that we know the parameter time_varying parameters for T + 1 
-        # So the last initial_params is already a part of the future simulation
-        # And we must take the 
+        # So the last initial_params is already a part of the future simulation.
+        # When we simulate 60 steps ahead the last observation is one too much for us.
         sim, param = simulate_recursion(gas, H + biggest_lag; initial_params = params_simulation)
-        observation_scenarios[:, scenario] = sim[biggest_lag+1:end]
+        observation_scenarios[:, scenario] = sim[biggest_lag:end-1]
         # The first param is known
-        parameter_scenarios[:, :, scenario] = param[biggest_lag+1:end, :]
+        parameter_scenarios[:, :, scenario] = param[biggest_lag:end-1, :]
     end
     return observation_scenarios, parameter_scenarios
 end
