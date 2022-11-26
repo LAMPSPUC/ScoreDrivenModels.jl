@@ -20,8 +20,8 @@ function instantiate_dist(D::Type{<:Distribution})
     end
 end
 
-function test_score_mean(D::Type{<:Distribution}; n::Int = 10^7, seed::Int = 10,
-                            atol::Float64 = 1e-3, rtol::Float64 = 1e-3)
+function test_score_mean(D::Type{<:Distribution}; n::Int = 10^6, seed::Int = 10,
+                            atol::Float64 = 1e-2, rtol::Float64 = 1e-2)
     Random.seed!(seed)
     dist = instantiate_dist(D)
     pars = permutedims([ScoreDrivenModels.params_sdm(dist)...])
