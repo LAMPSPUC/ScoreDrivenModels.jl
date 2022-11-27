@@ -1,14 +1,14 @@
-export Model
+export ScoreDrivenModel
 
-mutable struct Model{D <: Distribution, T <: AbstractFloat}
+mutable struct ScoreDrivenModel{D <: Distribution, T <: AbstractFloat}
     ω::Vector{T}
     A::Dict{Int, Matrix{T}}
     B::Dict{Int, Matrix{T}}
     scaling::Real
 end
 
-function deepcopy(gas::Model{D, T}) where {D, T}
-    return Model{D, T}(deepcopy(gas.ω), deepcopy(gas.A), deepcopy(gas.B), deepcopy(gas.scaling))
+function deepcopy(gas::ScoreDrivenModel{D, T}) where {D, T}
+    return ScoreDrivenModel{D, T}(deepcopy(gas.ω), deepcopy(gas.A), deepcopy(gas.B), deepcopy(gas.scaling))
 end
 
 function create_ω(num_params::Int)
@@ -26,7 +26,7 @@ function create_lagged_matrix(lags::Vector{Int}, time_varying_params::Vector{Int
     return mat
 end
 
-function Model(p::Int, q::Int, D::Type{<:Distribution}, scaling::Real;
+function ScoreDrivenModel(p::Int, q::Int, D::Type{<:Distribution}, scaling::Real;
              time_varying_params::Vector{Int} = collect(1:num_params(D)))
 
     # Vector of unkowns
@@ -37,10 +37,10 @@ function Model(p::Int, q::Int, D::Type{<:Distribution}, scaling::Real;
     A = create_lagged_matrix(collect(1:p), time_varying_params, zeros_params)
     B = create_lagged_matrix(collect(1:q), time_varying_params, zeros_params)
 
-    return Model{D, Float64}(ω, A, B, scaling)
+    return ScoreDrivenModel{D, Float64}(ω, A, B, scaling)
 end
 
-function Model(ps::Vector{Int}, qs::Vector{Int}, D::Type{<:Distribution}, scaling::Real;
+function ScoreDrivenModel(ps::Vector{Int}, qs::Vector{Int}, D::Type{<:Distribution}, scaling::Real;
              time_varying_params::Vector{Int} = collect(1:num_params(D)))
 
     # Vector of unkowns
@@ -51,29 +51,29 @@ function Model(ps::Vector{Int}, qs::Vector{Int}, D::Type{<:Distribution}, scalin
     A = create_lagged_matrix(ps, time_varying_params, zeros_params)
     B = create_lagged_matrix(qs, time_varying_params, zeros_params)
 
-    return Model{D, Float64}(ω, A, B, scaling)
+    return ScoreDrivenModel{D, Float64}(ω, A, B, scaling)
 end
 
 """
-    Model
+    ScoreDrivenModel
 
-The constructor of a score-driven model. The model receives the lag structure, the 
-distribution and the scaling. You can define the lag structure in two different 
-ways, either by passing integers `p` and `q` to add all lags from `1` to `p` and `1` to `q` or by 
-passing vectors of integers `ps` and `qs` containing the desired lags. Once you build 
+The constructor of a score-driven model. The model receives the lag structure, the
+distribution and the scaling. You can define the lag structure in two different
+ways, either by passing integers `p` and `q` to add all lags from `1` to `p` and `1` to `q` or by
+passing vectors of integers `ps` and `qs` containing the desired lags. Once you build
 the model all of the unknown parameters that must be estimated are represented as `NaN`.
 
 ```jldoctest
 # Passing p and q
-julia> Model(2, 2, LogNormal, 0.5)
-Model{LogNormal,Float64}([NaN, NaN], Dict(2=>[NaN 0.0; 0.0 NaN],1=>[NaN 0.0; 0.0 NaN]), Dict(2=>[NaN 0.0; 0.0 NaN],1=>[NaN 0.0; 0.0 NaN]), 0.5)
+julia> ScoreDrivenModel(2, 2, LogNormal, 0.5)
+ScoreDrivenModel{LogNormal,Float64}([NaN, NaN], Dict(2=>[NaN 0.0; 0.0 NaN],1=>[NaN 0.0; 0.0 NaN]), Dict(2=>[NaN 0.0; 0.0 NaN],1=>[NaN 0.0; 0.0 NaN]), 0.5)
 
 # Passing ps and qs
-julia> Model([1, 12], [1, 12], Gamma, 0.0)
-Model{Gamma,Float64}([NaN, NaN], Dict(12=>[NaN 0.0; 0.0 NaN],1=>[NaN 0.0; 0.0 NaN]), Dict(12=>[NaN 0.0; 0.0 NaN],1=>[NaN 0.0; 0.0 NaN]), 0.0)
+julia> ScoreDrivenModel([1, 12], [1, 12], Gamma, 0.0)
+ScoreDrivenModel{Gamma,Float64}([NaN, NaN], Dict(12=>[NaN 0.0; 0.0 NaN],1=>[NaN 0.0; 0.0 NaN]), Dict(12=>[NaN 0.0; 0.0 NaN],1=>[NaN 0.0; 0.0 NaN]), 0.0)
 ```
 
-If you don't want all the parameters to be considered time-varying you can express it 
+If you don't want all the parameters to be considered time-varying you can express it
 through the keyword argument `time_varying_params`, there you should pass a vector
 containing a number that represents which parameter should be time-varying. As an example
 in the Normal distribution `time_varying_params = [1]` indicates that only ``\\mu`` is
@@ -81,20 +81,20 @@ time-varying. You can find the table with the dictionary (number => parameter) i
 section [ScoreDrivenModels distributions](@ref).
 
 ```jldoctest
-julia> Model([1, 12], [1, 12], Normal, 1.0; time_varying_params = [1])
-Model{Normal,Float64}([NaN, NaN], Dict(12=>[NaN 0.0; 0.0 0.0],1=>[NaN 0.0; 0.0 0.0]), Dict(12=>[NaN 0.0; 0.0 0.0],1=>[NaN 0.0; 0.0 0.0]), 1.0)
+julia> ScoreDrivenModel([1, 12], [1, 12], Normal, 1.0; time_varying_params = [1])
+ScoreDrivenModel{Normal,Float64}([NaN, NaN], Dict(12=>[NaN 0.0; 0.0 0.0],1=>[NaN 0.0; 0.0 0.0]), Dict(12=>[NaN 0.0; 0.0 0.0],1=>[NaN 0.0; 0.0 0.0]), 1.0)
 ```
 """
-function Model end
+function ScoreDrivenModel end
 
-function number_of_lags(gas::Model)
+function number_of_lags(gas::ScoreDrivenModel)
     return max(maximum(keys(gas.A)), maximum(keys(gas.B)))
 end
 
 """
     Unknowns
 
-Structure that stores the positions of the parameters to be estimated in the [`Model`](@ref).
+Structure that stores the positions of the parameters to be estimated in the [`ScoreDrivenModel`](@ref).
 """
 mutable struct Unknowns
     ω::Vector{Int}
@@ -102,7 +102,7 @@ mutable struct Unknowns
     B::Dict{Int, Vector{Int}}
 end
 
-function fill_psitilde!(gas::Model, psitilde::Vector{T}, unknowns::Unknowns) where T
+function fill_psitilde!(gas::ScoreDrivenModel, psitilde::Vector{T}, unknowns::Unknowns) where T
     offset = 0
     # fill ω
     for i in unknowns.ω
@@ -126,7 +126,7 @@ function fill_psitilde!(gas::Model, psitilde::Vector{T}, unknowns::Unknowns) whe
     return
 end
 
-function find_unknowns(gas::Model)
+function find_unknowns(gas::ScoreDrivenModel)
     unknowns_A = Dict{Int, Vector{Int}}()
     unknowns_B = Dict{Int, Vector{Int}}()
 
@@ -141,7 +141,7 @@ function find_unknowns(gas::Model)
     return Unknowns(unknowns_ω, unknowns_A, unknowns_B)
 end
 
-function dim_unknowns(gas::Model)
+function dim_unknowns(gas::ScoreDrivenModel)
     return length(find_unknowns(gas))
 end
 
@@ -156,7 +156,7 @@ function length(unknowns::Unknowns)
     return len
 end
 
-function log_lik(psitilde::Vector{T}, y::Vector{T}, gas::Model{D, T},
+function log_lik(psitilde::Vector{T}, y::Vector{T}, gas::ScoreDrivenModel{D, T},
                  initial_params::Matrix{T}, unknowns::Unknowns, n::Int) where {D, T}
 
     # Use the unkowns vectors to fill the right positions

@@ -30,7 +30,7 @@ ub = [1.0, 1.0, 0.5, 1.0]
 lb = [-1.0, 0.0, 0.0, 0.5]
 
 # Specify GAS model: a normal model with time-varying σ and lag 1
-gas = Model(1, 1, Normal, 1.0, time_varying_params = [2])
+gas = ScoreDrivenModel(1, 1, Normal, 1.0, time_varying_params = [2])
 
 # Set initial point for the optimization
 initial_point = [0.0, 0.5, 0.25, 0.75]

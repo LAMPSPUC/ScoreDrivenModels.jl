@@ -38,7 +38,7 @@ function results(f::Fitted{D, T}) where {D, T}
     estim_results = eval_coefs_stats(f)
     np = length(f.unknowns)
     jarquebera_p_value = pvalue(JarqueBeraTest(f.quantile_residuals))
-    return EstimationStats{D, T}(f.num_obs, f.llk, f.aic, f.bic, np, 
+    return EstimationStats{D, T}(f.num_obs, f.llk, f.aic, f.bic, np,
                                  jarquebera_p_value, estim_results)
 end
 
@@ -47,7 +47,7 @@ function eval_coefs_stats(f::Fitted{D, T}) where {D, T}
     inv_H = inv(f.numerical_hessian)
     vars = diag(inv_H)
     for i in eachindex(vars)
-        if vars[i] <= VARIANCE_ZERO 
+        if vars[i] <= VARIANCE_ZERO
             vars[i] = VARIANCE_ZERO
         end
     end
@@ -70,7 +70,7 @@ mutable struct AuxEstimation{T <: AbstractFloat}
     function AuxEstimation{T}() where T
         return new(
             Vector{Vector{T}}(undef, 0), #psi
-            Vector{Matrix{T}}(undef, 0), 
+            Vector{Matrix{T}}(undef, 0),
             Vector{T}(undef, 0), # loglikelihood
             Vector{Optim.OptimizationResults}(undef, 0) # opt_result
             )
@@ -87,7 +87,7 @@ end
 
 function update_aux_estimation!(aux_est::AuxEstimation{T}, func::Optim.TwiceDifferentiable,
                                 opt_result::Optim.OptimizationResults) where T
-                                
+
     push!(aux_est.numerical_hessian, Optim.hessian!(func, opt_result.minimizer))
     push!(aux_est.psi, opt_result.minimizer)
     push!(aux_est.loglikelihood, -opt_result.minimum)
@@ -95,7 +95,7 @@ function update_aux_estimation!(aux_est::AuxEstimation{T}, func::Optim.TwiceDiff
     return
 end
 
-function fit!(gas::Model{D, T}, y::Vector{T};
+function fit!(gas::ScoreDrivenModel{D, T}, y::Vector{T};
              initial_params::Matrix{T} = DEFAULT_INITIAL_PARAM,
              opt_method::AbstractOptimizationMethod = NelderMead(gas, DEFAULT_NUM_SEEDS),
              verbose::Int = DEFAULT_VERBOSE,
@@ -111,23 +111,23 @@ function fit!(gas::Model{D, T}, y::Vector{T};
     # Number of initial_points and number of params to estimate
     n_initial_points = length(opt_method.initial_points)
     n = length(y)
-    
+
     unknowns = find_unknowns(gas)
     n_unknowns = length(unknowns)
-    
+
     # Check if the model has no unknowns
     check_model_estimated(n_unknowns) && return gas
 
     # Create a copy of the model to estimate
     gas_fit = deepcopy(gas)
-    
+
     # optimize for each initial_point
     aux_est = AuxEstimation{T}()
 
     for i = 1:n_initial_points
-        try 
-            func = TwiceDifferentiable(psi_tilde -> log_lik(psi_tilde, y, gas_fit, 
-                                                        initial_params, unknowns, n), 
+        try
+            func = TwiceDifferentiable(psi_tilde -> log_lik(psi_tilde, y, gas_fit,
+                                                        initial_params, unknowns, n),
                                                         opt_method.initial_points[i])
             opt_result = optimize(func, opt_method, verbose, i, time_limit_sec)
             update_aux_estimation!(aux_est, func, opt_result)
@@ -141,7 +141,7 @@ function fit!(gas::Model{D, T}, y::Vector{T};
         end
     end
 
-    if isempty(aux_est.loglikelihood) 
+    if isempty(aux_est.loglikelihood)
         verbose >= 1 && println("No initial point converged.")
         return
     end
@@ -162,7 +162,7 @@ function fit!(gas::Model{D, T}, y::Vector{T};
     fill_psitilde!(gas, coefs, unknowns)
 
     # Calculate pearson residuals
-    pearson_res = isnan(initial_params[1]) ? 
+    pearson_res = isnan(initial_params[1]) ?
                 quantile_residuals(y, gas) :
                 quantile_residuals(y, gas; initial_params = initial_params)
 

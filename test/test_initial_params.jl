@@ -1,6 +1,6 @@
 @testset "Inital params" begin
     @testset "stationary initial params" begin
-        gas_1_1 = Model(1, 1, Normal, 0.0)
+        gas_1_1 = ScoreDrivenModel(1, 1, Normal, 0.0)
         gas_1_1.ω = [1; 1]
         gas_1_1.B[1] = [0.8 0;0 0.5]
         initial_params_tilde = stationary_initial_params_tilde(gas_1_1)
@@ -10,7 +10,7 @@
         @test initial_params[1, 1] ≈ 5 atol = 1e-2 rtol = 1e-2
         @test initial_params[1, 2] ≈ exp(2) atol = 1e-2 rtol = 1e-2
 
-        gas_1_2 = Model(1, 2, Normal, 0.0)
+        gas_1_2 = ScoreDrivenModel(1, 2, Normal, 0.0)
         gas_1_2.ω = [1; 1]
         gas_1_2.B[1] = [0.4 0;0 0.25]
         gas_1_2.B[2] = [0.4 0;0 0.25]

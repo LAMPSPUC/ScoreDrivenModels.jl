@@ -38,7 +38,7 @@ end
 """
 TODO
 """
-function cross_validation(gas::Model{<:Distribution, T}, y::Vector{T}, steps_ahead::Int, start_idx::Int;
+function cross_validation(gas::ScoreDrivenModel{<:Distribution, T}, y::Vector{T}, steps_ahead::Int, start_idx::Int;
                   S::Int = 10_000,
                   initial_params::Matrix{T} = DEFAULT_INITIAL_PARAM,
                   opt_method = NelderMead(gas, DEFAULT_NUM_SEEDS)) where T
@@ -50,7 +50,7 @@ function cross_validation(gas::Model{<:Distribution, T}, y::Vector{T}, steps_ahe
         y_to_fit = y[1:start_idx - 1 + i]
         y_to_verify = y[start_idx + i:start_idx - 1 + i + steps_ahead]
         fit!(gas_to_fit, y_to_fit; initial_params=initial_params, opt_method=opt_method)
-        forec = initial_params !== DEFAULT_INITIAL_PARAM ? 
+        forec = initial_params !== DEFAULT_INITIAL_PARAM ?
                     forecast(y_to_fit, gas_to_fit, steps_ahead; S=S, initial_params=initial_params) :
                     forecast(y_to_fit, gas_to_fit, steps_ahead; S=S)
         abs_errors = evaluate_abs_error(y_to_verify, forec.observation_forecast)

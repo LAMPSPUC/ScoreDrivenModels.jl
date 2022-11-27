@@ -6,31 +6,31 @@
         simulation = simulate_GAS_1_1(Normal, 0.0, ω, A, B, 1)
         @testset "Estimation by passing number of initial_points" begin
             # LBFGS
-            gas = Model(1, 1, Normal, 0.0)
+            gas = ScoreDrivenModel(1, 1, Normal, 0.0)
             fit!(gas, simulation; verbose = 2, opt_method = ScoreDrivenModels.LBFGS(gas, 3))
             test_coefficients_GAS_1_1(gas, ω, A, B)
             # NelderMead
-            gas = Model(1, 1, Normal, 0.0)
+            gas = ScoreDrivenModel(1, 1, Normal, 0.0)
             fit!(gas, simulation; verbose = 2, opt_method = ScoreDrivenModels.NelderMead(gas, 3))
             test_coefficients_GAS_1_1(gas, ω, A, B)
             # IPNewton
-            gas = Model(1, 1, Normal, 0.0)
+            gas = ScoreDrivenModel(1, 1, Normal, 0.0)
             fit!(gas, simulation; verbose = 2, opt_method = ScoreDrivenModels.IPNewton(gas, 3))
             test_coefficients_GAS_1_1(gas, ω, A, B)
         end
         @testset "Estimation by passing initial_points" begin
             # LBFGS
-            gas = Model(1, 1, Normal, 0.0)
+            gas = ScoreDrivenModel(1, 1, Normal, 0.0)
             initial_points = [[0.1, 0.1, 0.5, 0.5, 0.5, 0.5]]
             fit!(gas, simulation; verbose = 1, opt_method = ScoreDrivenModels.LBFGS(gas, initial_points))
             test_coefficients_GAS_1_1(gas, ω, A, B)
             # NelderMead
-            gas = Model(1, 1, Normal, 0.0)
+            gas = ScoreDrivenModel(1, 1, Normal, 0.0)
             initial_points = [[0.1, 0.1, 0.5, 0.5, 0.5, 0.5]]
             fit!(gas, simulation; verbose = 1, opt_method = ScoreDrivenModels.NelderMead(gas, initial_points))
             test_coefficients_GAS_1_1(gas, ω, A, B)
             # IPNewton
-            gas = Model(1, 1, Normal, 0.0)
+            gas = ScoreDrivenModel(1, 1, Normal, 0.0)
             initial_points = [[0.1, 0.1, 0.5, 0.5, 0.5, 0.5]]
             fit!(gas, simulation; verbose = 1, opt_method = ScoreDrivenModels.IPNewton(gas, initial_points))
             test_coefficients_GAS_1_1(gas, ω, A, B)
@@ -43,7 +43,7 @@
             A = [0.5 0; 0 0.5]
             B = [0.5 0; 0 0.5]
             simulation = simulate_GAS_1_1(LogNormal, 0.0, ω, A, B, 13)
-            gas = Model(1, 1, LogNormal, 0.0)
+            gas = ScoreDrivenModel(1, 1, LogNormal, 0.0)
             fit!(gas, simulation; verbose = 1, opt_method = ScoreDrivenModels.LBFGS(gas, 3))
             test_coefficients_GAS_1_1(gas, ω, A, B)
         end
@@ -52,7 +52,7 @@
             A = [0.5 0; 0 0.5]
             B = [0.5 0; 0 0.5]
             simulation = simulate_GAS_1_1(LogNormal, 0.5, ω, A, B, 13)
-            gas = Model(1, 1, LogNormal, 0.5)
+            gas = ScoreDrivenModel(1, 1, LogNormal, 0.5)
             fit!(gas, simulation; verbose = 1, opt_method = ScoreDrivenModels.LBFGS(gas, 3))
             test_coefficients_GAS_1_1(gas, ω, A, B)
         end
@@ -61,13 +61,13 @@
             A = [0.1 0; 0 0.1]
             B = [0.1 0; 0 0.1]
             simulation = simulate_GAS_1_1(LogNormal, 1.0, ω, A, B, 3)
-            gas = Model(1, 1, LogNormal, 1.0)
+            gas = ScoreDrivenModel(1, 1, LogNormal, 1.0)
             fit!(gas, simulation; verbose = 1, opt_method = ScoreDrivenModels.LBFGS(gas, 3))
             test_coefficients_GAS_1_1(gas, ω, A, B)
         end
-        @testset "Model([1, 12], [1, 12])" begin
+        @testset "ScoreDrivenModel([1, 12], [1, 12])" begin
             simulation = simulate_GAS_1_12(LogNormal, 0.0, 123)
-            gas = Model([1, 12], [1, 12], LogNormal, 0.0)
+            gas = ScoreDrivenModel([1, 12], [1, 12], LogNormal, 0.0)
             fit!(gas, simulation; verbose = 1, opt_method = ScoreDrivenModels.LBFGS(gas, 3))
             test_coefficients_GAS_1_12(gas)
         end

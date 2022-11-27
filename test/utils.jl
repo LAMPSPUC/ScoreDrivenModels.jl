@@ -130,7 +130,7 @@ function test_dynamic(sigma::Float64, lags::Int; seed::Int = 12, atol::Float64 =
     Random.seed!(seed)
     dist = Normal(0, sigma^2)
     obs_dynamic = kron(ones(n), collect(1:lags)) + rand(dist, n*lags)
-    gas_lag_lag = Model(lags, lags, Normal, 0.0)
+    gas_lag_lag = ScoreDrivenModel(lags, lags, Normal, 0.0)
     initial_params = dynamic_initial_params(obs_dynamic, gas_lag_lag)
     for i in axes(initial_params, 1)
         @test initial_params[i, 1] ≈ i atol = atol rtol = rtol
@@ -141,7 +141,7 @@ end
 function simulate_GAS_1_1(D::Type{<:Distribution}, scaling::Float64, ω::Vector{T}, A::Matrix{T},
                             B::Matrix{T}, seed::Int) where T
     Random.seed!(seed)
-    gas = ScoreDrivenModels.Model(1, 1, D, scaling)
+    gas = ScoreDrivenModel(1, 1, D, scaling)
 
     gas.ω = ω
     gas.A[1] = A
@@ -154,7 +154,7 @@ end
 function simulate_GAS_1_12(D::Type{<:Distribution}, scaling::Float64, seed::Int)
     Random.seed!(seed)
     v = [0.1, 0.1]
-    gas = Model([1, 12], [1, 12], D, scaling)
+    gas = ScoreDrivenModel([1, 12], [1, 12], D, scaling)
 
     gas.ω = v
     gas.A[1]  = convert(Matrix{Float64}, Diagonal(3*v))
@@ -167,7 +167,7 @@ function simulate_GAS_1_12(D::Type{<:Distribution}, scaling::Float64, seed::Int)
     return series
 end
 
-function test_coefficients_GAS_1_1(gas::Model{D, T}, ω::Vector{T}, A::Matrix{T}, B::Matrix{T};
+function test_coefficients_GAS_1_1(gas::ScoreDrivenModel{D, T}, ω::Vector{T}, A::Matrix{T}, B::Matrix{T};
                                     atol = 1e-1, rtol = 1e-1) where {D <: Distribution, T}
     @test gas.ω[1] ≈ ω[1] atol = atol rtol = rtol
     @test gas.ω[2] ≈ ω[2] atol = atol rtol = rtol
@@ -178,7 +178,7 @@ function test_coefficients_GAS_1_1(gas::Model{D, T}, ω::Vector{T}, A::Matrix{T}
     return
 end
 
-function test_coefficients_GAS_1_12(gas::Model{D, T}; atol = 1e-1, rtol = 1e-1) where {D <: Distribution, T}
+function test_coefficients_GAS_1_12(gas::ScoreDrivenModel{D, T}; atol = 1e-1, rtol = 1e-1) where {D <: Distribution, T}
     @test gas.ω[1] ≈ 0.1 atol = atol rtol = rtol
     @test gas.ω[2] ≈ 0.1 atol = atol rtol = rtol
     @test gas.A[1][1, 1] ≈ 0.3 atol = atol rtol = rtol
@@ -195,7 +195,7 @@ end
 function normality_quantile_and_pearson_residuals(D, n::Int, lags::Int; seed::Int = 11)
     Random.seed!(seed)
 
-    gas = Model(1, 1, D, 0.0)
+    gas = ScoreDrivenModel(1, 1, D, 0.0)
     gas.ω .= [0.0; 0.0]
     gas.A[1][[1; 4]] .= 0.2
     gas.B[1][[1; 4]] .= 0.2
@@ -221,7 +221,7 @@ function test_GARCH_1_1(y, seed::Int, optimizer; atol = 1e-4, rtol = 1e-4)
     ini = [mean(y) var(y)]
     ub = [1.0; 1.0; 1.0; 1.0]
     lb = [-1.0; 0.0; 0.0; 0.0]
-    gas = Model(1, 1, Normal, 1.0, time_varying_params = [2])
+    gas = ScoreDrivenModel(1, 1, Normal, 1.0, time_varying_params = [2])
     f = fit!(gas, y; initial_params = ini, verbose = 2, opt_method = optimizer(gas, 10; ub = ub, lb = lb))
     show(stdout, results(f))
 
