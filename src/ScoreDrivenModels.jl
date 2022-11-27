@@ -1,7 +1,14 @@
 module ScoreDrivenModels
 
-using Distributions, Optim, SpecialFunctions, HypothesisTests, RecipesBase, StatsBase
-using LinearAlgebra, Printf
+using Distributions
+using Distributions: AffineDistribution, value_support
+using HypothesisTests
+using LinearAlgebra
+using Optim
+using Printf
+using RecipesBase
+using SpecialFunctions
+using StatsBase
 
 import Base: length, deepcopy, show
 

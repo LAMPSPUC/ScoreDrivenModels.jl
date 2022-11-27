@@ -16,11 +16,11 @@ TDistLocationScale
 
 function score!(score_til::Matrix{T}, y::T, ::Type{TDistLocationScale}, param::Matrix{T}, t::Int) where T
     score_til[t, 1] = ((param[t, 3] + 1) * (y - param[t, 1])) / ((y - param[t, 1])^2 + param[t, 2] * param[t, 3])
-    score_til[t, 2] = -(param[t, 3] * (param[t, 2] - (y - param[t, 1])^2)) / (2 * param[t, 2] * (param[t, 3] * param[t, 2] + 
+    score_til[t, 2] = -(param[t, 3] * (param[t, 2] - (y - param[t, 1])^2)) / (2 * param[t, 2] * (param[t, 3] * param[t, 2] +
                         (y - param[t, 1])^2))
     score_til[t, 3] = ((((y - param[t, 1])^2)*(param[t, 3] + 1)/(param[t, 3] * (y - param[t, 1])^2 + param[t, 2] * param[t, 3]^2)) -
-                      1/param[t, 3] - 
-                      log(((y - param[t, 1])^2)/(param[t, 2] * param[t, 3]) + 1) - 
+                      1/param[t, 3] -
+                      log(((y - param[t, 1])^2)/(param[t, 2] * param[t, 3]) + 1) -
                       digamma(param[t, 3] / 2) + digamma((param[t, 3] + 1) / 2)) / 2
     return
 end
@@ -49,30 +49,30 @@ function log_likelihood(::Type{TDistLocationScale}, y::Vector{T}, param::Matrix{
 end
 
 # Links
-function link!(param_tilde::Matrix{T}, ::Type{TDistLocationScale}, param::Matrix{T}, t::Int) where T 
+function link!(param_tilde::Matrix{T}, ::Type{TDistLocationScale}, param::Matrix{T}, t::Int) where T
     param_tilde[t, 1] = link(IdentityLink, param[t, 1])
     param_tilde[t, 2] = link(LogLink, param[t, 2], zero(T))
     param_tilde[t, 3] = link(LogLink, param[t, 3], zero(T))
     return
 end
-function unlink!(param::Matrix{T}, ::Type{TDistLocationScale}, param_tilde::Matrix{T}, t::Int) where T 
+function unlink!(param::Matrix{T}, ::Type{TDistLocationScale}, param_tilde::Matrix{T}, t::Int) where T
     param[t, 1] = unlink(IdentityLink, param_tilde[t, 1])
     param[t, 2] = unlink(LogLink, param_tilde[t, 2], zero(T))
     param[t, 3] = unlink(LogLink, param_tilde[t, 3], zero(T))
     return
 end
-function jacobian_link!(aux::AuxiliaryLinAlg{T}, ::Type{TDistLocationScale}, param::Matrix{T}, t::Int) where T 
+function jacobian_link!(aux::AuxiliaryLinAlg{T}, ::Type{TDistLocationScale}, param::Matrix{T}, t::Int) where T
     aux.jac[1] = jacobian_link(IdentityLink, param[t, 1])
     aux.jac[2] = jacobian_link(LogLink, param[t, 2], zero(T))
     aux.jac[3] = jacobian_link(LogLink, param[t, 3], zero(T))
     return
 end
 
-# utils 
+# utils
 function update_dist(::Type{TDistLocationScale}, param::Matrix{T}, t::Int) where T
     tdist = TDist(param[t, 3])
-    return LocationScale(param[t, 1], sqrt(param[t, 2]), tdist)
-end 
+    return AffineDistribution(param[t, 1], sqrt(param[t, 2]), tdist)
+end
 
 function params_sdm(d::TDistLocationScale)
     return (d.μ, d.σ^2, Distributions.params(d.ρ)...)

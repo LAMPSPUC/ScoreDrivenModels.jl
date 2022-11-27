@@ -1,6 +1,6 @@
 # Define TDistLocationScale as the location scale transformation of the Distributions.jl TDist
 export TDistLocationScale
-TDistLocationScale = LocationScale{Float64,TDist{Float64}}
+TDistLocationScale = AffineDistribution{Float64,value_support(TDist),TDist{Float64}}
 
 export BetaFourParameters
-BetaFourParameters = LocationScale{Float64,Beta{Float64}}
+BetaFourParameters = AffineDistribution{Float64,value_support(Beta),Beta{Float64}}
