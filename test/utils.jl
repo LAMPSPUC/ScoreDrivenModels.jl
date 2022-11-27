@@ -20,8 +20,8 @@ function instantiate_dist(D::Type{<:Distribution})
     end
 end
 
-function test_score_mean(D::Type{<:Distribution}; n::Int = 10^7, seed::Int = 10,
-                            atol::Float64 = 1e-3, rtol::Float64 = 1e-3)
+function test_score_mean(D::Type{<:Distribution}; n::Int = 10^6, seed::Int = 10,
+                            atol::Float64 = 1e-2, rtol::Float64 = 1e-2)
     Random.seed!(seed)
     dist = instantiate_dist(D)
     pars = permutedims([ScoreDrivenModels.params_sdm(dist)...])
@@ -55,7 +55,7 @@ function test_fisher_information(D::Type{<:Distribution}; n::Int = 10^6, seed::I
 
     # Some distributions might not have the fisher information yet available
     if D in FI_NOT_IMPLEMENTED
-        return 
+        return
     else
         ScoreDrivenModels.fisher_information!(aux_lin_alg, D, pars, 1)
     end
@@ -94,10 +94,10 @@ end
 
 function test_dist_utils(D::Type{<:Distribution})
     # num_params
-    dist = instantiate_dist(D) 
+    dist = instantiate_dist(D)
     n_pars = ScoreDrivenModels.num_params(D)
     @test n_pars == length(ScoreDrivenModels.params_sdm(dist))
-     
+
     # update_dist
     t = 1
     pars = permutedims([ScoreDrivenModels.params_sdm(dist)...])
