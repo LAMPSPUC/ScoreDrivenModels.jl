@@ -1,11 +1,11 @@
 export stationary_initial_params_tilde, stationary_initial_params, dynamic_initial_params
 
 """
-    stationary_initial_param_tilde(gas::Model{D, T}) where {D, T}
+    stationary_initial_param_tilde(gas::ScoreDrivenModel{D, T}) where {D, T}
 
 #TODO
 """
-function stationary_initial_params_tilde(gas::Model{D, T}) where {D, T}
+function stationary_initial_params_tilde(gas::ScoreDrivenModel{D, T}) where {D, T}
     biggest_lag = number_of_lags(gas)
     n_params = num_params(D)
     initial_params_tilde = Matrix{T}(undef, biggest_lag, n_params)
@@ -17,11 +17,11 @@ function stationary_initial_params_tilde(gas::Model{D, T}) where {D, T}
 end
 
 """
-    stationary_initial_params(gas::Model{D, T}) where {D, T}
+    stationary_initial_params(gas::ScoreDrivenModel{D, T}) where {D, T}
 
 #TODO
 """
-function stationary_initial_params(gas::Model{D, T}) where {D, T}
+function stationary_initial_params(gas::ScoreDrivenModel{D, T}) where {D, T}
     biggest_lag = number_of_lags(gas)
     n_params = num_params(D)
     initial_params_tilde = Matrix{T}(undef, biggest_lag, n_params)
@@ -39,11 +39,11 @@ end
 
     #TODO This is an heuristic! only seen in some phd thesis.
 """
-function dynamic_initial_params(obs::Vector{T}, gas::Model{D, T}) where {D, T}
+function dynamic_initial_params(obs::Vector{T}, gas::ScoreDrivenModel{D, T}) where {D, T}
     # Take the biggest lag
     biggest_lag = ScoreDrivenModels.number_of_lags(gas)
 
-    # Allocate memory 
+    # Allocate memory
     initial_params = Matrix{T}(undef, biggest_lag, ScoreDrivenModels.num_params(D))
     obs_separated = Vector{Vector{T}}(undef, biggest_lag)
 

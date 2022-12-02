@@ -6,7 +6,7 @@ It provides a high-level presentation of the theory behind score-driven models a
 ## Model Specification
 
 ```@docs
-Model
+ScoreDrivenModel
 ```
 
 ## Optimization Algorithms

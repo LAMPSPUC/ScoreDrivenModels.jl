@@ -1,6 +1,6 @@
 export quantile_residuals, pearson_residuals
 
-function quantile_residuals(obs::Vector{T}, gas::Model{D, T};
+function quantile_residuals(obs::Vector{T}, gas::ScoreDrivenModel{D, T};
                             initial_params::Matrix{T} = stationary_initial_params(gas)) where {D, T}
 
     n = length(obs)
@@ -32,7 +32,7 @@ function quantile_residuals(obs::Vector{T}, gas::Model{D, T};
     return quant_res
 end
 
-function pearson_residuals(obs::Vector{T}, gas::Model{D, T};
+function pearson_residuals(obs::Vector{T}, gas::ScoreDrivenModel{D, T};
                              initial_params::Matrix{T} = stationary_initial_params(gas)) where {D, T}
 
     n = length(obs)

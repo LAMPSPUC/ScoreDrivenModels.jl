@@ -10,7 +10,7 @@ Right now when estimating a BetaFourParameters model is recomended to provide fi
 with the code:
 
 ```julia
-gas_beta_4 = Model([1, 2, 11, 12], [1, 2, 11, 12], BetaFourParameters, 0.0; time_varying_params=[3])
+gas_beta_4 = ScoreDrivenModel([1, 2, 11, 12], [1, 2, 11, 12], BetaFourParameters, 0.0; time_varying_params=[3])
 gas_beta_4.ω[1] = minimum(y) - 0.1*std(y) # parameter a
 gas_beta_4.ω[2] = maximum(y) + 0.1*std(y) # parameter c
 ```
