@@ -131,7 +131,7 @@ function fit!(gas::ScoreDrivenModel{D, T}, y::Vector{T};
                                                         opt_method.initial_points[i])
             opt_result = optimize(func, opt_method, verbose, i, time_limit_sec)
             update_aux_estimation!(aux_est, func, opt_result)
-            verbose >= 1 && println("Round $i of $n_initial_points - Log-likelihood: $(-opt_result.minimum * length(y))")
+            verbose >= 1 && println("Round $i of $n_initial_points: log-likelihood = $(-opt_result.minimum * length(y))")
         catch err
             println(err)
             if throw_errors
